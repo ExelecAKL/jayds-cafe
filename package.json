@@ -1,0 +1,72 @@
+{
+  "name": "cafeos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CafeOS — PWA-based Online Ordering App System for a Cafe",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "tsx scripts/run-workspaces.ts dev",
+    "dev:local": "tsx scripts/run-local-supabase.ts dev",
+    "build:start:local": "tsx scripts/run-local-supabase.ts build:start",
+    "demo:local": "npm run db:start && npm run db:seed-auth && npm run build:start:local",
+    "dev:customer": "npm run dev -w apps/customer",
+    "dev:pos": "npm run dev -w apps/pos",
+    "dev:admin": "npm run dev -w apps/admin",
+    "build": "npm run build -w apps/customer && npm run build -w apps/pos && npm run build -w apps/admin",
+    "build:start": "npm run build && npm run start",
+    "start": "tsx scripts/run-workspaces.ts start",
+    "start:customer": "npm run start -w apps/customer",
+    "start:pos": "npm run start -w apps/pos",
+    "start:admin": "npm run start -w apps/admin",
+    "build:start:customer": "npm run build -w apps/customer && npm run start -w apps/customer",
+    "build:start:pos": "npm run build -w apps/pos && npm run start -w apps/pos",
+    "build:start:admin": "npm run build -w apps/admin && npm run start -w apps/admin",
+    "lint": "eslint .",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:status": "supabase status",
+    "db:env": "supabase status -o env",
+    "db:seed-auth": "tsx scripts/seed-local-auth-users.ts",
+    "db:seed-dummy": "supabase migration up && tsx scripts/apply-local-sql.ts supabase/seed_dummy_operational.sql",
+    "db:reset": "supabase db reset && npm run db:seed-auth",
+    "db:migrate": "supabase migration up",
+    "test": "tsx --test --test-concurrency=2 tests/*.test.ts",
+    "check:http": "tsx tests/http-smoke.ts",
+    "typecheck": "tsc --noEmit -p apps/customer/tsconfig.json && tsc --noEmit -p apps/pos/tsconfig.json && tsc --noEmit -p apps/admin/tsconfig.json && tsc --noEmit -p packages/shared/tsconfig.json && tsc --noEmit -p tsconfig.scripts.json",
+    "check:browser": "tsx tests/browser-operations.ts",
+    "check:demo": "tsx scripts/check-demo.ts",
+    "check:customer": "tsx tests/customer-browser.ts",
+    "check:pwa": "tsx tests/customer-pwa-browser.ts",
+    "check:motion": "tsx tests/customer-motion-browser.ts"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@playwright/test": "^1.63.0",
+    "@serwist/next": "9.5.12",
+    "@types/node": "24.19.0",
+    "@types/pg": "^8.23.1",
+    "concurrently": "^8.2.2",
+    "embedded-postgres": "^17.10.0-beta.17",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.8",
+    "jiti": "2.7.0",
+    "pg": "^8.23.1",
+    "prettier": "^3.9.9",
+    "supabase": "^2.95.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "overrides": {
+    "browserslist": "4.29.3",
+    "@serwist/next@9.5.12": {
+      "browserslist": "4.29.3"
+    }
+  },
+  "type": "module"
+}

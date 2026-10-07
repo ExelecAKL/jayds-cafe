@@ -1,0 +1,22 @@
+.git/
+.codex-logs/
+.tmp.*
+.vercel-*/
+**/.env*
+**/.next/
+**/node_modules/
+**/*.tsbuildinfo
+supabase/.temp/
+supabase/.branches/
+screenshots/
+playwright-report/
+test-results/
+coverage/
+*.log
+docs/
+screenshots/
+updated dfd+context/
+tests/
+supabase/
+schema.sql
+walkthrough.md

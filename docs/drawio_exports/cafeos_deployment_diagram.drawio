@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" modified="2026-04-26T17:07:15.596200+00:00" agent="Codex" version="24.7.17" type="device">
+  <diagram id="deployment-diagram" name="CafeOS Deployment Diagram">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1120" math="0" shadow="0" background="#ffffff">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Deployment Diagram" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;fontFamily=Arial;fontSize=24;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="45" y="40" width="360" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="client" value="&amp;lt;&amp;lt;node&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;Client Devices&lt;br&gt;(Mobile / POS / Admin)&lt;/b&gt;" style="shape=cube;size=20;whiteSpace=wrap;html=1;boundedLbl=1;strokeColor=#111111;fillColor=#ffffff;fontFamily=Arial;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="150" width="360" height="245" as="geometry" />
+        </mxCell>
+        <mxCell id="client_component" value="&amp;lt;&amp;lt;Front-End&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;Next.js PWA / Web Apps&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#111111;fillColor=#ffffff;fontFamily=Arial;fontSize=13;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="130" y="292" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="web" value="&amp;lt;&amp;lt;node&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;Web Server&lt;br&gt;(Cloud Hosted)&lt;/b&gt;" style="shape=cube;size=20;whiteSpace=wrap;html=1;boundedLbl=1;strokeColor=#111111;fillColor=#ffffff;fontFamily=Arial;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="650" y="170" width="360" height="225" as="geometry" />
+        </mxCell>
+        <mxCell id="web_component" value="&amp;lt;&amp;lt;Back-End&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;Vercel + Next.js API&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#111111;fillColor=#ffffff;fontFamily=Arial;fontSize=13;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="710" y="292" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="auth" value="&amp;lt;&amp;lt;SaaS&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;Supabase&lt;br&gt;Auth-as-a-Service&lt;/b&gt;" style="shape=cube;size=20;whiteSpace=wrap;html=1;boundedLbl=1;strokeColor=#111111;fillColor=#ffffff;fontFamily=Arial;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="185" width="360" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="db" value="&amp;lt;&amp;lt;Database Node&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;Supabase PostgreSQL&lt;br&gt;Database Server&lt;br&gt;(Cloud Deployment)&lt;/b&gt;" style="shape=cube;size=20;whiteSpace=wrap;html=1;boundedLbl=1;strokeColor=#111111;fillColor=#ffffff;fontFamily=Arial;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="585" y="630" width="520" height="245" as="geometry" />
+        </mxCell>
+        <mxCell id="external" value="&amp;lt;&amp;lt;External Services&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;Maya Payment API&lt;br&gt;Lalamove Delivery API&lt;/b&gt;" style="shape=cube;size=20;whiteSpace=wrap;html=1;boundedLbl=1;strokeColor=#111111;fillColor=#ffffff;fontFamily=Arial;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="640" width="360" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="HTTPS&lt;br&gt;(REST API, JSON)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#111111;strokeWidth=2;" edge="1" parent="1" source="client" target="web">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="API Call&lt;br&gt;(SDK)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#111111;strokeWidth=2;" edge="1" parent="1" source="web" target="auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="PostgREST / SQL&lt;br&gt;(via SSL)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#111111;strokeWidth=2;" edge="1" parent="1" source="web" target="db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="HTTPS API&lt;br&gt;(Serverless)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#111111;strokeWidth=2;" edge="1" parent="1" source="web" target="external">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="Auth redirect / session" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#111111;strokeWidth=2;dashed=1;" edge="1" parent="1" source="client" target="auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

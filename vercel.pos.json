@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build -w apps/pos",
+  "outputDirectory": "apps/pos/.next",
+  "framework": "nextjs"
+}

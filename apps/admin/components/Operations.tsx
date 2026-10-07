@@ -1,0 +1,425 @@
+"use client";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { supabase } from "@cafeos/shared/supabase/client";
+import type {
+  StockItem,
+  StockBatch,
+  StockMovement,
+  Supplier,
+  PurchaseOrder,
+  GoodsReceipt,
+  Stocktake,
+  DemandForecast,
+  InventorySettings,
+  InventoryReadiness,
+} from "@cafeos/shared/inventory/types";
+
+export type IconName =
+  | "overview"
+  | "orders"
+  | "catalog"
+  | "stock"
+  | "purchase"
+  | "reports"
+  | "people"
+  | "shield"
+  | "coffee"
+  | "arrow"
+  | "search"
+  | "close"
+  | "menu"
+  | "bell"
+  | "refresh"
+  | "plus"
+  | "check"
+  | "logout";
+const paths: Record<IconName, string> = {
+  overview: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z",
+  orders: "M8 3h8v3H8zM6 5H4v16h16V5h-2M8 11h8M8 15h5",
+  catalog: "M4 4h16v16H4zM4 10h16M10 10v10",
+  stock: "m3 7 9-4 9 4v10l-9 4-9-4V7zm0 0 9 4 9-4M12 11v10",
+  purchase: "M3 3h2l3 13h11l2-9H6M9 21h.01M18 21h.01",
+  reports: "M4 20V4M4 20h16M8 16v-5M13 16V7M18 16v-8",
+  people:
+    "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M16 3a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-3.87M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
+  shield: "m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3zm-4 9 3 3 5-6",
+  coffee:
+    "M3 8h13v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8zm13 0h2a3 3 0 0 1 0 6h-2M6 3v2M10 2v3M14 3v2",
+  arrow: "M5 12h14m-5-5 5 5-5 5",
+  search: "M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
+  close: "m6 6 12 12M18 6 6 18",
+  menu: "M4 6h16M4 12h16M4 18h16",
+  bell: "M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4",
+  refresh: "M20 7v5h-5M4 17v-5h5M6 6a8 8 0 0 1 14 6M4 12a8 8 0 0 0 14 6",
+  plus: "M12 5v14M5 12h14",
+  check: "m5 12 4 4L19 6",
+  logout: "M9 4H4v16h5M9 12h12m-4-4 4 4-4 4",
+};
+export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.65"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d={paths[name]} />
+    </svg>
+  );
+}
+export const peso = (value: number) =>
+  new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" }).format(
+    Number(value) || 0,
+  );
+export const quantity = (value: number) =>
+  new Intl.NumberFormat("en-PH", { maximumFractionDigits: 2 }).format(
+    Number(value) || 0,
+  );
+export const businessDate = (value: string) =>
+  new Intl.DateTimeFormat("en-PH", {
+    timeZone: "Asia/Manila",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+export type OperationalStock = StockItem & {
+  stock_value: number;
+  expiring_stock: number;
+};
+interface State {
+  stock: OperationalStock[];
+  batches: StockBatch[];
+  movements: StockMovement[];
+  suppliers: Supplier[];
+  purchases: PurchaseOrder[];
+  receipts: GoodsReceipt[];
+  counts: Stocktake[];
+  forecasts: DemandForecast[];
+  settings: InventorySettings | null;
+  readiness: InventoryReadiness | null;
+  loading: boolean;
+  error: string;
+  lastUpdated: string | null;
+  connected: boolean;
+  refresh: () => Promise<void>;
+  run: (name: string, args?: Record<string, unknown>) => Promise<unknown>;
+}
+const Context = createContext<State | null>(null);
+export function OperationsProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<Omit<State, "refresh" | "run">>({
+    stock: [],
+    batches: [],
+    movements: [],
+    suppliers: [],
+    purchases: [],
+    receipts: [],
+    counts: [],
+    forecasts: [],
+    settings: null,
+    readiness: null,
+    loading: true,
+    error: "",
+    lastUpdated: null,
+    connected: false,
+  });
+  const mounted = useRef(true);
+  const generation = useRef(0);
+  const refresh = useCallback(async () => {
+    const request = ++generation.current;
+    try {
+      const results = await Promise.all([
+        supabase.from("stock_overview").select("*").order("name"),
+        supabase
+          .from("stock_batches")
+          .select("*")
+          .order("expires_on", { nullsFirst: false }),
+        supabase
+          .from("stock_movements")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(150),
+        supabase.from("suppliers").select("*").order("name"),
+        supabase
+          .from("purchase_orders")
+          .select(
+            "*,supplier:suppliers(*),lines:purchase_order_lines(*,ingredient:ingredients(*))",
+          )
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("goods_receipts")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(100),
+        supabase
+          .from("stocktakes")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(150),
+        supabase.from("forecast_overview").select("*"),
+        supabase.from("inventory_settings").select("*").single(),
+        supabase.rpc("get_inventory_readiness"),
+      ]);
+      const failure = results.find((result) => result.error)?.error;
+      if (failure)
+        throw new Error(
+          ["42P01", "PGRST205", "PGRST202"].includes(failure.code)
+            ? "Apply the Jayds inventory migrations to enable the operations workspace. Existing catalog and order screens remain available."
+            : failure.message,
+        );
+      if (!mounted.current || request !== generation.current) return;
+      setState((previous) => ({
+        ...previous,
+        stock: results[0].data as OperationalStock[],
+        batches: results[1].data as StockBatch[],
+        movements: results[2].data as StockMovement[],
+        suppliers: results[3].data as Supplier[],
+        purchases: results[4].data as unknown as PurchaseOrder[],
+        receipts: results[5].data as GoodsReceipt[],
+        counts: results[6].data as Stocktake[],
+        forecasts: results[7].data as DemandForecast[],
+        settings: results[8].data as InventorySettings,
+        readiness: results[9].data as InventoryReadiness,
+        loading: false,
+        error: "",
+        lastUpdated: new Date().toISOString(),
+      }));
+    } catch (error) {
+      if (mounted.current && request === generation.current)
+        setState((previous) => ({
+          ...previous,
+          loading: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Could not load operations",
+        }));
+    }
+  }, []);
+  const run = useCallback(
+    async (name: string, args: Record<string, unknown> = {}) => {
+      const { data, error } = await supabase.rpc(name, args);
+      if (error)
+        throw new Error(
+          error.code === "PGRST202"
+            ? "The inventory database upgrade is required for this action."
+            : error.message,
+        );
+      await refresh();
+      return data;
+    },
+    [refresh],
+  );
+  useEffect(() => {
+    mounted.current = true;
+    void refresh();
+    const channel = supabase
+      .channel("jayds-operations")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "catalog_state" },
+        () => void refresh(),
+      )
+      .subscribe((status) =>
+        setState((previous) => ({
+          ...previous,
+          connected: status === "SUBSCRIBED" && navigator.onLine,
+        })),
+      );
+    const poll = setInterval(() => {
+      if (document.visibilityState === "visible") void refresh();
+    }, 30_000);
+    const online = () => {
+      setState((previous) => ({ ...previous, connected: navigator.onLine }));
+      if (navigator.onLine) void refresh();
+    };
+    window.addEventListener("online", online);
+    window.addEventListener("offline", online);
+    window.addEventListener("focus", online);
+    return () => {
+      mounted.current = false;
+      clearInterval(poll);
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", online);
+      window.removeEventListener("focus", online);
+      void supabase.removeChannel(channel);
+    };
+  }, [refresh]);
+  return (
+    <Context.Provider value={{ ...state, refresh, run }}>
+      {children}
+    </Context.Provider>
+  );
+}
+export function useOperations() {
+  const value = useContext(Context);
+  if (!value) throw new Error("OperationsProvider missing");
+  return value;
+}
+export function PageHeader({
+  eyebrow,
+  title,
+  description,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="ops-page-header">
+      <div>
+        <p className="ops-eyebrow">{eyebrow}</p>
+        <h1>{title}</h1>
+        <p className="ops-description">{description}</p>
+      </div>
+      <div className="ops-header-actions">{children}</div>
+    </div>
+  );
+}
+export function Badge({
+  children,
+  tone = "neutral",
+}: {
+  children: ReactNode;
+  tone?: "neutral" | "success" | "warning" | "danger" | "brand";
+}) {
+  return <span className={`ops-badge ${tone}`}>{children}</span>;
+}
+export function Empty({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="ops-empty">
+      <Icon name="stock" size={30} />
+      <h3>{title}</h3>
+      <p>{description}</p>
+      {children}
+    </div>
+  );
+}
+export function Feedback({
+  error,
+  success,
+}: {
+  error?: string;
+  success?: string;
+}) {
+  return (
+    <>
+      {error && (
+        <div role="alert" className="ops-feedback error">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div role="status" className="ops-feedback success">
+          {success}
+        </div>
+      )}
+    </>
+  );
+}
+export function Drawer({
+  title,
+  description,
+  children,
+  onClose,
+  busy = false,
+  wide = false,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+  onClose: () => void;
+  busy?: boolean;
+  wide?: boolean;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const close = useRef(onClose);
+  useEffect(() => {
+    close.current = onClose;
+  }, [onClose]);
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    ref.current?.focus();
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) close.current();
+      if (event.key !== "Tab") return;
+      const nodes = ref.current?.querySelectorAll<HTMLElement>(
+        'button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href],[tabindex="0"]',
+      );
+      if (!nodes?.length) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      if (
+        event.shiftKey &&
+        (document.activeElement === first ||
+          document.activeElement === ref.current)
+      ) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", keydown);
+    return () => {
+      document.body.style.overflow = overflow;
+      document.removeEventListener("keydown", keydown);
+      previous?.focus();
+    };
+  }, [busy]);
+  return (
+    <div className="ops-overlay" onClick={() => !busy && onClose()}>
+      <section
+        ref={ref}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className={`ops-drawer ${wide ? "wide" : ""}`}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header>
+          <div>
+            <p className="ops-eyebrow">Jayds back office</p>
+            <h2>{title}</h2>
+            {description && <p>{description}</p>}
+          </div>
+          <button
+            className="ops-icon-button"
+            aria-label="Close dialog"
+            onClick={onClose}
+            disabled={busy}
+          >
+            <Icon name="close" />
+          </button>
+        </header>
+        <div className="ops-drawer-body">{children}</div>
+      </section>
+    </div>
+  );
+}

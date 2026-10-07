@@ -1,0 +1,30 @@
+{
+  "full": {
+    "width": 179,
+    "height": 255
+  },
+  "wordmark": {
+    "width": 68,
+    "height": 66
+  },
+  "horizontal": {
+    "width": 133,
+    "height": 32
+  },
+  "lockup": {
+    "width": 275,
+    "height": 60
+  },
+  "mascot": {
+    "width": 147,
+    "height": 253
+  },
+  "symbol": {
+    "width": 32,
+    "height": 32
+  },
+  "pin": {
+    "width": 48,
+    "height": 64
+  }
+}

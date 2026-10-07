@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Production builds
+build/
+dist/
+
+# Environment variables
+.env*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel/
+.vercel-*/
+
+# PWA
+public/sw.js
+public/workbox-*.js
+public/sw.js.map
+public/workbox-*.js.map
+apps/*/public/sw.js
+apps/*/public/workbox-*.js
+apps/*/public/sw.js.map
+apps/*/public/workbox-*.js.map
+apps/*/public/swe-worker-*.js
+apps/*/public/swe-worker-*.js.map
+.codex-logs/
+
+# Local credentials, database links, browser captures, and generated state
+.tmp.*
+supabase/.temp/
+supabase/.branches/
+screenshots/
+*.tsbuildinfo
+playwright-report/
+test-results/
+coverage/
+*.log
+# Thesis render output; retain source Markdown, generators, and diagrams
+docs/*.docx
+docs/*.pdf
+docs/rendered*/
+docs/classmate_pdf_pages/
+**/__pycache__/
+*.pyc
+~$*

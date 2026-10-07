@@ -1,0 +1,55 @@
+- [Croffles] Almond Nutella: NONE
+- [Croffles] Banatella: NONE
+- [Croffles] Biscoff Croffle: NONE
+- [Croffles] Ham & Cheese: NONE
+- [Croffles] Just Croffle: NONE
+- [Croffles] S'mores: NONE
+- [Espresso] Americano: Less Sweet, Normal, Extra Sweet
+- [Espresso] Aussie Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Espresso] Butterscotch Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Espresso] Caramel Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Espresso] Cinnamon Cappuccino: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot
+- [Espresso] Coffee Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Espresso] French Vanilla: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot
+- [Espresso] Hazelnut Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Espresso] Macadamia Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Espresso] Spanish Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Espresso] Vanilla Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Espresso] White Mocha Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Whipped Cream, Chocolate Drizzle, Extra Shot, Oat Milk Sub, Almond Milk Sub
+- [Frappes] Biscoff Frappe: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Caramel Frappe: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Cookies & Cream: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Dark Chocolate: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Java Chip: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Matcha: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Mocha Frappe: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Salted Caramel Frappe: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Strawberries & Cream: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Frappes] Vanilla Milkshake: Less Sweet, Normal, Extra Sweet, Whipped Cream, Chocolate Drizzle, Crushed Oreos
+- [Milk Teas] Classic Milk Tea: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Sea Salt Foam, Crushed Oreos
+- [Milk Teas] Cookies & Cream Milk Tea: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Sea Salt Foam, Crushed Oreos
+- [Milk Teas] Dark Chocolate Milk Tea: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Sea Salt Foam, Crushed Oreos
+- [Milk Teas] Okinawa Milk Tea: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Sea Salt Foam, Crushed Oreos
+- [Milk Teas] Taro Milk Tea: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Sea Salt Foam, Crushed Oreos
+- [Milk Teas] Wintermelon Milk Tea: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Sea Salt Foam, Crushed Oreos
+- [Refreshers] Blueberry Soda: Less Sweet, Normal, Extra Sweet
+- [Refreshers] Green Apple Soda: Less Sweet, Normal, Extra Sweet
+- [Refreshers] Honey Peach Soda: Less Sweet, Normal, Extra Sweet
+- [Refreshers] Lychee Soda: Less Sweet, Normal, Extra Sweet
+- [Refreshers] Strawberry Soda: Less Sweet, Normal, Extra Sweet
+- [Signature Drinks] Biscoff: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Caramel Macchiato: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Caramel Mocha: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Cloud Hazelnut: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Cocoa Lava: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Hazelnut Mocha: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Matcha Latte: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Milo Shaken Espresso: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Mocha: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Nom Yen Pink Milk: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot
+- [Signature Drinks] Salted Caramel: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Signature Drinks] Strawberry Milk: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot
+- [Signature Drinks] Tres Leche Shaken Espresso: Less Sweet, Normal, Extra Sweet, Tapioca Pearls, Coffee Jelly, Nata de Coco, Whipped Cream, Chocolate Drizzle, Extra Shot, Sea Salt Foam
+- [Snacks] Chicken Pop: NONE
+- [Snacks] Flavored Fries: NONE
+- [Snacks] Nachos: NONE

@@ -1,0 +1,43 @@
+{
+  "name": "@cafeos/customer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "predev": "node ../../scripts/prepare-brand-assets.mjs && node ../../scripts/prepare-map-worker.mjs",
+    "dev": "next dev --webpack -p 4000",
+    "prebuild": "node ../../scripts/prepare-brand-assets.mjs && node ../../scripts/prepare-map-worker.mjs",
+    "build": "next build --webpack",
+    "start": "next start -p 4000",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@cafeos/shared": "*",
+    "@serwist/next": "9.5.12",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.39.3",
+    "@types/leaflet": "^1.9.21",
+    "@types/qrcode": "^1.5.6",
+    "leaflet": "^1.9.4",
+    "leaflet-defaulticon-compatibility": "^0.1.2",
+    "maplibre-gl": "^6.11.2",
+    "next": "16.3.8",
+    "qrcode": "^1.5.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-leaflet": "5.0.0",
+    "sharp": "^0.35.5",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/web-push": "^3.6.4",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.33",
+    "serwist": "9.5.12",
+    "tailwindcss": "^3.4.1",
+    "typescript": "5.9.3"
+  },
+  "type": "module"
+}

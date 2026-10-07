@@ -1,0 +1,28 @@
+-- Minimal copy of the existing business tables; production migrations run unchanged on top.
+CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
+CREATE SCHEMA auth;
+CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql AS $$ SELECT nullif(current_setting('request.jwt.claim.role',true),'') $$;
+CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+CREATE TYPE order_status AS ENUM('pending','confirmed','preparing','ready','completed','cancelled');
+CREATE TYPE order_type AS ENUM('dine_in','takeaway','pickup','delivery');
+CREATE TYPE payment_method AS ENUM('cash','maya');
+CREATE TYPE payment_status AS ENUM('pending','paid','failed','refunded');
+CREATE TABLE profiles(id uuid PRIMARY KEY,role text,points integer DEFAULT 0);
+CREATE TABLE categories(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),name text,description text,sort_order integer DEFAULT 0,is_active boolean DEFAULT true,status text DEFAULT 'active',created_at timestamptz DEFAULT now(),updated_at timestamptz DEFAULT now());
+CREATE TABLE menu_items(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),name text,description text,price numeric,category_id uuid REFERENCES categories(id),image_url text,is_available boolean DEFAULT true,is_featured boolean DEFAULT false,recipe_required boolean DEFAULT true,prep_time_minutes integer DEFAULT 10,sort_order integer DEFAULT 0,tags text[] DEFAULT '{}',status text DEFAULT 'active',created_at timestamptz DEFAULT now(),updated_at timestamptz DEFAULT now());
+CREATE TABLE item_variants(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),menu_item_id uuid REFERENCES menu_items(id),variant_group text,label text,price_modifier numeric DEFAULT 0,is_default boolean DEFAULT false,sort_order integer DEFAULT 0,applicable_items jsonb,created_at timestamptz DEFAULT now());
+CREATE TABLE ingredients(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),name text UNIQUE,unit text DEFAULT 'g',current_stock numeric DEFAULT 0,min_stock_alert numeric DEFAULT 50,cost_per_unit numeric DEFAULT 1,supplier text,is_active boolean DEFAULT true,created_at timestamptz DEFAULT now(),updated_at timestamptz DEFAULT now());
+ALTER TABLE ingredients ENABLE ROW LEVEL SECURITY;
+CREATE POLICY ingredients_read ON ingredients FOR SELECT USING(true);
+CREATE TABLE menu_item_ingredients(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),menu_item_id uuid REFERENCES menu_items(id),ingredient_id uuid REFERENCES ingredients(id),quantity_used numeric DEFAULT 1,size_multipliers jsonb DEFAULT '{}',UNIQUE(menu_item_id,ingredient_id));
+CREATE TABLE variant_ingredients(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),variant_label text,variant_group text,ingredient_id uuid REFERENCES ingredients(id),quantity_used numeric,replaces_ingredient_id uuid REFERENCES ingredients(id));
+CREATE TABLE orders(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),order_number text DEFAULT ('ORD-'||substr(gen_random_uuid()::text,1,8)),customer_id uuid REFERENCES profiles(id),staff_id uuid REFERENCES profiles(id),status order_status DEFAULT 'pending',order_type order_type DEFAULT 'pickup',order_source text DEFAULT 'app',payment_method payment_method DEFAULT 'cash',payment_status payment_status DEFAULT 'pending',subtotal numeric,total numeric,discount numeric DEFAULT 0,points_redeemed integer DEFAULT 0,points_earned integer DEFAULT 0,notes text,pickup_confirmation_hash text,advance_order_key text,expires_at timestamptz,delivery_name text,delivery_phone text,delivery_address text,delivery_fee numeric,delivery_lat numeric,delivery_lng numeric,lalamove_quotation_id text,created_at timestamptz DEFAULT now(),updated_at timestamptz DEFAULT now());
+CREATE TABLE order_items(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),order_id uuid REFERENCES orders(id),menu_item_id uuid REFERENCES menu_items(id),name text,price numeric,quantity integer,variants jsonb,subtotal numeric,notes text);
+CREATE TABLE inventory_logs(id uuid DEFAULT gen_random_uuid(),ingredient_id uuid,change_amount numeric,change_type text,order_id uuid,staff_id uuid,notes text,stock_after numeric,created_at timestamptz DEFAULT now());
+CREATE TABLE vouchers(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),is_active boolean DEFAULT true,uses_count integer DEFAULT 0,max_uses integer,valid_from timestamptz,valid_until timestamptz,min_order_amount numeric DEFAULT 0,discount_type text,discount_value numeric,application_mode text DEFAULT 'whole_order',applicable_item_ids jsonb DEFAULT '[]',max_discount_amount numeric);
+CREATE TABLE voucher_claims(id uuid DEFAULT gen_random_uuid(),voucher_id uuid REFERENCES vouchers(id),user_id uuid REFERENCES profiles(id),order_id uuid REFERENCES orders(id),used_at timestamptz);
+CREATE FUNCTION deduct_inventory_on_order_complete() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NEW; END $$;
+GRANT USAGE ON SCHEMA public,auth TO anon,authenticated,service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon,authenticated;
+GRANT INSERT,UPDATE ON menu_items,item_variants,menu_item_ingredients,ingredients,orders,order_items TO authenticated;
