@@ -30,7 +30,8 @@
     "./pos/fulfillment": "./src/pos/fulfillment.ts",
     "./customer/types": "./src/customer/types.ts",
     "./customer/scheduling": "./src/customer/scheduling.ts",
-    "./utils/uuid": "./src/utils/uuid.ts"
+    "./utils/uuid": "./src/utils/uuid.ts",
+    "./utils/app-path": "./src/utils/app-path.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

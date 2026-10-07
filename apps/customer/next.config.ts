@@ -35,6 +35,15 @@ const nextConfig: NextConfig = {
         destination: "/menu/browse/:id",
         permanent: false,
       },
+      ...(posUpstreamUrl
+        ? [
+            {
+              source: "/pos/:path*",
+              destination: "/staff/:path*",
+              permanent: true,
+            },
+          ]
+        : []),
     ];
   },
   images: {
@@ -113,12 +122,12 @@ const nextConfig: NextConfig = {
 
     if (posUpstreamUrl) {
       beforeFiles.push({
-        source: "/pos",
-        destination: `${posUpstreamUrl}/pos`,
+        source: "/staff",
+        destination: `${posUpstreamUrl}/staff`,
       });
       beforeFiles.push({
-        source: "/pos/:path*",
-        destination: `${posUpstreamUrl}/pos/:path*`,
+        source: "/staff/:path*",
+        destination: `${posUpstreamUrl}/staff/:path*`,
       });
     }
 

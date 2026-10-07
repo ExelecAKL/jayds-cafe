@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
+import { appPath } from "@cafeos/shared/utils/app-path";
 import { readDraft } from "@cafeos/shared/pos/draft";
 import type { RegisterDraft } from "@cafeos/shared/pos/types";
 const memory = new Map<string, string>();
@@ -39,7 +40,7 @@ export async function cashierRequest<T>(
       "Your staff session expired. Sign in again; your ticket is retained.",
       401,
     );
-  const response = await fetch(path, {
+  const response = await fetch(appPath(path), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

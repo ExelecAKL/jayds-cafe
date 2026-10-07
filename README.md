@@ -1,7 +1,7 @@
 # ☕ CafeOS — PWA-based Online Ordering App System for a Cafe
 
 Private source repository: [karaagexc/jayds-cafe](https://github.com/karaagexc/jayds-cafe).
-Hosted entry points: [Customer](https://jaydscafe.vercel.app), [Cashier POS](https://jaydscafe.vercel.app/pos), and [Admin](https://jaydscafe.vercel.app/admin).
+Hosted entry points: [Customer](https://jaydscafe.vercel.app), [Cashier POS](https://jaydscafe.vercel.app/staff), and [Admin](https://jaydscafe.vercel.app/admin).
 See [deployment and version control](docs/vercel-deployment.md) for publishing changes.
 
 A **3-in-1 web system** built with **Next.js 16.3.8**, **Supabase**, and **Maya Business API** for a thesis project titled: *"The Development of a PWA-based Online Ordering App System for a Cafe"*

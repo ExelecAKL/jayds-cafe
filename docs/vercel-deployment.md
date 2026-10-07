@@ -7,10 +7,10 @@ Private repository: https://github.com/karaagexc/jayds-cafe
 | App | Public URL | Vercel project |
 | --- | --- | --- |
 | Customer | https://jaydscafe.vercel.app | jaydscafe |
-| Cashier POS | https://jaydscafe.vercel.app/pos | jaydscafe-pos |
+| Cashier POS | https://jaydscafe.vercel.app/staff | jaydscafe-pos |
 | Admin | https://jaydscafe.vercel.app/admin | jaydscafe-admin |
 
-Customer proxies `/pos` and `/admin` to the respective deployments. POS and Admin retain their authentication and staff role checks. Their upstream URLs are `https://jaydscafe-pos.vercel.app` and `https://jaydscafe-admin.vercel.app`.
+Customer proxies `/staff` and `/admin` to the respective deployments. Old `/pos` links redirect to `/staff`. POS and Admin retain their authentication and staff role checks. Their upstream URLs are `https://jaydscafe-pos.vercel.app` and `https://jaydscafe-admin.vercel.app`.
 
 ## Build settings
 
@@ -19,7 +19,7 @@ All three projects deploy from the repository root so the npm workspaces, shared
 | Project | Build command | Output directory | Additional environment |
 | --- | --- | --- | --- |
 | jaydscafe | npm run build -w apps/customer | apps/customer/.next | POS_UPSTREAM_URL and ADMIN_UPSTREAM_URL |
-| jaydscafe-pos | npm run build -w apps/pos | apps/pos/.next | APP_BASE_PATH=/pos |
+| jaydscafe-pos | npm run build -w apps/pos | apps/pos/.next | APP_BASE_PATH=/staff |
 | jaydscafe-admin | npm run build -w apps/admin | apps/admin/.next | APP_BASE_PATH=/admin |
 
 `vercel.json` sets the common framework. The three `vercel.<app>.json` files pin the build command and output for manual CLI deployments. Project dashboard settings must use the table above for Git deployments.
@@ -28,7 +28,7 @@ All three projects deploy from the repository root so the npm workspaces, shared
 
 Store credentials in Vercel environment variables, never in Git. The upload excludes local `.env` files, provider link files, database CLI state, test logs, and browser captures. `.env.example` contains placeholders.
 
-All apps require `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. Set `NEXT_PUBLIC_CUSTOMER_URL=https://jaydscafe.vercel.app`, `NEXT_PUBLIC_POS_URL=https://jaydscafe.vercel.app`, and `NEXT_PUBLIC_ADMIN_URL=https://jaydscafe.vercel.app/admin`.
+All apps require `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. Set `NEXT_PUBLIC_CUSTOMER_URL=https://jaydscafe.vercel.app`, `NEXT_PUBLIC_POS_URL=https://jaydscafe.vercel.app/staff`, and `NEXT_PUBLIC_ADMIN_URL=https://jaydscafe.vercel.app/admin`.
 
 Customer also requires its existing Maya and Lalamove credentials, courier pickup coordinates/address/phone, and any configured webhook secret. Keep `MAYA_ENV=sandbox` and `LALAMOVE_BASE_URL=https://rest.sandbox.lalamove.com` for the panel demo. A hosted production deployment does not switch providers to live payments or couriers.
 

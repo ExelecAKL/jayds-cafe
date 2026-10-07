@@ -13,10 +13,10 @@ playwright-report/
 test-results/
 coverage/
 *.log
-docs/
-screenshots/
-updated dfd+context/
-tests/
-supabase/
-schema.sql
-walkthrough.md
+/docs/
+/screenshots/
+/updated dfd+context/
+/tests/
+/supabase/
+/schema.sql
+/walkthrough.md

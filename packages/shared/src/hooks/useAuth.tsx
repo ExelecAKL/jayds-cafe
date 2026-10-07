@@ -12,6 +12,7 @@ import React, {
   useRef,
 } from "react";
 import { supabase } from "../supabase/client";
+import { appPath } from "../utils/app-path";
 import type { Profile, UserRole } from "../types/index";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -280,9 +281,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = useCallback(async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(
       email,
-      process.env.NEXT_PUBLIC_APP_SCOPE === "customer" &&
-        typeof window !== "undefined"
-        ? { redirectTo: window.location.origin + "/reset-password" }
+      typeof window !== "undefined"
+        ? { redirectTo: window.location.origin + appPath("/reset-password") }
         : undefined,
     );
     return { error: error ? new Error(error.message) : null };

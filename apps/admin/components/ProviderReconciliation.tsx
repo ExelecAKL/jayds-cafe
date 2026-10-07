@@ -1,6 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
+import { appPath } from "@cafeos/shared/utils/app-path";
 
 export interface ReconciliationAttempt {
   id: string;
@@ -38,7 +39,7 @@ export default function ProviderReconciliation({
         throw new Error(
           "Your Admin session expired. Sign in again before reviewing this reference.",
         );
-      const response = await fetch("/api/customer-care/reconcile", {
+      const response = await fetch(appPath("/api/customer-care/reconcile"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
