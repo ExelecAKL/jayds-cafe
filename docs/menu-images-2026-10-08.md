@@ -11,3 +11,13 @@ The shared image helper retains API/owner image precedence and supplies local fa
 Validation passed: 55 PNG alpha/completeness checks, workspace TypeScript, focused ESLint, all three production builds, and the isolated real-service-worker browser test. That browser check confirmed only the viewed Americano image was cached, offline menu reload and draft editing worked, reconnection retained the draft, no private pages/API responses entered Cache Storage, and no runtime errors occurred. Real iOS/Android hardware was not tested.
 
 No orders, payments, courier bookings, stock changes, or loyalty transactions were created by these checks.
+
+Deployed commit `4213d334fb2a0b00bf3d78a415d01a1cf836efda` directly through Vercel CLI and pushed it to the existing private GitHub repository. Vercel confirmed all three production deployments are READY with that commit:
+
+| App | Deployment |
+| --- | --- |
+| Customer | `dpl_8NYY8dgnYLSoxLoJ9QEpKgAqLSzu` |
+| Staff | `dpl_ENxrZaTcvvHieB4jc2G6oPR71rgd` |
+| Admin | `dpl_3R1LMomeX7px1JhA97bFBmGpArrs` |
+
+Live browser checks passed at `https://jaydscafe.vercel.app`, `/staff`, and `/admin`: customer Fries and Matcha Latte; staff Fries and Americano; Admin Fries, Americano, and Chicken Pop. Each displayed the expected shared API URL, decoded at 768px, and used containment rather than cropping. No browser runtime errors occurred. A real hosted service worker cached the viewed public Matcha Latte image and decoded it again after an offline page reload. The anonymous catalog returned 52 published items with the expected image URLs; all 55 stored items have images without changing publication or availability.
