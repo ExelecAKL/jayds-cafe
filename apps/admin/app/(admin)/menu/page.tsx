@@ -13,6 +13,7 @@ import {
   Icon,
   peso,
 } from "../../../components/Operations";
+import { PaginatedTable } from "../../../components/PaginatedTable";
 export default function CatalogPage() {
   const { menuItems, categories, loading, refetch } = useMenu({
     includeUnavailable: true,
@@ -21,7 +22,7 @@ export default function CatalogPage() {
   const [archive, setArchive] = useState<MenuItem | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  const [page, setPage] = useState(1);
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -74,7 +75,6 @@ export default function CatalogPage() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setPage(1);
             }}
           />
           <select
@@ -82,7 +82,6 @@ export default function CatalogPage() {
             value={filter}
             onChange={(e) => {
               setFilter(e.target.value);
-              setPage(1);
             }}
           >
             <option value="all">All products</option>
@@ -97,7 +96,11 @@ export default function CatalogPage() {
           </p>
         ) : (
           <div className="ops-table-wrap">
-            <table className="ops-table">
+            <PaginatedTable
+              aria-label="Menu products"
+              resetKey={JSON.stringify([search, filter])}
+              className="ops-table"
+            >
               <thead>
                 <tr>
                   <th>Product</th>
@@ -110,7 +113,7 @@ export default function CatalogPage() {
                 </tr>
               </thead>
               <tbody>
-                {rows.slice((page - 1) * 15, page * 15).map((m) => (
+                {rows.map((m) => (
                   <tr key={m.id}>
                     <td>
                       <div className="flex items-center gap-3">
@@ -173,35 +176,12 @@ export default function CatalogPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
             {!rows.length && (
               <p className="ops-loading">No products match these filters.</p>
             )}
           </div>
         )}
-        <div className="ops-pagination">
-          <span>{rows.length} products</span>
-          <div>
-            <button
-              className="ops-button small"
-              disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
-            >
-              Previous
-            </button>
-            <span>
-              {" "}
-              {page} / {Math.max(1, Math.ceil(rows.length / 15))}{" "}
-            </span>
-            <button
-              className="ops-button small"
-              disabled={page * 15 >= rows.length}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
       </section>
       {edit !== undefined && (
         <MenuItemForm

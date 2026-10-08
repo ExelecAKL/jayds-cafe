@@ -4,7 +4,7 @@
 
 @layer base {
   html {
-    font-family: var(--font-operations), 'Inter', system-ui, sans-serif;
+    font-family: var(--font-operations), "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -617,6 +617,68 @@ button:disabled {
   color: var(--ops-muted);
   border-top: 1px solid var(--ops-border);
 }
+.admin-paginated-table {
+  min-width: 0;
+  width: 100%;
+}
+.admin-table-scroll {
+  overflow-x: auto;
+}
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--ops-border);
+  background: var(--ops-surface);
+  font-size: 13px;
+}
+.admin-pagination-summary {
+  color: var(--ops-muted);
+  margin: 0;
+}
+.admin-pagination-summary strong {
+  color: var(--ops-ink);
+}
+.admin-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-pagination-controls button,
+.admin-page-number {
+  min-height: 40px;
+  padding: 9px 14px;
+  border: 1px solid var(--ops-border);
+  border-radius: 8px;
+  background: white;
+  color: var(--ops-ink);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.admin-pagination-controls button:not(:disabled):hover {
+  background: var(--ops-background);
+}
+.admin-page-number {
+  background: var(--ops-background);
+}
+@media (max-width: 480px) {
+  .admin-pagination {
+    padding: 14px 12px;
+  }
+  .admin-pagination-controls {
+    width: 100%;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .admin-pagination-controls button,
+  .admin-page-number {
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+}
 .ops-empty {
   padding: 48px 25px;
   display: flex;
@@ -766,7 +828,7 @@ button:disabled {
   min-height: 76px;
   resize: vertical;
 }
-.ops-form input[type='checkbox'] {
+.ops-form input[type="checkbox"] {
   width: 15px;
   height: 15px;
   accent-color: #a9683d;
@@ -847,11 +909,11 @@ button:disabled {
 .admin-shell .bg-gray-50 {
   background: #f8f6f1;
 }
-.admin-shell button[class*='bg-gradient'] {
+.admin-shell button[class*="bg-gradient"] {
   background: #a9683d !important;
   box-shadow: none !important;
 }
-.admin-shell button[class*='bg-amber-500'] {
+.admin-shell button[class*="bg-amber-500"] {
   background: #a9683d;
 }
 .admin-shell .text-amber-600 {

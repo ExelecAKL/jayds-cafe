@@ -1,9 +1,9 @@
-'use client';
+"use client";
 import { createUuid } from "@cafeos/shared/utils/uuid";
-import { useState, type FormEvent } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { supabase } from '@cafeos/shared/supabase/client';
-import type { Supplier, PurchaseOrder } from '@cafeos/shared/inventory/types';
+import { useState, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
+import { supabase } from "@cafeos/shared/supabase/client";
+import type { Supplier, PurchaseOrder } from "@cafeos/shared/inventory/types";
 import {
   Badge,
   businessDate,
@@ -15,7 +15,8 @@ import {
   peso,
   quantity,
   useOperations,
-} from './Operations';
+} from "./Operations";
+import { PaginatedTable } from "./PaginatedTable";
 function SupplierForm({
   supplier,
   onClose,
@@ -25,36 +26,36 @@ function SupplierForm({
 }) {
   const ops = useOperations();
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
-    name: supplier?.name ?? '',
-    contact_name: supplier?.contact_name ?? '',
-    email: supplier?.email ?? '',
-    phone: supplier?.phone ?? '',
+    name: supplier?.name ?? "",
+    contact_name: supplier?.contact_name ?? "",
+    email: supplier?.email ?? "",
+    phone: supplier?.phone ?? "",
     lead_time_days: supplier?.lead_time_days ?? 3,
-    notes: supplier?.notes ?? '',
+    notes: supplier?.notes ?? "",
     is_active: supplier?.is_active ?? true,
   });
   const save = async (event: FormEvent) => {
     event.preventDefault();
     setBusy(true);
-    setError('');
+    setError("");
     try {
       const result = supplier
-        ? await supabase.from('suppliers').update(form).eq('id', supplier.id)
-        : await supabase.from('suppliers').insert(form);
+        ? await supabase.from("suppliers").update(form).eq("id", supplier.id)
+        : await supabase.from("suppliers").insert(form);
       if (result.error) throw new Error(result.error.message);
       await ops.refresh();
       onClose();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Save failed');
+      setError(e instanceof Error ? e.message : "Save failed");
     } finally {
       setBusy(false);
     }
   };
   return (
     <Drawer
-      title={supplier ? 'Edit supplier' : 'Add supplier'}
+      title={supplier ? "Edit supplier" : "Add supplier"}
       onClose={onClose}
       busy={busy}
     >
@@ -131,7 +132,7 @@ function SupplierForm({
             Cancel
           </button>
           <button className="ops-button primary" disabled={busy}>
-            {busy ? 'Saving…' : 'Save supplier'}
+            {busy ? "Saving…" : "Save supplier"}
           </button>
         </div>
       </form>
@@ -146,9 +147,9 @@ function PurchaseForm({
   onClose: () => void;
 }) {
   const ops = useOperations();
-  const [supplier, setSupplier] = useState(purchase?.supplier_id ?? '');
-  const [expected, setExpected] = useState(purchase?.expected_on ?? '');
-  const [notes, setNotes] = useState(purchase?.notes ?? '');
+  const [supplier, setSupplier] = useState(purchase?.supplier_id ?? "");
+  const [expected, setExpected] = useState(purchase?.expected_on ?? "");
+  const [notes, setNotes] = useState(purchase?.notes ?? "");
   const [lines, setLines] = useState(
     (purchase?.lines ?? []).map((l) => ({
       ingredient_id: l.ingredient_id,
@@ -157,11 +158,11 @@ function PurchaseForm({
     })),
   );
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const save = async (event: FormEvent) => {
     event.preventDefault();
     setBusy(true);
-    setError('');
+    setError("");
     try {
       if (
         !supplier ||
@@ -176,11 +177,11 @@ function PurchaseForm({
         )
       )
         throw new Error(
-          'Choose a supplier and add valid purchase quantities and costs.',
+          "Choose a supplier and add valid purchase quantities and costs.",
         );
       if (new Set(lines.map((l) => l.ingredient_id)).size !== lines.length)
-        throw new Error('Combine duplicate stock items into one line.');
-      await ops.run('inv_save_po', {
+        throw new Error("Combine duplicate stock items into one line.");
+      await ops.run("inv_save_po", {
         p_id: purchase?.id ?? null,
         p_supplier: supplier,
         p_expected: expected || null,
@@ -189,14 +190,14 @@ function PurchaseForm({
       });
       onClose();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Save failed');
+      setError(e instanceof Error ? e.message : "Save failed");
     } finally {
       setBusy(false);
     }
   };
   return (
     <Drawer
-      title={purchase ? 'Edit ' + purchase.number : 'New purchase draft'}
+      title={purchase ? "Edit " + purchase.number : "New purchase draft"}
       description="Drafts require approval and a separate physical receiving confirmation."
       onClose={onClose}
       busy={busy}
@@ -263,7 +264,7 @@ function PurchaseForm({
                     .map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name}
-                        {s.supplier_id === supplier ? ' · Preferred' : ''}
+                        {s.supplier_id === supplier ? " · Preferred" : ""}
                       </option>
                     ))}
                 </select>
@@ -292,7 +293,7 @@ function PurchaseForm({
                     }
                   />
                   <small>
-                    {quantity(stock?.pack_size ?? 1)} {stock?.unit} per pack ·{' '}
+                    {quantity(stock?.pack_size ?? 1)} {stock?.unit} per pack ·{" "}
                     {quantity(line.quantity)} base units
                   </small>
                 </label>
@@ -331,7 +332,7 @@ function PurchaseForm({
           onClick={() =>
             setLines([
               ...lines,
-              { ingredient_id: '', quantity: 1, unit_cost: 0 },
+              { ingredient_id: "", quantity: 1, unit_cost: 0 },
             ])
           }
         >
@@ -342,7 +343,7 @@ function PurchaseForm({
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
         </label>
         <div className="ops-form-summary">
-          Estimated total:{' '}
+          Estimated total:{" "}
           <strong>
             {peso(lines.reduce((sum, l) => sum + l.quantity * l.unit_cost, 0))}
           </strong>
@@ -363,7 +364,7 @@ function PurchaseForm({
             Cancel
           </button>
           <button className="ops-button primary" disabled={busy}>
-            {busy ? 'Saving…' : 'Save draft'}
+            {busy ? "Saving…" : "Save draft"}
           </button>
         </div>
       </form>
@@ -378,10 +379,10 @@ function ReceiveForm({
   onClose: () => void;
 }) {
   const ops = useOperations();
-  const [reference, setReference] = useState('');
+  const [reference, setReference] = useState("");
   const [key] = useState(() => createUuid());
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [lines, setLines] = useState(
     (purchase.lines ?? [])
       .filter((l) => l.received_quantity < l.quantity)
@@ -389,15 +390,15 @@ function ReceiveForm({
         ingredient_id: l.ingredient_id,
         quantity: 0,
         unit_cost: l.unit_cost,
-        batch_code: '',
-        expires_on: '',
+        batch_code: "",
+        expires_on: "",
         outstanding: l.quantity - l.received_quantity,
       })),
   );
   const save = async (event: FormEvent) => {
     event.preventDefault();
     setBusy(true);
-    setError('');
+    setError("");
     try {
       const received = lines.filter((l) => l.quantity > 0);
       if (
@@ -413,9 +414,9 @@ function ReceiveForm({
         )
       )
         throw new Error(
-          'Enter a delivery reference and actual quantities within the outstanding order.',
+          "Enter a delivery reference and actual quantities within the outstanding order.",
         );
-      await ops.run('inv_receive_po', {
+      await ops.run("inv_receive_po", {
         p_id: purchase.id,
         p_reference: reference.trim(),
         p_lines: received.map((l) => ({
@@ -429,14 +430,14 @@ function ReceiveForm({
       });
       onClose();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Receiving failed');
+      setError(e instanceof Error ? e.message : "Receiving failed");
     } finally {
       setBusy(false);
     }
   };
   return (
     <Drawer
-      title={'Receive ' + purchase.number}
+      title={"Receive " + purchase.number}
       description="Confirm quantities physically delivered. Unreceived quantities remain outstanding."
       onClose={onClose}
       busy={busy}
@@ -456,7 +457,7 @@ function ReceiveForm({
           const stock = ops.stock.find((s) => s.id === line.ingredient_id);
           return (
             <div key={line.ingredient_id} className="ops-recipe-line">
-              <h3>{stock?.name ?? 'Stock item'}</h3>
+              <h3>{stock?.name ?? "Stock item"}</h3>
               <p className="ops-description">
                 Outstanding: {quantity(line.outstanding)} {stock?.unit}
               </p>
@@ -543,7 +544,7 @@ function ReceiveForm({
             Cancel
           </button>
           <button className="ops-button primary" disabled={busy}>
-            {busy ? 'Posting…' : 'Confirm physical receipt'}
+            {busy ? "Posting…" : "Confirm physical receipt"}
           </button>
         </div>
       </form>
@@ -553,32 +554,34 @@ function ReceiveForm({
 export function PurchasingWorkspace() {
   const ops = useOperations();
   const params = useSearchParams();
-  const [tab, setTab] = useState('orders');
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState(params.get('filter') ?? 'open');
+  const [tab, setTab] = useState("orders");
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState(params.get("filter") ?? "open");
   const [supplier, setSupplier] = useState<Supplier | null | undefined>();
   const [draft, setDraft] = useState<PurchaseOrder | null | undefined>();
   const [selectedSnapshot, setSelected] = useState<PurchaseOrder | null>(null);
-  const selected = ops.purchases.find(p => p.id === selectedSnapshot?.id) ?? selectedSnapshot;
+  const selected =
+    ops.purchases.find((p) => p.id === selectedSnapshot?.id) ??
+    selectedSnapshot;
   const [receive, setReceive] = useState<PurchaseOrder | null>(null);
   const [transition, setTransition] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const act = async () => {
     if (!selected || !transition) return;
     setBusy(true);
-    setError('');
+    setError("");
     try {
-      await ops.run('inv_po_transition', {
+      await ops.run("inv_po_transition", {
         p_id: selected.id,
         p_status: transition,
       });
       setSelected(null);
       setTransition(null);
-      setSuccess('Purchase order updated.');
+      setSuccess("Purchase order updated.");
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Update failed');
+      setError(e instanceof Error ? e.message : "Update failed");
     } finally {
       setBusy(false);
     }
@@ -588,10 +591,10 @@ export function PurchasingWorkspace() {
       (p.number + p.supplier?.name)
         .toLowerCase()
         .includes(search.toLowerCase()) &&
-      (filter === 'all' ||
-        (filter === 'open' && !['received', 'cancelled'].includes(p.status)) ||
-        (filter === 'incoming' &&
-          ['approved', 'ordered', 'partial'].includes(p.status)) ||
+      (filter === "all" ||
+        (filter === "open" && !["received", "cancelled"].includes(p.status)) ||
+        (filter === "incoming" &&
+          ["approved", "ordered", "partial"].includes(p.status)) ||
         filter === p.status),
   );
   return (
@@ -619,7 +622,7 @@ export function PurchasingWorkspace() {
         <div className="ops-metric">
           <span>Drafts to review</span>
           <strong>
-            {ops.purchases.filter((p) => p.status === 'draft').length}
+            {ops.purchases.filter((p) => p.status === "draft").length}
           </strong>
           <small>Administrator approval required</small>
         </div>
@@ -628,7 +631,7 @@ export function PurchasingWorkspace() {
           <strong>
             {
               ops.purchases.filter((p) =>
-                ['ordered', 'partial'].includes(p.status),
+                ["ordered", "partial"].includes(p.status),
               ).length
             }
           </strong>
@@ -640,7 +643,7 @@ export function PurchasingWorkspace() {
             {peso(
               ops.purchases
                 .filter((p) =>
-                  ['approved', 'ordered', 'partial'].includes(p.status),
+                  ["approved", "ordered", "partial"].includes(p.status),
                 )
                 .reduce(
                   (sum, p) =>
@@ -665,17 +668,17 @@ export function PurchasingWorkspace() {
       </div>
       <div className="ops-tabs">
         {[
-          ['orders', 'Purchase orders'],
-          ['suppliers', 'Suppliers'],
-          ['receipts', 'Receiving history'],
+          ["orders", "Purchase orders"],
+          ["suppliers", "Suppliers"],
+          ["receipts", "Receiving history"],
         ].map(([key, label]) => (
           <button
             key={key}
-            className={tab === key ? 'active' : ''}
+            className={tab === key ? "active" : ""}
             aria-pressed={tab === key}
             onClick={() => {
               setTab(key);
-              setSearch('');
+              setSearch("");
             }}
           >
             {label}
@@ -687,26 +690,26 @@ export function PurchasingWorkspace() {
           <input
             type="search"
             aria-label="Search purchasing"
-            placeholder={'Search ' + tab + '…'}
+            placeholder={"Search " + tab + "…"}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          {tab === 'orders' && (
+          {tab === "orders" && (
             <select
               aria-label="Order status"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >
               {[
-                'open',
-                'all',
-                'draft',
-                'approved',
-                'ordered',
-                'partial',
-                'received',
-                'cancelled',
-                'incoming',
+                "open",
+                "all",
+                "draft",
+                "approved",
+                "ordered",
+                "partial",
+                "received",
+                "cancelled",
+                "incoming",
               ].map((s) => (
                 <option key={s} value={s}>
                   {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -719,10 +722,14 @@ export function PurchasingWorkspace() {
           <p className="ops-loading" role="status">
             Loading purchasing…
           </p>
-        ) : tab === 'orders' ? (
+        ) : tab === "orders" ? (
           orders.length ? (
             <div className="ops-table-wrap">
-              <table className="ops-table">
+              <PaginatedTable
+                aria-label="Purchase orders"
+                resetKey={JSON.stringify([tab, search, filter])}
+                className="ops-table"
+              >
                 <thead>
                   <tr>
                     <th>Purchase order</th>
@@ -749,20 +756,20 @@ export function PurchasingWorkspace() {
                         <small>
                           {p.generated
                             ? p.manually_edited
-                              ? 'Generated · manually edited'
-                              : 'Automatic draft'
-                            : 'Manual purchase'}
+                              ? "Generated · manually edited"
+                              : "Automatic draft"
+                            : "Manual purchase"}
                         </small>
                       </td>
                       <td>{p.supplier?.name}</td>
                       <td>
                         <Badge
                           tone={
-                            p.status === 'received'
-                              ? 'success'
-                              : p.status === 'draft'
-                                ? 'warning'
-                                : 'neutral'
+                            p.status === "received"
+                              ? "success"
+                              : p.status === "draft"
+                                ? "warning"
+                                : "neutral"
                           }
                         >
                           {p.status}
@@ -770,8 +777,8 @@ export function PurchasingWorkspace() {
                       </td>
                       <td>
                         {p.expected_on
-                          ? businessDate(p.expected_on + 'T00:00:00+08:00')
-                          : 'Unscheduled'}
+                          ? businessDate(p.expected_on + "T00:00:00+08:00")
+                          : "Unscheduled"}
                       </td>
                       <td className="numeric">
                         {peso(
@@ -784,7 +791,7 @@ export function PurchasingWorkspace() {
                         )}
                       </td>
                       <td>
-                        {p.status === 'draft' && (
+                        {p.status === "draft" && (
                           <button
                             className="ops-button small"
                             onClick={() => setDraft(p)}
@@ -792,7 +799,7 @@ export function PurchasingWorkspace() {
                             Edit draft
                           </button>
                         )}
-                        {['ordered', 'partial'].includes(p.status) && (
+                        {["ordered", "partial"].includes(p.status) && (
                           <button
                             className="ops-button small"
                             onClick={() => setReceive(p)}
@@ -813,7 +820,7 @@ export function PurchasingWorkspace() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           ) : (
             <Empty
@@ -821,9 +828,13 @@ export function PurchasingWorkspace() {
               description="Create a draft manually or refresh forecasts to generate replenishment drafts."
             />
           )
-        ) : tab === 'suppliers' ? (
+        ) : tab === "suppliers" ? (
           <div className="ops-table-wrap">
-            <table className="ops-table">
+            <PaginatedTable
+              aria-label="Suppliers"
+              resetKey={JSON.stringify([tab, search, filter])}
+              className="ops-table"
+            >
               <thead>
                 <tr>
                   <th>Supplier</th>
@@ -848,7 +859,7 @@ export function PurchasingWorkspace() {
                         <small>{s.email}</small>
                       </td>
                       <td>
-                        {s.contact_name || '—'}
+                        {s.contact_name || "—"}
                         <small>{s.phone}</small>
                       </td>
                       <td>{s.lead_time_days} days</td>
@@ -856,8 +867,8 @@ export function PurchasingWorkspace() {
                         {ops.stock.filter((i) => i.supplier_id === s.id).length}
                       </td>
                       <td>
-                        <Badge tone={s.is_active ? 'success' : 'neutral'}>
-                          {s.is_active ? 'Active' : 'Inactive'}
+                        <Badge tone={s.is_active ? "success" : "neutral"}>
+                          {s.is_active ? "Active" : "Inactive"}
                         </Badge>
                       </td>
                       <td>
@@ -871,11 +882,15 @@ export function PurchasingWorkspace() {
                     </tr>
                   ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         ) : (
           <div className="ops-table-wrap">
-            <table className="ops-table">
+            <PaginatedTable
+              aria-label="Goods receipts"
+              resetKey={JSON.stringify([tab, search, filter])}
+              className="ops-table"
+            >
               <thead>
                 <tr>
                   <th>Delivery reference</th>
@@ -893,13 +908,13 @@ export function PurchasingWorkspace() {
                       <td>{r.reference}</td>
                       <td>
                         {ops.purchases.find((p) => p.id === r.purchase_order_id)
-                          ?.number ?? 'Direct receipt'}
+                          ?.number ?? "Direct receipt"}
                       </td>
                       <td>{businessDate(r.created_at)}</td>
                     </tr>
                   ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
       </section>
@@ -928,7 +943,11 @@ export function PurchasingWorkspace() {
           <Feedback error={error} />
           <Badge>{selected.status}</Badge>
           <div className="ops-table-wrap">
-            <table className="ops-table">
+            <PaginatedTable
+              aria-label="Purchase lines"
+              resetKey={selected.id}
+              className="ops-table"
+            >
               <thead>
                 <tr>
                   <th>Stock item</th>
@@ -949,17 +968,17 @@ export function PurchasingWorkspace() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
           {selected.notes && <p>{selected.notes}</p>}
           {transition ? (
             <div className="ops-form-summary">
               <p>
-                {transition === 'approved'
-                  ? 'Approve this purchase plan? Stock is added when the delivery is physically received.'
-                  : transition === 'ordered'
-                    ? 'Confirm that this order was sent to the supplier?'
-                    : 'Cancel the outstanding purchase? Previously received stock stays in inventory.'}
+                {transition === "approved"
+                  ? "Approve this purchase plan? Stock is added when the delivery is physically received."
+                  : transition === "ordered"
+                    ? "Confirm that this order was sent to the supplier?"
+                    : "Cancel the outstanding purchase? Previously received stock stays in inventory."}
               </p>
               <div className="ops-form-actions">
                 <button
@@ -974,32 +993,32 @@ export function PurchasingWorkspace() {
                   disabled={busy}
                   onClick={() => void act()}
                 >
-                  {busy ? 'Updating…' : 'Confirm ' + transition}
+                  {busy ? "Updating…" : "Confirm " + transition}
                 </button>
               </div>
             </div>
           ) : (
             <div className="ops-form-actions">
-              {selected.status === 'draft' && (
+              {selected.status === "draft" && (
                 <button
                   className="ops-button primary"
-                  onClick={() => setTransition('approved')}
+                  onClick={() => setTransition("approved")}
                 >
                   Approve purchase
                 </button>
               )}
-              {selected.status === 'approved' && (
+              {selected.status === "approved" && (
                 <button
                   className="ops-button primary"
-                  onClick={() => setTransition('ordered')}
+                  onClick={() => setTransition("ordered")}
                 >
                   Confirm ordered
                 </button>
               )}
-              {!['received', 'cancelled'].includes(selected.status) && (
+              {!["received", "cancelled"].includes(selected.status) && (
                 <button
                   className="ops-button danger"
-                  onClick={() => setTransition('cancelled')}
+                  onClick={() => setTransition("cancelled")}
                 >
                   Cancel purchase
                 </button>

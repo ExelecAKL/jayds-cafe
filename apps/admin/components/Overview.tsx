@@ -13,6 +13,7 @@ import {
   useOperations,
   type IconName,
 } from "./Operations";
+import { PaginatedTable } from "./PaginatedTable";
 interface Sales {
   revenue: number;
   orders: number;
@@ -297,7 +298,7 @@ export default function Overview() {
             </Link>
           </div>
           <div className="ops-table-wrap">
-            <table className="ops-table">
+            <PaginatedTable aria-label="Recent orders" className="ops-table">
               <thead>
                 <tr>
                   <th>Order</th>
@@ -339,7 +340,7 @@ export default function Overview() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </section>
         <section className="ops-panel">

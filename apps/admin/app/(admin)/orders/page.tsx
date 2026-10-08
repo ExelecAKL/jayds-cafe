@@ -3,12 +3,13 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
-import { Pagination } from "../../../components/Pagination";
 import { OrderDetailsModal } from "../../../components/OrderDetailsModal";
 import type { Order, OrderStatus } from "@cafeos/shared/types";
 import { Badge, Feedback, PageHeader } from "../../../components/Operations";
+import { ADMIN_PAGE_SIZE } from "../../../components/Pagination";
+import { PaginatedTable } from "../../../components/PaginatedTable";
 
 const ALL_STATUSES: OrderStatus[] = [
   "pending",
@@ -81,9 +82,7 @@ export default function OrdersPage() {
   // Server Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const pageSize = 10;
-
-  const totalPages = Math.ceil(totalItems / pageSize);
+  const latestRequest = useRef(0);
 
   // Helper to reset page whenever a filter changes
   useEffect(() => {
@@ -98,6 +97,7 @@ export default function OrdersPage() {
   ]);
 
   const fetchOrders = useCallback(async () => {
+    const request = ++latestRequest.current;
     setLoading(true);
 
     let query = supabase
@@ -128,18 +128,23 @@ export default function OrdersPage() {
 
     // Server offset
     query = query.range(
-      (currentPage - 1) * pageSize,
-      currentPage * pageSize - 1,
+      (currentPage - 1) * ADMIN_PAGE_SIZE,
+      currentPage * ADMIN_PAGE_SIZE - 1,
     );
 
     const { data, error, count } = await query;
+    if (request !== latestRequest.current) return;
 
     if (error) {
       setError(error.message);
     } else {
       setError("");
       setOrders((data as unknown as Order[]) || []);
-      if (count !== null) setTotalItems(count);
+      if (count !== null) {
+        setTotalItems(count);
+        const lastPage = Math.max(1, Math.ceil(count / ADMIN_PAGE_SIZE));
+        if (currentPage > lastPage) setCurrentPage(lastPage);
+      }
     }
     setLoading(false);
   }, [
@@ -278,7 +283,16 @@ export default function OrdersPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <PaginatedTable
+              aria-label="Orders"
+              pagination={{
+                currentPage,
+                totalItems,
+                onPageChange: setCurrentPage,
+                loading: loading,
+              }}
+              className="w-full"
+            >
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50">
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -384,21 +398,13 @@ export default function OrdersPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
 
             {orders.length === 0 && (
               <div className="p-8 text-center text-gray-400">
                 No orders found.
               </div>
             )}
-
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              pageSize={pageSize}
-              onPageChange={setCurrentPage}
-            />
           </div>
         )}
       </div>

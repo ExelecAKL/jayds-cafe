@@ -37,6 +37,7 @@
     "check:http": "tsx tests/http-smoke.ts",
     "typecheck": "tsc --noEmit -p apps/customer/tsconfig.json && tsc --noEmit -p apps/pos/tsconfig.json && tsc --noEmit -p apps/admin/tsconfig.json && tsc --noEmit -p packages/shared/tsconfig.json && tsc --noEmit -p tsconfig.scripts.json",
     "check:browser": "tsx tests/browser-operations.ts",
+    "check:admin-pagination": "tsx tests/admin-pagination-browser.ts",
     "check:demo": "tsx scripts/check-demo.ts",
     "check:customer": "tsx tests/customer-browser.ts",
     "check:pwa": "tsx tests/customer-pwa-browser.ts",

@@ -1,13 +1,14 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { supabase } from '@cafeos/shared/supabase/client';
+"use client";
+import { useEffect, useState } from "react";
+import { supabase } from "@cafeos/shared/supabase/client";
 import {
   PageHeader,
   Badge,
   businessDate,
   Drawer,
   Feedback,
-} from '../../../components/Operations';
+} from "../../../components/Operations";
+import { PaginatedTable } from "../../../components/PaginatedTable";
 type Entry = {
   id: string;
   actor_id: string | null;
@@ -21,18 +22,18 @@ type Entry = {
 };
 export default function AuditPage() {
   const [rows, setRows] = useState<Entry[]>([]);
-  const [error, setError] = useState('');
-  const [search, setSearch] = useState('');
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Entry | null>(null);
   const [loading, setLoading] = useState(true);
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from('admin_audit')
-      .select('*')
-      .order('created_at', { ascending: false })
+      .from("admin_audit")
+      .select("*")
+      .order("created_at", { ascending: false })
       .limit(200);
-    setError(error?.message ?? '');
+    setError(error?.message ?? "");
     setRows(data ?? []);
     setLoading(false);
   };
@@ -67,7 +68,11 @@ export default function AuditPage() {
           </p>
         ) : (
           <div className="ops-table-wrap">
-            <table className="ops-table">
+            <PaginatedTable
+              aria-label="Audit log"
+              resetKey={search}
+              className="ops-table"
+            >
               <thead>
                 <tr>
                   <th>Date</th>
@@ -89,8 +94,8 @@ export default function AuditPage() {
                       <td>
                         {businessDate(r.created_at)}
                         <small>
-                          {new Date(r.created_at).toLocaleTimeString('en-PH', {
-                            timeZone: 'Asia/Manila',
+                          {new Date(r.created_at).toLocaleTimeString("en-PH", {
+                            timeZone: "Asia/Manila",
                           })}
                         </small>
                       </td>
@@ -101,7 +106,7 @@ export default function AuditPage() {
                         {r.entity}
                         <small>{r.reason}</small>
                       </td>
-                      <td>{r.actor_id?.slice(0, 8) ?? 'System'}</td>
+                      <td>{r.actor_id?.slice(0, 8) ?? "System"}</td>
                       <td>
                         <button
                           className="ops-button small"
@@ -113,7 +118,7 @@ export default function AuditPage() {
                     </tr>
                   ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
       </section>
@@ -122,7 +127,7 @@ export default function AuditPage() {
           <p>
             {selected.entity} · {selected.entity_id}
           </p>
-          <p>Actor: {selected.actor_id ?? 'System'}</p>
+          <p>Actor: {selected.actor_id ?? "System"}</p>
           <h3>Before</h3>
           <pre className="ops-json">
             {JSON.stringify(selected.before_data, null, 2)}

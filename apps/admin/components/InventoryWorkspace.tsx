@@ -27,6 +27,7 @@ import {
 } from "./Operations";
 import { MenuItemForm } from "./MenuItemForm";
 import InventoryReadiness from "./InventoryReadiness";
+import { PaginatedTable } from "./PaginatedTable";
 
 type Tab =
   "stock" | "recipes" | "movements" | "waste" | "stocktakes" | "forecasts";
@@ -777,7 +778,7 @@ export default function InventoryWorkspace() {
   const [tab, setTab] = useState<Tab>((params.get("tab") as Tab) || "stock");
   const [filter, setFilter] = useState(params.get("filter") ?? "all");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [stockForm, setStockForm] = useState<{
     item: OperationalStock | null;
@@ -870,7 +871,7 @@ export default function InventoryWorkspace() {
   );
   const changeTab = (next: Tab) => {
     setTab(next);
-    setPage(1);
+
     setSearch("");
     setFilter("all");
     setError("");
@@ -999,7 +1000,6 @@ export default function InventoryWorkspace() {
             value={search}
             onChange={(event) => {
               setSearch(event.target.value);
-              setPage(1);
             }}
             placeholder="Search by stock name or SKU…"
           />
@@ -1010,7 +1010,6 @@ export default function InventoryWorkspace() {
             value={filter}
             onChange={(event) => {
               setFilter(event.target.value);
-              setPage(1);
             }}
           >
             <option value="all">All stock</option>
@@ -1082,7 +1081,11 @@ export default function InventoryWorkspace() {
         ) : tab === "stock" ? (
           <>
             <div className="ops-table-wrap">
-              <table className="ops-table">
+              <PaginatedTable
+                aria-label="Stock items"
+                resetKey={JSON.stringify([tab, search, filter, horizon])}
+                className="ops-table"
+              >
                 <thead>
                   <tr>
                     <th>Stock item</th>
@@ -1096,7 +1099,7 @@ export default function InventoryWorkspace() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.slice((page - 1) * 15, page * 15).map((item) => (
+                  {filtered.map((item) => (
                     <tr
                       className="ops-click-row"
                       key={item.id}
@@ -1144,7 +1147,7 @@ export default function InventoryWorkspace() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
             {!filtered.length && (
               <Empty
@@ -1152,30 +1155,14 @@ export default function InventoryWorkspace() {
                 description="Add your ingredients, packaging, and finished goods to start recording stock."
               />
             )}
-            <div className="ops-pagination">
-              {filtered.length} items
-              <button
-                className="ops-button small"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Previous
-              </button>
-              <span>
-                {page} / {Math.max(1, Math.ceil(filtered.length / 15))}
-              </span>
-              <button
-                className="ops-button small"
-                disabled={page * 15 >= filtered.length}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </button>
-            </div>
           </>
         ) : tab === "recipes" ? (
           <div className="ops-table-wrap">
-            <table className="ops-table">
+            <PaginatedTable
+              aria-label="Recipe requirements"
+              resetKey={JSON.stringify([tab, search, filter, horizon])}
+              className="ops-table"
+            >
               <thead>
                 <tr>
                   <th>Menu product</th>
@@ -1246,12 +1233,16 @@ export default function InventoryWorkspace() {
                     );
                   })}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         ) : tab === "movements" || tab === "waste" ? (
           <>
             <div className="ops-table-wrap">
-              <table className="ops-table">
+              <PaginatedTable
+                aria-label="Stock movements"
+                resetKey={JSON.stringify([tab, search, filter, horizon])}
+                className="ops-table"
+              >
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -1313,7 +1304,7 @@ export default function InventoryWorkspace() {
                       </tr>
                     ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
             {!ops.movements.some(
               (row) =>
@@ -1333,7 +1324,11 @@ export default function InventoryWorkspace() {
         ) : tab === "stocktakes" ? (
           <>
             <div className="ops-table-wrap">
-              <table className="ops-table">
+              <PaginatedTable
+                aria-label="Physical counts"
+                resetKey={JSON.stringify([tab, search, filter, horizon])}
+                className="ops-table"
+              >
                 <thead>
                   <tr>
                     <th>Stock item</th>
@@ -1376,7 +1371,7 @@ export default function InventoryWorkspace() {
                       </tr>
                     ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
             {!ops.counts.length && (
               <Empty
@@ -1398,7 +1393,11 @@ export default function InventoryWorkspace() {
               <Badge tone="brand">{horizon}-day outlook</Badge>
             </div>
             <div className="ops-table-wrap">
-              <table className="ops-table">
+              <PaginatedTable
+                aria-label="Demand forecasts"
+                resetKey={JSON.stringify([tab, search, filter, horizon])}
+                className="ops-table"
+              >
                 <thead>
                   <tr>
                     <th>Stock item</th>
@@ -1475,7 +1474,7 @@ export default function InventoryWorkspace() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
             <p className="ops-chart-caption" style={{ paddingTop: 16 }}>
               Daily refresh at 02:00 Philippine time. Automatic drafts require
@@ -1551,7 +1550,11 @@ export default function InventoryWorkspace() {
             Receipt batches · earliest expiry first
           </h3>
           <div className="ops-panel ops-table-wrap">
-            <table className="ops-table">
+            <PaginatedTable
+              aria-label="Stock batches"
+              resetKey={selected.id}
+              className="ops-table"
+            >
               <thead>
                 <tr>
                   <th>Batch</th>
@@ -1574,7 +1577,7 @@ export default function InventoryWorkspace() {
                     </tr>
                   ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
           <h3 className="ops-section-title">Used by menu products</h3>
           <div className="ops-toolbar">
