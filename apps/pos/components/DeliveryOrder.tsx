@@ -5,6 +5,7 @@ import { safeLalamoveUrl } from "@cafeos/shared/lalamove-urls";
 import { pesos } from "@cafeos/shared/pos/draft";
 import { cashierRequest, useOnline } from "../lib/client";
 import { PosDialog, PosIcon } from "./PosPrimitives";
+import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 
 const statuses: Record<string, string> = {
   ASSIGNING_DRIVER: "Finding a rider",
@@ -29,6 +30,7 @@ export function DeliveryOrder({
   onClose: () => void;
   onChanged: () => void;
 }) {
+  const confirm = useActionConfirm();
   const online = useOnline();
   const [linked, setLinked] = useState(!!order.lalamove_order_id);
   const [status, setStatus] = useState<DeliveryStatus>({
@@ -87,6 +89,20 @@ export function DeliveryOrder({
     setError("");
     try {
       if (!linked) {
+        if (
+          !(await confirm({
+            title: `Book a rider for ${order.order_number}?`,
+            description:
+              "Check that this paid delivery order is ready to hand to the rider. The server checks payment, readiness, and the quote again before booking.",
+            details: [
+              order.delivery_address || "Check delivery address on the ticket",
+              `Delivery fee on ticket: ${pesos(order.delivery_fee ?? 0)}`,
+            ],
+            confirmLabel: "Book rider",
+          }))
+        )
+          return;
+        if (!active.current) return;
         await cashierRequest("/api/orders/delivery", {
           order_id: order.id,
           action: "dispatch",

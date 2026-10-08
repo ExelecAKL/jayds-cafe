@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { PaginatedTable } from "../../../components/PaginatedTable";
+import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 
 type Profile = {
   id: string;
@@ -15,6 +16,7 @@ type Profile = {
 };
 
 export default function StaffAccountsPage() {
+  const confirm = useActionConfirm();
   const { profile: currentUser } = useAuth();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,10 +66,32 @@ export default function StaffAccountsPage() {
     userId: string,
     newRole: "admin" | "staff" | "customer",
   ) => {
-    if (userId === currentUser?.id) return;
+    if (processingId || userId === currentUser?.id) return;
 
     setProcessingId(userId);
     setError("");
+
+    const account = profiles.find((p) => p.id === userId);
+    if (
+      !(await confirm({
+        title: "Change this account's access?",
+        description:
+          newRole === "admin"
+            ? "Admin can manage prices, stock, settings, and other accounts. Grant this only to a trusted manager."
+            : newRole === "customer"
+              ? "This removes staff and Admin access. Their customer account stays available."
+              : "This grants POS access after approval and removes Admin access.",
+        details: [
+          account?.full_name || "Account",
+          `Role: ${account?.role} → ${newRole}`,
+        ],
+        confirmLabel: "Change access",
+        danger: true,
+      }))
+    ) {
+      setProcessingId(null);
+      return;
+    }
 
     const { error } = await supabase
       .from("profiles")
@@ -90,8 +114,26 @@ export default function StaffAccountsPage() {
   };
 
   const approveStaff = async (userId: string) => {
+    if (processingId) return;
     setProcessingId(userId);
     setError("");
+
+    const account = profiles.find((p) => p.id === userId);
+    if (
+      !(await confirm({
+        title: "Approve this employee's access?",
+        description:
+          "Confirm that this is the correct person and role before allowing them to sign in.",
+        details: [
+          account?.full_name || "Account",
+          `Access: ${account?.role === "admin" ? "Admin — can manage the entire café" : "Staff — can use the POS"}`,
+        ],
+        confirmLabel: "Approve access",
+      }))
+    ) {
+      setProcessingId(null);
+      return;
+    }
 
     const { error } = await supabase
       .from("profiles")
@@ -110,8 +152,25 @@ export default function StaffAccountsPage() {
   };
 
   const rejectStaff = async (userId: string) => {
+    if (processingId) return;
     setProcessingId(userId);
     setError("");
+
+    if (
+      !(await confirm({
+        title: "Decline this staff request?",
+        description:
+          "This account will become a Customer account. It will not have staff or Admin access.",
+        details: [
+          profiles.find((p) => p.id === userId)?.full_name || "Account",
+        ],
+        confirmLabel: "Decline request",
+        danger: true,
+      }))
+    ) {
+      setProcessingId(null);
+      return;
+    }
 
     // Reject = demote to customer and remove from list
     const { error } = await supabase
@@ -133,7 +192,7 @@ export default function StaffAccountsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Staff Accounts</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Staff access</h1>
       <p className="text-gray-500 mb-6">
         Manage staff and admin access. Customer accounts are not shown here.
       </p>
@@ -194,14 +253,14 @@ export default function StaffAccountsPage() {
                       disabled={isProcessing}
                       className="px-4 py-2 text-sm font-semibold bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 disabled:opacity-50 transition-all"
                     >
-                      ✓ Approve
+                      Approve access
                     </button>
                     <button
                       onClick={() => rejectStaff(profile.id)}
                       disabled={isProcessing}
                       className="px-4 py-2 text-sm font-semibold bg-red-100 text-red-600 rounded-xl hover:bg-red-200 disabled:opacity-50 transition-all"
                     >
-                      ✕ Reject
+                      Decline request
                     </button>
                     {isProcessing && (
                       <div className="w-4 h-4 border-2 border-gray-200 border-t-amber-500 rounded-full animate-spin" />

@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { ADMIN_PAGE_SIZE } from "../../../components/Pagination";
 import { PaginatedTable } from "../../../components/PaginatedTable";
+import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 
 interface VoidLog {
   id: string;
@@ -15,6 +16,7 @@ interface VoidLog {
 }
 
 export default function VoidSecurityPage() {
+  const confirm = useActionConfirm();
   const [logs, setLogs] = useState<VoidLog[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(true);
 
@@ -45,6 +47,7 @@ export default function VoidSecurityPage() {
 
   const handleUpdatePin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (savingPin) return;
     setPinMessage(null);
     if (!newPin || newPin.length !== 6 || !/^\d+$/.test(newPin)) {
       setPinMessage({ type: "error", text: "PIN must be exactly 6 digits." });
@@ -52,6 +55,17 @@ export default function VoidSecurityPage() {
     }
 
     setSavingPin(true);
+    if (
+      !(await confirm({
+        title: "Change the manager cancellation PIN?",
+        description:
+          "The old PIN will stop working. Give the new PIN only to managers allowed to authorize order cancellations.",
+        confirmLabel: "Change PIN",
+      }))
+    ) {
+      setSavingPin(false);
+      return;
+    }
     const { error } = await supabase.from("store_settings").upsert({
       id: "global",
       void_pin: newPin,
@@ -107,9 +121,10 @@ export default function VoidSecurityPage() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Void Security</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Cancellation PIN</h1>
         <p className="text-gray-500 text-sm mt-1">
-          Manage Manager Override PIN and review the void audit log.
+          Set the manager PIN used to cancel orders, and review the cancellation
+          log.
         </p>
       </div>
 

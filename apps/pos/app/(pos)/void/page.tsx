@@ -25,9 +25,19 @@ export default function VoidOrderPage() {
     [notice, setNotice] = useState(""),
     processing = useRef(false);
   const order = orders.find((o) => o.id === selected);
+  const [acknowledgedOrder, setAcknowledgedOrder] = useState<string | null>(
+    null,
+  );
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (processing.current || !user || !order || pin.length !== 6) return;
+    if (
+      processing.current ||
+      !user ||
+      !order ||
+      pin.length !== 6 ||
+      acknowledgedOrder !== order.id
+    )
+      return;
     processing.current = true;
     setBusy(true);
     setMessage("");
@@ -94,6 +104,7 @@ export default function VoidOrderPage() {
                 setSelected(o.id);
                 setMessage("");
                 setPin("");
+                setAcknowledgedOrder(null);
               }}
             >
               <div className="order-ticket-heading">
@@ -138,6 +149,20 @@ export default function VoidOrderPage() {
                   : ""}
               </p>
               <label htmlFor="manager-pin">Manager PIN</label>
+              <label className="pos-cash-acknowledgement">
+                <input
+                  type="checkbox"
+                  aria-label="I understand the cancellation consequences"
+                  checked={acknowledgedOrder === order.id}
+                  disabled={busy}
+                  onChange={(event) =>
+                    setAcknowledgedOrder(event.target.checked ? order.id : null)
+                  }
+                />
+                <span>
+                  I understand the stock and refund consequences above.
+                </span>
+              </label>
               <input
                 id="manager-pin"
                 type="password"
@@ -215,7 +240,12 @@ export default function VoidOrderPage() {
               </button>
               <button
                 className="pos-button pos-danger"
-                disabled={!online || busy || pin.length !== 6}
+                disabled={
+                  !online ||
+                  busy ||
+                  pin.length !== 6 ||
+                  acknowledgedOrder !== order.id
+                }
               >
                 {busy ? "Voiding…" : "Authorize void"}
               </button>

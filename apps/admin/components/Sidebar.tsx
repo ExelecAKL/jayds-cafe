@@ -12,17 +12,17 @@ const groups: {
   {
     label: "Overview",
     items: [
-      { href: "/dashboard", label: "Operations overview", icon: "overview" },
+      { href: "/dashboard", label: "Café overview", icon: "overview" },
       { href: "/orders", label: "Orders", icon: "orders" },
-      { href: "/scheduling", label: "Branch & pickup", icon: "coffee" },
-      { href: "/customer-care", label: "Customer operations", icon: "people" },
+      { href: "/scheduling", label: "Hours & pickup", icon: "coffee" },
+      { href: "/customer-care", label: "Customer help", icon: "people" },
     ],
   },
   {
     label: "Catalog",
     items: [
-      { href: "/menu", label: "Menu products", icon: "catalog" },
-      { href: "/categories", label: "Categories", icon: "coffee" },
+      { href: "/menu", label: "Menu & prices", icon: "catalog" },
+      { href: "/categories", label: "Menu categories", icon: "coffee" },
       { href: "/vouchers", label: "Vouchers", icon: "catalog" },
     ],
   },
@@ -35,30 +35,28 @@ const groups: {
     items: [
       {
         href: "/purchasing",
-        label: "Suppliers & purchasing",
+        label: "Buy & receive stock",
         icon: "purchase",
       },
     ],
   },
   {
     label: "Reports",
-    items: [
-      { href: "/analytics", label: "Sales & performance", icon: "reports" },
-    ],
+    items: [{ href: "/analytics", label: "Sales reports", icon: "reports" }],
   },
   {
     label: "People",
     items: [
-      { href: "/staff-accounts", label: "Staff accounts", icon: "people" },
-      { href: "/staff", label: "Staff & users", icon: "people" },
-      { href: "/loyalty", label: "Members", icon: "coffee" },
+      { href: "/staff-accounts", label: "Staff access", icon: "people" },
+      { href: "/staff", label: "Account roles", icon: "people" },
+      { href: "/loyalty", label: "Customer points", icon: "coffee" },
     ],
   },
   {
     label: "Security",
     items: [
-      { href: "/void-security", label: "Void security", icon: "shield" },
-      { href: "/audit", label: "Activity log", icon: "orders" },
+      { href: "/void-security", label: "Cancellation PIN", icon: "shield" },
+      { href: "/audit", label: "Change history", icon: "orders" },
     ],
   },
 ];
@@ -133,6 +131,9 @@ export function Sidebar({
                   href={item.href}
                   key={item.href}
                   onClick={onClose}
+                  aria-current={
+                    pathname.startsWith(item.href) ? "page" : undefined
+                  }
                   className={pathname.startsWith(item.href) ? "active" : ""}
                 >
                   <Icon name={item.icon} />

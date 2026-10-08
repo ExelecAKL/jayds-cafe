@@ -4,6 +4,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "@cafeos/shared/ui/action-confirm.css";
 const founders = localFont({
   src: [
     { path: "../../../fonts/FoundersGrotesk-Regular.otf", weight: "400" },

@@ -44,6 +44,14 @@ export function CheckoutPanel({
     );
   const busyRef = useRef(false),
     online = useOnline();
+  const [acknowledgedAmount, setAcknowledgedAmount] = useState<string | null>(
+    null,
+  );
+  const cashAcknowledged = acknowledgedAmount === amount;
+  const updateAmount = (next: string) => {
+    setAcknowledgedAmount(null);
+    setAmount(next);
+  };
   const received = Number(amount),
     due = pending ? Number(pending.payload.expected_total) : total;
   const valid =
@@ -53,6 +61,7 @@ export function CheckoutPanel({
     received >= due;
   const digit = (value: string) => {
     setError("");
+    setAcknowledgedAmount(null);
     setAmount((current) => {
       if (value === "back") return current.slice(0, -1);
       if (value === "clear") return "";
@@ -61,7 +70,12 @@ export function CheckoutPanel({
     });
   };
   const accept = async () => {
-    if (busyRef.current || !online || (!pending && !valid)) return;
+    if (
+      busyRef.current ||
+      !online ||
+      (!pending && (!valid || !cashAcknowledged))
+    )
+      return;
     busyRef.current = true;
     setBusy(true);
     setError("");
@@ -213,14 +227,14 @@ export function CheckoutPanel({
             placeholder="0.00"
             onChange={(e) => {
               if (/^\d{0,10}(\.\d{0,2})?$/.test(e.target.value))
-                setAmount(e.target.value);
+                updateAmount(e.target.value);
             }}
           />
           <div className="cash-shortcuts">
             <button
               className="pos-button"
               disabled={busy || !!pending}
-              onClick={() => setAmount(due.toFixed(2))}
+              onClick={() => updateAmount(due.toFixed(2))}
             >
               Exact
             </button>
@@ -232,7 +246,7 @@ export function CheckoutPanel({
                   key={n}
                   className="pos-button"
                   disabled={busy || !!pending}
-                  onClick={() => setAmount(String(n))}
+                  onClick={() => updateAmount(String(n))}
                 >
                   {pesos(n).replace(".00", "")}
                 </button>
@@ -288,6 +302,26 @@ export function CheckoutPanel({
               ticket.
             </p>
           )}
+          {!pending && (
+            <label className="pos-cash-acknowledgement">
+              <input
+                type="checkbox"
+                aria-label="Cash has been received"
+                checked={cashAcknowledged}
+                disabled={busy || !valid}
+                onChange={(event) =>
+                  setAcknowledgedAmount(event.target.checked ? amount : null)
+                }
+              />
+              <span>
+                <strong>Cash has been received</strong>
+                <small>
+                  Check the money in hand before recording this as paid.
+                  Changing the amount requires checking again.
+                </small>
+              </span>
+            </label>
+          )}
           {error && (
             <p className="pos-error" role="alert">
               {error}
@@ -306,7 +340,9 @@ export function CheckoutPanel({
         </button>
         <button
           className="pos-button pos-success"
-          disabled={!online || busy || (!pending && !valid)}
+          disabled={
+            !online || busy || (!pending && (!valid || !cashAcknowledged))
+          }
           onClick={() => void accept()}
         >
           <PosIcon name="check" />

@@ -1,4 +1,5 @@
 "use client";
+import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
@@ -36,8 +37,8 @@ const tabs: { key: Tab; label: string }[] = [
   { key: "recipes", label: "Recipes" },
   { key: "movements", label: "Movements" },
   { key: "waste", label: "Waste" },
-  { key: "stocktakes", label: "Stocktakes" },
-  { key: "forecasts", label: "Forecasts" },
+  { key: "stocktakes", label: "Physical counts" },
+  { key: "forecasts", label: "Stock planning" },
 ];
 function StockForm({
   item,
@@ -138,7 +139,7 @@ function StockForm({
         </label>
         <div className="ops-form-grid">
           <label>
-            SKU
+            Item code (SKU, optional)
             <input {...field("sku")} />
           </label>
           <label>
@@ -188,7 +189,7 @@ function StockForm({
             <input type="number" min="0" step="any" {...field("max_stock")} />
           </label>
         </div>
-        <h3 className="ops-section-title">Replenishment</h3>
+        <h3 className="ops-section-title">Supplier & stock planning</h3>
         <label>
           Preferred supplier
           <select {...field("supplier_id")}>
@@ -225,7 +226,7 @@ function StockForm({
             />
           </label>
           <label>
-            Lead time (days)
+            Supplier delivery time (days)
             <input
               type="number"
               min="0"
@@ -235,7 +236,7 @@ function StockForm({
             />
           </label>
           <label>
-            Safety coverage (days)
+            Extra stock buffer (days)
             <input
               type="number"
               min="0"
@@ -245,7 +246,7 @@ function StockForm({
             />
           </label>
           <label>
-            Review interval (days)
+            Days between stock reviews
             <input
               type="number"
               min="1"
@@ -295,6 +296,7 @@ function MovementForm({
   onClose: () => void;
 }) {
   const ops = useOperations();
+  const confirm = useActionConfirm();
   const { user } = useAuth();
   const [id, setId] = useState(initial?.id ?? "");
   const [amount, setAmount] = useState("");
@@ -326,6 +328,41 @@ function MovementForm({
         throw new Error(
           "Select an item and enter a valid quantity and reason.",
         );
+      const nextStock =
+        kind === "count"
+          ? Number(amount)
+          : Number(item.current_stock) +
+            (kind === "waste" ? -1 : 1) * Number(amount);
+      if (
+        !(await confirm({
+          title:
+            kind === "count"
+              ? "Save this physical count?"
+              : kind === "waste"
+                ? "Record this waste?"
+                : "Add this delivery to stock?",
+          description:
+            kind === "count"
+              ? "This replaces the recorded stock with the quantity you counted. Check the actual stock before continuing."
+              : "This records a physical stock movement and updates availability for the POS and customer menu.",
+          details: [
+            item.name,
+            `Quantity: ${quantity(Number(amount))} ${item.unit}`,
+            `On hand: ${quantity(Number(item.current_stock))} → ${quantity(nextStock)} ${item.unit}`,
+            `Reason: ${reason.trim()}`,
+          ],
+          confirmLabel:
+            kind === "count"
+              ? "Save physical count"
+              : kind === "waste"
+                ? "Record waste"
+                : "Receive stock",
+          danger:
+            kind === "waste" ||
+            (kind === "count" && nextStock < Number(item.current_stock)),
+        }))
+      )
+        return;
       if (kind === "count") {
         if (!countSnapshot)
           throw new Error(
@@ -772,6 +809,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
   );
 }
 export default function InventoryWorkspace() {
+  const confirm = useActionConfirm();
   const params = useSearchParams();
   const ops = useOperations();
   const { menuItems, categories } = useMenu({ includeUnavailable: true });
@@ -897,7 +935,7 @@ export default function InventoryWorkspace() {
     <div>
       <PageHeader
         eyebrow="Stock control"
-        title="Inventory workspace"
+        title="Stock & recipes"
         description="Know what is on hand, what is committed, and what to replenish."
       >
         <button
@@ -1679,6 +1717,21 @@ export default function InventoryWorkspace() {
                 setBusy(true);
                 setError("");
                 try {
+                  if (
+                    !(await confirm({
+                      title: ops.settings?.enforcement_enabled
+                        ? "Turn off stock protection?"
+                        : "Turn on stock protection?",
+                      description: ops.settings?.enforcement_enabled
+                        ? "Orders will no longer be blocked when required stock is unavailable. Use this only while correcting stock records, and turn protection back on when finished."
+                        : "The server will verify opening counts and recipes. Orders will be blocked when their required stock is unavailable.",
+                      confirmLabel: ops.settings?.enforcement_enabled
+                        ? "Turn off stock protection"
+                        : "Activate inventory checks",
+                      danger: !!ops.settings?.enforcement_enabled,
+                    }))
+                  )
+                    return;
                   await ops.run("inv_activate", {
                     p_enabled: !ops.settings?.enforcement_enabled,
                   });

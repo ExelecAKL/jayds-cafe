@@ -850,7 +850,7 @@ try {
   });
   await page.goto(base + "/dashboard");
   await page
-    .getByRole("heading", { name: "Operations overview" })
+    .getByRole("heading", { name: "Café overview" })
     .waitFor({ timeout: 30000 });
   await page.getByText("₱1,200.00", { exact: true }).waitFor();
   for (const [width, height, label] of [
@@ -982,7 +982,7 @@ try {
   assert.equal(supportCase.response, "The receipt review is in progress.");
   await page.goto(base + "/inventory");
   await page
-    .getByRole("heading", { name: "Inventory workspace", exact: true })
+    .getByRole("heading", { name: "Stock & recipes", exact: true })
     .waitFor();
   await page
     .getByText("House espresso beans", { exact: true })
@@ -1044,6 +1044,10 @@ try {
   await drawer.getByLabel("Product name").fill("Spanish Latte — revised");
   failNextSave = true;
   await drawer.getByRole("button", { name: "Save product" }).click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Save product", exact: true })
+    .click();
   await drawer.getByRole("alert").waitFor();
   assert.equal(
     await drawer.getByLabel("Product name").inputValue(),
@@ -1057,6 +1061,10 @@ try {
     "Focus must stay in the drawer",
   );
   await drawer.getByRole("button", { name: "Save product" }).click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Save product", exact: true })
+    .click();
   await page.waitForFunction(
     () =>
       !document.querySelector('[role="dialog"]') ||
@@ -1072,7 +1080,7 @@ try {
     );
   await page.goto(base + "/purchasing");
   await page
-    .getByRole("heading", { name: "Purchasing", exact: true })
+    .getByRole("heading", { name: "Buy & receive stock", exact: true })
     .first()
     .waitFor();
   await page.waitForTimeout(1000);
@@ -1120,6 +1128,10 @@ try {
   await page.getByLabel("Delivery / invoice reference").fill("QA delivery");
   await page.getByLabel("Actual quantity (g)").fill("500");
   await page.getByRole("button", { name: "Confirm physical receipt" }).click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Confirm goods received" })
+    .click();
   await page.getByRole("dialog").waitFor({ state: "hidden" });
   assert.equal(
     Number(

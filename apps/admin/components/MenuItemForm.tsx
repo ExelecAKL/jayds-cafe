@@ -1,13 +1,14 @@
-'use client';
-import { useEffect, useState, type FormEvent } from 'react';
-import { supabase } from '@cafeos/shared/supabase/client';
+"use client";
+import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
+import { useEffect, useState, type FormEvent } from "react";
+import { supabase } from "@cafeos/shared/supabase/client";
 import type {
   MenuItem,
   Category,
   ItemVariant,
   MenuItemIngredient,
-} from '@cafeos/shared/types';
-import { Drawer, Feedback, useOperations, quantity } from './Operations';
+} from "@cafeos/shared/types";
+import { Drawer, Feedback, useOperations, quantity } from "./Operations";
 
 type Option = {
   variant_group: string;
@@ -31,20 +32,21 @@ export function MenuItemForm({
   onClose: () => void;
 }) {
   const ops = useOperations();
-  const [tab, setTab] = useState('Product');
+  const confirm = useActionConfirm();
+  const [tab, setTab] = useState("Product");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(!!item);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
-    name: item?.name ?? '',
-    description: item?.description ?? '',
-    price: String(item?.price ?? ''),
-    category_id: item?.category_id ?? '',
-    image_url: item?.image_url ?? '',
+    name: item?.name ?? "",
+    description: item?.description ?? "",
+    price: String(item?.price ?? ""),
+    category_id: item?.category_id ?? "",
+    image_url: item?.image_url ?? "",
     prep_time_minutes: String(item?.prep_time_minutes ?? 10),
     manually_available: item?.manually_available ?? item?.is_available ?? true,
     is_featured: item?.is_featured ?? false,
-    tags: (item?.tags ?? ['coffee']).join(', '),
+    tags: (item?.tags ?? ["coffee"]).join(", "),
   });
   const [options, setOptions] = useState<Option[]>(
     (item?.variants ?? []).map((v) => ({
@@ -61,9 +63,9 @@ export function MenuItemForm({
     let alive = true;
     async function load() {
       const optionsResult = await supabase
-        .from('item_variants')
-        .select('*')
-        .order('sort_order');
+        .from("item_variants")
+        .select("*")
+        .order("sort_order");
       if (!alive) return;
       if (optionsResult.error) {
         setError(optionsResult.error.message);
@@ -72,7 +74,7 @@ export function MenuItemForm({
       }
       const unique = new Map<string, Option>();
       (optionsResult.data as ItemVariant[]).forEach((v) =>
-        unique.set(v.variant_group + ':' + v.label, {
+        unique.set(v.variant_group + ":" + v.label, {
           variant_group: v.variant_group,
           label: v.label,
           price_modifier: v.price_modifier,
@@ -83,18 +85,18 @@ export function MenuItemForm({
       setLibrary([...unique.values()]);
       if (item) {
         const [product, recipe] = await Promise.all([
-          supabase.from('menu_items').select('*').eq('id', item.id).single(),
+          supabase.from("menu_items").select("*").eq("id", item.id).single(),
           supabase
-            .from('menu_item_ingredients')
-            .select('*')
-            .eq('menu_item_id', item.id),
+            .from("menu_item_ingredients")
+            .select("*")
+            .eq("menu_item_id", item.id),
         ]);
         if (!alive) return;
         if (product.error || recipe.error)
           setError(
             product.error?.message ??
               recipe.error?.message ??
-              'Could not load recipe',
+              "Could not load recipe",
           );
         else {
           setForm((previous) => ({
@@ -119,12 +121,12 @@ export function MenuItemForm({
     };
   }, [item]);
   const sizes = options
-    .filter((v) => v.variant_group === 'size')
+    .filter((v) => v.variant_group === "size")
     .map((v) => v.label);
   const save = async (event: FormEvent) => {
     event.preventDefault();
     setBusy(true);
-    setError('');
+    setError("");
     try {
       if (
         !form.name.trim() ||
@@ -132,7 +134,7 @@ export function MenuItemForm({
         !Number.isFinite(Number(form.price)) ||
         Number(form.price) < 0
       )
-        throw new Error('Enter a product name, category, and valid price.');
+        throw new Error("Enter a product name, category, and valid price.");
       if (
         recipes.some(
           (r) =>
@@ -145,10 +147,10 @@ export function MenuItemForm({
         )
       )
         throw new Error(
-          'Every stock requirement needs an item, positive quantity, and positive size multipliers.',
+          "Every stock requirement needs an item, positive quantity, and positive size multipliers.",
         );
       if (new Set(recipes.map((r) => r.ingredient_id)).size !== recipes.length)
-        throw new Error('Combine duplicate stock requirements into one line.');
+        throw new Error("Combine duplicate stock requirements into one line.");
       if (
         options.some(
           (v) =>
@@ -157,8 +159,22 @@ export function MenuItemForm({
             v.price_modifier < 0,
         )
       )
-        throw new Error('Options need a label and a valid additional price.');
-      await ops.run('inv_save_menu', {
+        throw new Error("Options need a label and a valid additional price.");
+      if (
+        !(await confirm({
+          title: item ? "Save these product changes?" : "Publish this product?",
+          description:
+            "The saved price, options, and availability will be used by the POS and customer menu for future orders.",
+          details: [
+            form.name.trim(),
+            `Base price: ₱${Number(form.price).toFixed(2)}`,
+            `Availability: ${form.manually_available ? "Available when stock allows" : "Unavailable"}`,
+          ],
+          confirmLabel: "Save product",
+        }))
+      )
+        return;
+      await ops.run("inv_save_menu", {
         p_id: item?.id ?? null,
         p_item: {
           ...form,
@@ -166,7 +182,7 @@ export function MenuItemForm({
           price: Number(form.price),
           prep_time_minutes: Number(form.prep_time_minutes),
           tags: form.tags
-            .split(',')
+            .split(",")
             .map((t) => t.trim())
             .filter(Boolean),
         },
@@ -175,14 +191,14 @@ export function MenuItemForm({
       });
       onClose();
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : 'Save failed');
+      setError(failure instanceof Error ? failure.message : "Save failed");
     } finally {
       setBusy(false);
     }
   };
   return (
     <Drawer
-      title={item ? 'Edit ' + item.name : 'New menu product'}
+      title={item ? "Edit " + item.name : "New menu product"}
       description="Catalog details, options, and stock requirements save together."
       onClose={onClose}
       busy={busy}
@@ -195,23 +211,23 @@ export function MenuItemForm({
         <form className="ops-form" onSubmit={save}>
           <div className="ops-tabs">
             {[
-              'Product',
-              'Pricing & options',
-              'Stock requirements',
-              'Availability',
+              "Product",
+              "Pricing & options",
+              "Stock requirements",
+              "Availability",
             ].map((name) => (
               <button
                 key={name}
                 type="button"
                 aria-pressed={tab === name}
-                className={tab === name ? 'active' : ''}
+                className={tab === name ? "active" : ""}
                 onClick={() => setTab(name)}
               >
                 {name}
               </button>
             ))}
           </div>
-          {tab === 'Product' && (
+          {tab === "Product" && (
             <>
               <label>
                 Product name
@@ -244,7 +260,7 @@ export function MenuItemForm({
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
-                        {c.status !== 'active' ? ' (inactive)' : ''}
+                        {c.status !== "active" ? " (inactive)" : ""}
                       </option>
                     ))}
                   </select>
@@ -295,7 +311,7 @@ export function MenuItemForm({
               </label>
             </>
           )}
-          {tab === 'Pricing & options' && (
+          {tab === "Pricing & options" && (
             <>
               <label>
                 Base price (PHP)
@@ -330,11 +346,11 @@ export function MenuItemForm({
                   >
                     {[
                       ...new Set([
-                        'size',
-                        'temperature',
-                        'milk_sub',
-                        'sugar_level',
-                        'add_on',
+                        "size",
+                        "temperature",
+                        "milk_sub",
+                        "sugar_level",
+                        "add_on",
                         ...options.map((v) => v.variant_group),
                       ]),
                     ].map((g) => (
@@ -378,7 +394,7 @@ export function MenuItemForm({
                             i === index
                               ? { ...v, is_default: e.target.checked }
                               : v.variant_group === option.variant_group &&
-                                  option.variant_group !== 'add_on'
+                                  option.variant_group !== "add_on"
                                 ? { ...v, is_default: false }
                                 : v,
                           ),
@@ -406,8 +422,8 @@ export function MenuItemForm({
                     setOptions([
                       ...options,
                       {
-                        variant_group: 'size',
-                        label: '',
+                        variant_group: "size",
+                        label: "",
                         price_modifier: 0,
                         is_default: false,
                         sort_order: options.length,
@@ -443,7 +459,7 @@ export function MenuItemForm({
               </div>
             </>
           )}
-          {tab === 'Stock requirements' && (
+          {tab === "Stock requirements" && (
             <>
               <p className="ops-description">
                 Include ingredients, cups, lids, and finished goods. Quantities
@@ -475,13 +491,13 @@ export function MenuItemForm({
                           {ops.stock.map((s) => (
                             <option key={s.id} value={s.id}>
                               {s.name} · {s.unit}
-                              {!s.is_active ? ' (inactive)' : ''}
+                              {!s.is_active ? " (inactive)" : ""}
                             </option>
                           ))}
                         </select>
                       </label>
                       <label>
-                        Base quantity {stock ? '(' + stock.unit + ')' : ''}
+                        Base quantity {stock ? "(" + stock.unit + ")" : ""}
                         <input
                           type="number"
                           min="0.001"
@@ -536,10 +552,10 @@ export function MenuItemForm({
                       ))}
                     </div>
                     <small>
-                      Estimated base cost:{' '}
+                      Estimated base cost:{" "}
                       {quantity(
                         recipe.quantity_used * (stock?.cost_per_unit ?? 0),
-                      )}{' '}
+                      )}{" "}
                       PHP
                     </small>
                     <button
@@ -561,7 +577,7 @@ export function MenuItemForm({
                   setRecipes([
                     ...recipes,
                     {
-                      ingredient_id: '',
+                      ingredient_id: "",
                       quantity_used: 1,
                       size_multipliers: {},
                     },
@@ -578,7 +594,7 @@ export function MenuItemForm({
               )}
             </>
           )}
-          {tab === 'Availability' && (
+          {tab === "Availability" && (
             <>
               <label className="ops-check-label">
                 <input
@@ -593,15 +609,15 @@ export function MenuItemForm({
               <div className="ops-form-summary">
                 <p>
                   {form.manually_available
-                    ? 'Customers can order configurations that have sufficient eligible stock.'
-                    : 'Ordering is disabled until an administrator enables this product.'}
+                    ? "Customers can order configurations that have sufficient eligible stock."
+                    : "Ordering is disabled until an administrator enables this product."}
                 </p>
                 <p>
                   Sold-out published products stay visible. Archived products
                   and inactive categories are excluded from the ordering
                   catalog.
                 </p>
-                {item?.status === 'archived' && (
+                {item?.status === "archived" && (
                   <p>
                     This product is archived. Restore it in Catalog to publish
                     it.
@@ -623,7 +639,7 @@ export function MenuItemForm({
               className="ops-button primary"
               disabled={busy || !!ops.error}
             >
-              {busy ? 'Saving…' : 'Save product'}
+              {busy ? "Saving…" : "Save product"}
             </button>
           </div>
         </form>

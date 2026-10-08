@@ -3,6 +3,7 @@
 
 import type { Metadata } from "next";
 import "./globals.css";
+import "@cafeos/shared/ui/action-confirm.css";
 import { Providers } from "./providers";
 import localFont from "next/font/local";
 const founders = localFont({

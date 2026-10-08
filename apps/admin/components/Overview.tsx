@@ -76,6 +76,12 @@ export default function Overview() {
     ["approved", "ordered", "partial"].includes(po.status),
   );
   const drafts = ops.purchases.filter((po) => po.status === "draft");
+  const forecastTimestamp = ops.forecasts[0]?.calculated_at;
+  const forecastDate = forecastTimestamp ? new Date(forecastTimestamp) : null;
+  const forecastUpdated =
+    forecastDate && Number.isFinite(forecastDate.getTime())
+      ? forecastDate.toLocaleString("en-PH", { timeZone: "Asia/Manila" })
+      : null;
   const max = Math.max(
     ...(sales?.days.map((day) => Number(day.revenue)) ?? [0]),
     1,
@@ -128,7 +134,7 @@ export default function Overview() {
     <div>
       <PageHeader
         eyebrow="Your café, at a glance"
-        title="Operations overview"
+        title="Café overview"
         description="A clear view of today’s service, stock, and next steps."
       >
         <select
@@ -152,6 +158,43 @@ export default function Overview() {
         </button>
       </PageHeader>
       <Feedback error={ops.error || error} />
+      <section className="ops-everyday" aria-label="Everyday tasks">
+        <h2>What would you like to do?</h2>
+        <div className="ops-everyday-links">
+          <Link href="/menu">
+            <Icon name="catalog" />
+            <span>
+              <strong>Change a price or product</strong>
+              <small>Menu, options & publishing</small>
+            </span>
+            <Icon name="arrow" />
+          </Link>
+          <Link href="/inventory">
+            <Icon name="stock" />
+            <span>
+              <strong>Check or count stock</strong>
+              <small>Deliveries, waste & physical counts</small>
+            </span>
+            <Icon name="arrow" />
+          </Link>
+          <Link href="/purchasing">
+            <Icon name="purchase" />
+            <span>
+              <strong>Buy or receive supplies</strong>
+              <small>Suppliers & purchase orders</small>
+            </span>
+            <Icon name="arrow" />
+          </Link>
+          <Link href="/analytics">
+            <Icon name="reports" />
+            <span>
+              <strong>See how sales are doing</strong>
+              <small>Sales, products & estimated margins</small>
+            </span>
+            <Icon name="arrow" />
+          </Link>
+        </div>
+      </section>
       {ops.settings && !ops.settings.enforcement_enabled && (
         <div className="ops-notice">
           <Icon name="shield" />
@@ -346,7 +389,7 @@ export default function Overview() {
         <section className="ops-panel">
           <div className="ops-panel-header">
             <div>
-              <h2>Replenishment</h2>
+              <h2>Stock to reorder</h2>
               <p>Prepared suggestions, reviewed by you</p>
             </div>
             <Link href="/purchasing">
@@ -377,8 +420,8 @@ export default function Overview() {
           <div className="ops-action-row">
             <Icon name="refresh" size={15} />
             <p>
-              {ops.forecasts[0]
-                ? `Forecast refreshed ${new Date(ops.forecasts[0].calculated_at).toLocaleString("en-PH", { timeZone: "Asia/Manila" })}`
+              {forecastUpdated
+                ? `Forecast refreshed ${forecastUpdated}`
                 : "Refresh forecasts after recording sales history."}
             </p>
           </div>

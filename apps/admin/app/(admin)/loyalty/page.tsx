@@ -7,8 +7,12 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import type { LoyaltyTier, Profile } from "@cafeos/shared/types";
 import { PaginatedTable } from "../../../components/PaginatedTable";
+import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
+import { Drawer, Feedback } from "../../../components/Operations";
 
 export default function LoyaltyPage() {
+  const confirm = useActionConfirm();
+  const [adjustError, setAdjustError] = useState("");
   const [tiers, setTiers] = useState<LoyaltyTier[]>([]);
   const [customers, setCustomers] = useState<Profile[]>([]);
   const [search, setSearch] = useState("");
@@ -70,25 +74,56 @@ export default function LoyaltyPage() {
   }, [fetchData]);
 
   const handleAdjust = async () => {
-    if (!adjustTarget || !adjustAmount) return;
-    setAdjustSaving(true);
-    const amount = parseInt(adjustAmount);
-    const newPoints = Math.max(0, adjustTarget.points + amount);
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({ points: newPoints })
-      .eq("id", adjustTarget.id);
-
-    if (error) {
-      alert("Failed to adjust points: " + error.message);
+    if (adjustSaving || !adjustTarget || !adjustAmount) return;
+    const amount = Number(adjustAmount);
+    if (!Number.isSafeInteger(amount) || amount === 0) {
+      setAdjustError("Enter a non-zero whole number of points.");
+      return;
     }
+    setAdjustSaving(true);
+    setAdjustError("");
+    try {
+      const newPoints = Math.max(0, adjustTarget.points + amount);
+      if (!Number.isSafeInteger(newPoints)) {
+        setAdjustError("The resulting points balance is too large.");
+        return;
+      }
+      if (
+        !(await confirm({
+          title: "Change this customer's points?",
+          description:
+            "Check the customer and resulting balance before saving this correction.",
+          details: [
+            adjustTarget.full_name || adjustTarget.email,
+            `Points: ${adjustTarget.points} → ${newPoints}`,
+            ...(adjustReason.trim() ? [`Reason: ${adjustReason.trim()}`] : []),
+            ...(adjustTarget.points + amount < 0
+              ? ["The balance will stop at zero."]
+              : []),
+          ],
+          confirmLabel: "Save points balance",
+          danger: amount < 0,
+        }))
+      )
+        return;
 
-    setAdjustTarget(null);
-    setAdjustAmount("");
-    setAdjustReason("");
-    setAdjustSaving(false);
-    void fetchData();
+      const { error } = await supabase
+        .from("profiles")
+        .update({ points: newPoints })
+        .eq("id", adjustTarget.id);
+
+      if (error) {
+        setAdjustError("Could not save points. " + error.message);
+        return;
+      }
+
+      setAdjustTarget(null);
+      setAdjustAmount("");
+      setAdjustReason("");
+      void fetchData();
+    } finally {
+      setAdjustSaving(false);
+    }
   };
 
   const filtered = search
@@ -118,9 +153,7 @@ export default function LoyaltyPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Loyalty Management
-      </h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Customer points</h1>
 
       {/* Tier Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -271,20 +304,25 @@ export default function LoyaltyPage() {
 
       {/* Points Adjustment Modal */}
       {adjustTarget && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-1">
-              Adjust Points
-            </h3>
+        <Drawer
+          title="Adjust points"
+          onClose={() => setAdjustTarget(null)}
+          busy={adjustSaving}
+        >
+          <div>
             <p className="text-sm text-gray-500 mb-4">
               {adjustTarget.full_name || adjustTarget.email} — Current:{" "}
               {adjustTarget.points.toLocaleString()} pts
             </p>
 
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="points-adjustment"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Amount (positive=add, negative=deduct)
             </label>
             <input
+              id="points-adjustment"
               type="number"
               value={adjustAmount}
               onChange={(e) => setAdjustAmount(e.target.value)}
@@ -292,20 +330,30 @@ export default function LoyaltyPage() {
               placeholder="e.g. 50 or -20"
             />
 
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Reason
+            <label
+              htmlFor="points-review-note"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Review note (optional)
             </label>
             <input
+              id="points-review-note"
               type="text"
               value={adjustReason}
               onChange={(e) => setAdjustReason(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl mb-4 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
               placeholder="e.g. Customer service adjustment"
             />
+            <p className="text-sm text-gray-500 mb-4">
+              This note appears in your confirmation for review. It is not saved
+              to the customer’s history.
+            </p>
+            <Feedback error={adjustError} />
 
             <div className="flex gap-3">
               <button
                 onClick={() => setAdjustTarget(null)}
+                disabled={adjustSaving}
                 className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
               >
                 Cancel
@@ -319,7 +367,7 @@ export default function LoyaltyPage() {
               </button>
             </div>
           </div>
-        </div>
+        </Drawer>
       )}
     </div>
   );

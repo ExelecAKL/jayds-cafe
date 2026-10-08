@@ -1,4 +1,5 @@
 "use client";
+import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
@@ -379,6 +380,7 @@ function ReceiveForm({
   onClose: () => void;
 }) {
   const ops = useOperations();
+  const confirm = useActionConfirm();
   const [reference, setReference] = useState("");
   const [key] = useState(() => createUuid());
   const [busy, setBusy] = useState(false);
@@ -416,6 +418,24 @@ function ReceiveForm({
         throw new Error(
           "Enter a delivery reference and actual quantities within the outstanding order.",
         );
+      if (
+        !(await confirm({
+          title: `Receive ${purchase.number}?`,
+          description:
+            "Confirm these quantities have physically arrived. They will be added to stock now; any remaining quantities stay outstanding.",
+          details: [
+            `Delivery reference: ${reference.trim()}`,
+            ...received.map((line) => {
+              const item = ops.stock.find(
+                (row) => row.id === line.ingredient_id,
+              );
+              return `${item?.name ?? "Stock item"}: ${quantity(line.quantity)} ${item?.unit ?? ""}`;
+            }),
+          ],
+          confirmLabel: "Confirm goods received",
+        }))
+      )
+        return;
       await ops.run("inv_receive_po", {
         p_id: purchase.id,
         p_reference: reference.trim(),
@@ -601,7 +621,7 @@ export function PurchasingWorkspace() {
     <>
       <PageHeader
         eyebrow="Supply & replenishment"
-        title="Purchasing"
+        title="Buy & receive stock"
         description="Plan the next delivery. Approve with confidence. Receive what arrived."
       >
         <button className="ops-button" onClick={() => setSupplier(null)}>

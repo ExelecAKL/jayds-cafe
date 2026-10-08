@@ -5,6 +5,10 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { chromium, expect, type Page } from "@playwright/test";
+import {
+  adminWorkflowJourneys,
+  type AdminWorkflowFixture,
+} from "./admin-workflow-journeys";
 
 const root = process.cwd();
 const port = 4282;
@@ -236,6 +240,29 @@ const tables: Record<string, Record<string, unknown>[]> = {
   })),
   store_settings: [{ id: "global", void_pin: "******" }],
   loyalty_tiers: [],
+  vouchers: [
+    {
+      id: id(21, 1),
+      code: "QA10",
+      description: "QA discount",
+      discount_type: "percentage",
+      discount_value: 10,
+      min_order_amount: 0,
+      max_uses: 100,
+      uses_count: 0,
+      is_active: true,
+      valid_from: timestamp,
+      valid_until: null,
+      target_tier: null,
+      frequency_limit: null,
+      deployed_at: null,
+      applicable_item_ids: null,
+      application_mode: "whole_order",
+      max_discount_amount: null,
+      created_at: timestamp,
+    },
+  ],
+  customer_support_cases: [],
   order_items: menu.map((m, i) => ({
     order_id: orders[0].id,
     name: m.name,
@@ -248,6 +275,25 @@ const browser = await chromium.launch({ channel: "chrome", headless: true });
 const errors: string[] = [],
   blocked: string[] = [];
 const seen = new Set<string>();
+let workflowMode = false;
+const workflowFixture: AdminWorkflowFixture = { writes: [], failNext: null };
+let branchSettings = {
+  name: "QA café",
+  address: "QA street, Manila",
+  latitude: 14.3,
+  longitude: 120.9,
+  delivery_radius_km: 5,
+  contact_phone: "",
+  regular_hours: [{ weekday: 1, opens: "08:00", closes: "18:00" }],
+  closure_dates: [],
+  scheduled_pickup_enabled: false,
+  slot_order_capacity: 5,
+  slot_item_capacity: 20,
+  minimum_notice_minutes: 30,
+  preparation_lead_minutes: 10,
+  production_verified_at: null,
+  production_verification_reason: null,
+};
 const serverRanges: { table: string; offset: number; limit: number }[] = [];
 let slowSearchStarted!: () => void;
 let releaseSlowSearch!: () => void;
@@ -314,6 +360,94 @@ try {
       return;
     }
     const name = url.pathname.split("/").at(-1)!;
+    if (
+      workflowMode &&
+      request.method() !== "GET" &&
+      request.method() !== "HEAD"
+    ) {
+      const body = request.postDataJSON() ?? {};
+      const readRPC = [
+        "get_published_catalog",
+        "get_inventory_readiness",
+        "inv_dashboard",
+        "get_customer_scheduling_admin",
+        "get_customer_operations",
+      ];
+      if (!readRPC.includes(name)) {
+        workflowFixture.writes.push({ name, body, method: request.method() });
+        if (workflowFixture.failNext === name) {
+          workflowFixture.failNext = null;
+          await route.fulfill({
+            status: 503,
+            json: { message: "Isolated workflow save failure" },
+          });
+          return;
+        }
+        if (url.pathname.includes("/rpc/")) {
+          if (name === "inv_post_movement") {
+            const item = stock.find((row) => row.id === body.p_item)!;
+            item.current_stock =
+              Number(item.current_stock) +
+              (body.p_kind === "waste" ? -1 : 1) * Number(body.p_quantity);
+            item.available_stock = item.current_stock;
+          } else if (name === "inv_post_stocktake") {
+            const count = tables.stocktakes.find(
+              (row) => row.id === body.p_id,
+            )!;
+            const item = stock.find((row) => row.id === count.ingredient_id)!;
+            item.current_stock = Number(count.counted);
+            item.available_stock = item.current_stock;
+            count.state = "posted";
+          } else if (name === "customer_save_branch_settings")
+            branchSettings = body.p_settings;
+          else if (
+            !["inv_refresh_forecasts", "inv_generate_drafts"].includes(name)
+          ) {
+            blocked.push(name);
+            await route.abort();
+            return;
+          }
+          await route.fulfill({ json: null });
+          return;
+        }
+        const source = tables[name];
+        if (!source) {
+          blocked.push(name);
+          await route.abort();
+          return;
+        }
+        const matches = (row: Record<string, unknown>) =>
+          Array.from(url.searchParams).every(
+            ([field, value]) =>
+              !value.startsWith("eq.") || String(row[field]) === value.slice(3),
+          );
+        if (request.method() === "PATCH")
+          source.filter(matches).forEach((row) => Object.assign(row, body));
+        if (request.method() === "DELETE")
+          tables[name] = source.filter((row) => !matches(row));
+        let inserted: Record<string, unknown> | undefined;
+        if (request.method() === "POST") {
+          const existing = body.id && source.find((row) => row.id === body.id);
+          if (existing) {
+            Object.assign(existing, body);
+            inserted = existing;
+          } else {
+            inserted = {
+              id: id(22, workflowFixture.writes.length),
+              created_at: timestamp,
+              ...body,
+            };
+            source.push(inserted!);
+          }
+        }
+        await route.fulfill({
+          json: request.headers().accept?.includes("vnd.pgrst.object")
+            ? inserted
+            : [],
+        });
+        return;
+      }
+    }
     if (url.pathname.includes("/rpc/")) {
       const data =
         name === "get_published_catalog"
@@ -335,9 +469,18 @@ try {
                   average: 100,
                   active: 0,
                   stock_conflicts: 0,
-                  days: [],
+                  days: Array.from({ length: 7 }, (_, n) => ({
+                    date: new Date(Date.now() - (6 - n) * 86400000)
+                      .toISOString()
+                      .slice(0, 10),
+                    revenue: [250, 400, 600, 450, 700, 500, 600][n],
+                  })),
                 }
-              : null;
+              : name === "get_customer_scheduling_admin"
+                ? { settings: branchSettings, production_ready: true }
+                : name === "get_customer_operations"
+                  ? { attempts: [], failed_push: 0 }
+                  : null;
       if (!data) blocked.push(name);
       await route.fulfill({
         status: data ? 200 : 503,
@@ -347,13 +490,15 @@ try {
     }
     assert.equal(
       request.method(),
-      "GET",
+      workflowMode && request.method() === "HEAD" ? "HEAD" : "GET",
       "Pagination must not submit a mutation",
     );
     let data = [...(tables[name] ?? [])];
     for (const [field, value] of url.searchParams) {
       if (value.startsWith("eq."))
         data = data.filter((row) => String(row[field]) === value.slice(3));
+      if (value.startsWith("neq."))
+        data = data.filter((row) => String(row[field]) !== value.slice(4));
       if (value.startsWith("in.(")) {
         const values = value.slice(4, -1).split(",");
         data = data.filter((row) => values.includes(String(row[field])));
@@ -379,9 +524,12 @@ try {
       serverRanges.push({ table: name, offset, limit });
     data = data.slice(offset, offset + limit);
     await route.fulfill({
-      json: request.headers().accept?.includes("vnd.pgrst.object")
-        ? (data[0] ?? null)
-        : data,
+      json:
+        request.method() === "HEAD"
+          ? null
+          : request.headers().accept?.includes("vnd.pgrst.object")
+            ? (data[0] ?? null)
+            : data,
       headers: {
         "content-range": `${offset}-${offset + data.length - 1}/${count}`,
         "access-control-expose-headers": "content-range",
@@ -466,102 +614,136 @@ try {
     ).toBeDisabled();
     await search.fill("");
   }
-  await open("/dashboard");
-  await check("Recent orders", 6);
-  await open("/menu");
-  await check("Menu products", 55);
-  await filterCheck(
-    "Menu products",
-    page.getByRole("searchbox", { name: "Search menu products" }),
-    "Product 55",
-  );
-  await open("/inventory");
-  await check("Stock items", 49);
-  await filterCheck("Stock items", page.getByLabel("Search stock"), "Stock 49");
-  await table("Stock items").locator("tbody > tr").first().click();
-  await check("Stock batches", 23);
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Close dialog", exact: true })
-    .click();
-  for (const [tab, name, count] of [
-    ["Recipes", "Recipe requirements", 55],
-    ["Movements", "Stock movements", 23],
-    ["Stocktakes", "Physical counts", 23],
-    ["Forecasts", "Demand forecasts", 49],
-  ] as const) {
-    await page.getByRole("tab", { name: tab, exact: true }).click();
-    await check(name, count);
+  if (!process.env.ADMIN_WORKFLOW_ONLY) {
+    await open("/dashboard");
+    await check("Recent orders", 6);
+    await open("/menu");
+    await check("Menu products", 55);
+    await filterCheck(
+      "Menu products",
+      page.getByRole("searchbox", { name: "Search menu products" }),
+      "Product 55",
+    );
+    await open("/inventory");
+    await check("Stock items", 49);
+    await filterCheck(
+      "Stock items",
+      page.getByLabel("Search stock"),
+      "Stock 49",
+    );
+    await table("Stock items").locator("tbody > tr").first().click();
+    await check("Stock batches", 23);
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Close dialog", exact: true })
+      .click();
+    for (const [tab, name, count] of [
+      ["Recipes", "Recipe requirements", 55],
+      ["Movements", "Stock movements", 23],
+      ["Physical counts", "Physical counts", 23],
+      ["Stock planning", "Demand forecasts", 49],
+    ] as const) {
+      await page.getByRole("tab", { name: tab, exact: true }).click();
+      await check(name, count);
+    }
+    await open("/purchasing");
+    await check("Purchase orders", 23);
+    await filterCheck(
+      "Purchase orders",
+      page.getByRole("searchbox", { name: "Search purchasing" }),
+      "PO-QA-23",
+    );
+    await table("Purchase orders")
+      .getByRole("button", { name: "PO-QA-1", exact: true })
+      .click();
+    await check("Purchase lines", 23);
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Close dialog", exact: true })
+      .click();
+    await page.getByRole("button", { name: "Suppliers", exact: true }).click();
+    await check("Suppliers", 23);
+    await page
+      .getByRole("button", { name: "Receiving history", exact: true })
+      .click();
+    await check("Goods receipts", 23);
+    await open("/analytics");
+    await check("Best sellers", 10);
+    await check("Product margins", 55);
+    await open("/audit");
+    await check("Audit log", 23);
+    await open("/loyalty");
+    await check("Loyalty customers", 23);
+    await open("/staff");
+    await check("Staff", 47);
+    await open("/staff-accounts");
+    await check("Staff accounts", 24);
+    await open("/void-security");
+    await check("Void audit log", 23);
+    await open("/orders");
+    await check("Orders", 35);
+    const orderSearch = page.getByPlaceholder("Search Order #...");
+    await footer("Orders")
+      .getByRole("button", { name: "Next", exact: true })
+      .click();
+    await orderSearch.fill("slow");
+    await slowStarted;
+    await orderSearch.fill("QA-035");
+    await expect(rows("Orders")).toHaveCount(1);
+    releaseSlowSearch();
+    await slowDone;
+    await expect(table("Orders")).toContainText("QA-035");
+    await expect(footer("Orders")).toContainText("Showing 1 to 1 of 1 entries");
+    await orderSearch.fill("missing-qa");
+    await expect(footer("Orders")).toContainText("Showing 0 to 0 of 0 entries");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await open("/menu");
+    await expect(rows("Menu products")).toHaveCount(10);
+    const nav = footer("Menu products");
+    await nav.scrollIntoViewIfNeeded();
+    const box = await nav.boundingBox();
+    assert.ok(
+      box && box.x >= 0 && box.x + box.width <= 391,
+      "Mobile footer fits viewport",
+    );
+    const next = nav.getByRole("button", { name: "Next", exact: true });
+    await next.focus();
+    await page.keyboard.press("Enter");
+    await expect(nav).toContainText("Page 2 of 6");
+    await nav.screenshot({ path: path.join(output, "mobile-footer.png") });
   }
-  await open("/purchasing");
-  await check("Purchase orders", 23);
-  await filterCheck(
-    "Purchase orders",
-    page.getByRole("searchbox", { name: "Search purchasing" }),
-    "PO-QA-23",
+  workflowMode = true;
+  tables.profiles.push(
+    ...list(2, (n) => ({
+      ...admin,
+      id: id(23, n),
+      full_name: `Pending staff ${n}`,
+      role: n === 1 ? "admin" : "staff",
+      is_approved: false,
+    })),
   );
-  await table("Purchase orders")
-    .getByRole("button", { name: "PO-QA-1", exact: true })
-    .click();
-  await check("Purchase lines", 23);
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Close dialog", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Suppliers", exact: true }).click();
-  await check("Suppliers", 23);
-  await page
-    .getByRole("button", { name: "Receiving history", exact: true })
-    .click();
-  await check("Goods receipts", 23);
-  await open("/analytics");
-  await check("Best sellers", 10);
-  await check("Product margins", 55);
-  await open("/audit");
-  await check("Audit log", 23);
-  await open("/loyalty");
-  await check("Loyalty customers", 23);
-  await open("/staff");
-  await check("Staff", 47);
-  await open("/staff-accounts");
-  await check("Staff accounts", 24);
-  await open("/void-security");
-  await check("Void audit log", 23);
-  await open("/orders");
-  await check("Orders", 35);
-  const orderSearch = page.getByPlaceholder("Search Order #...");
-  await footer("Orders")
-    .getByRole("button", { name: "Next", exact: true })
-    .click();
-  await orderSearch.fill("slow");
-  await slowStarted;
-  await orderSearch.fill("QA-035");
-  await expect(rows("Orders")).toHaveCount(1);
-  releaseSlowSearch();
-  await slowDone;
-  await expect(table("Orders")).toContainText("QA-035");
-  await expect(footer("Orders")).toContainText("Showing 1 to 1 of 1 entries");
-  await orderSearch.fill("missing-qa");
-  await expect(footer("Orders")).toContainText("Showing 0 to 0 of 0 entries");
-  await page.setViewportSize({ width: 390, height: 844 });
-  await open("/menu");
-  await expect(rows("Menu products")).toHaveCount(10);
-  const nav = footer("Menu products");
-  await nav.scrollIntoViewIfNeeded();
-  const box = await nav.boundingBox();
-  assert.ok(
-    box && box.x >= 0 && box.x + box.width <= 391,
-    "Mobile footer fits viewport",
-  );
-  const next = nav.getByRole("button", { name: "Next", exact: true });
-  await next.focus();
-  await page.keyboard.press("Enter");
-  await expect(nav).toContainText("Page 2 of 6");
-  await nav.screenshot({ path: path.join(output, "mobile-footer.png") });
-  assert.equal(seen.size, 20, "All twenty Admin tables exercised");
+  const workflows = await adminWorkflowJourneys(
+    page,
+    origin,
+    workflowFixture,
+  ).catch(async (error) => {
+    await page.screenshot({
+      path: path.join(output, "workflow-error.png"),
+      fullPage: true,
+    });
+    writeFileSync(
+      path.join(output, "workflow-error.html"),
+      await page.content(),
+    );
+    throw error;
+  });
+  if (!process.env.ADMIN_WORKFLOW_ONLY)
+    assert.equal(seen.size, 20, "All twenty Admin tables exercised");
   assert.deepEqual(errors, [], "No browser runtime errors");
   assert.deepEqual(blocked, [], "No unhandled external APIs");
-  for (const name of ["orders", "void_logs"])
+  for (const name of process.env.ADMIN_WORKFLOW_ONLY
+    ? []
+    : ["orders", "void_logs"])
     assert.ok(
       serverRanges.some(
         (r) => r.table === name && r.offset === 10 && r.limit === 10,
@@ -581,9 +763,14 @@ try {
     serverRanges,
     runtimeErrors: errors,
     liveBusinessWrites: false,
+    workflows,
+    fixtureWriteCount: workflowFixture.writes.length,
   };
   writeFileSync(
-    path.join(output, "result.json"),
+    path.join(
+      output,
+      process.env.ADMIN_WORKFLOW_ONLY ? "workflow-result.json" : "result.json",
+    ),
     JSON.stringify(result, null, 2),
   );
   console.log(JSON.stringify(result));

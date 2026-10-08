@@ -348,6 +348,21 @@ export async function cashierJourneys({
     );
   }
   await page.setViewportSize({ width: 1366, height: 768 });
+  assert.equal(
+    await dialog
+      .getByRole("button", { name: "Confirm cash payment", exact: true })
+      .isDisabled(),
+    true,
+    "Cash acknowledgement is required",
+  );
+  await dialog.getByLabel("Cash has been received").check();
+  await dialog.getByRole("button", { name: "Exact", exact: true }).click();
+  assert.equal(
+    await dialog.getByLabel("Cash has been received").isChecked(),
+    false,
+    "Re-entering the amount requires acknowledgement again",
+  );
+  await dialog.getByLabel("Cash has been received").check();
   loseResponse();
   await dialog
     .getByRole("button", { name: "Confirm cash payment", exact: true })
@@ -625,6 +640,20 @@ export async function cashierJourneys({
   await deliveryDialog
     .getByRole("button", { name: "Book rider", exact: true })
     .click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Go back" })
+    .click();
+  await deliveryDialog
+    .getByText("Ready for a rider", { exact: true })
+    .waitFor();
+  await deliveryDialog
+    .getByRole("button", { name: "Book rider", exact: true })
+    .click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Book rider", exact: true })
+    .click();
   await deliveryDialog.getByText("Finding a rider", { exact: true }).waitFor();
   assert.equal(
     (
@@ -707,6 +736,7 @@ export async function cashierJourneys({
     "pending",
   );
   await cashDialog.getByRole("button", { name: "Exact", exact: true }).click();
+  await cashDialog.getByLabel("Cash has been received").check();
   await page.screenshot({ path: path.join(output, "pos-cash-at-pickup.png") });
   loseResponse();
   await cashDialog
@@ -770,6 +800,11 @@ export async function cashierJourneys({
   await page.goto(base + "/void");
   await page.getByRole("button", { name: /^ORD-/ }).first().click();
   await page.getByLabel("Manager PIN").fill("000000");
+  assert.equal(
+    await page.getByRole("button", { name: "Authorize void" }).isDisabled(),
+    true,
+  );
+  await page.getByLabel("I understand the cancellation consequences").check();
   await page.getByRole("button", { name: "Authorize void" }).click();
   await page.getByRole("dialog").getByRole("alert").waitFor();
   await page.getByLabel("Manager PIN").fill("123456");

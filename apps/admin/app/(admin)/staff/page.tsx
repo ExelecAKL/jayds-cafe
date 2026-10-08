@@ -7,6 +7,9 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import type { Profile, UserRole } from "@cafeos/shared/types";
 import { PaginatedTable } from "../../../components/PaginatedTable";
+import { useAuth } from "@cafeos/shared/hooks/useAuth";
+import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
+import { Feedback } from "../../../components/Operations";
 
 const ROLES: UserRole[] = ["customer", "staff", "admin"];
 const roleColors: Record<UserRole, string> = {
@@ -16,6 +19,10 @@ const roleColors: Record<UserRole, string> = {
 };
 
 export default function StaffPage() {
+  const { user: currentUser } = useAuth();
+  const confirm = useActionConfirm();
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
   const [users, setUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,22 +43,51 @@ export default function StaffPage() {
   }, [fetchUsers]);
 
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
-    const { error } = await supabase
-      .from("profiles")
-      .update({ role: newRole })
-      .eq("id", userId);
+    if (processing || userId === currentUser?.id) return;
+    const account = users.find((user) => user.id === userId);
+    if (!account || account.role === newRole) return;
+    setProcessing(true);
+    setError("");
+    try {
+      if (
+        !(await confirm({
+          title: `Change ${account.full_name || account.email}'s access?`,
+          description:
+            newRole === "admin"
+              ? "Admin can manage prices, stock, settings, and other accounts. Grant this only to a trusted manager."
+              : newRole === "staff"
+                ? "Staff can use the POS after their account is approved. Admin access will be removed."
+                : "Customer can use the customer app. Staff and Admin access will be removed.",
+          details: [`Role: ${account.role} → ${newRole}`],
+          confirmLabel: "Change access",
+          danger: newRole !== "staff",
+        }))
+      )
+        return;
+      const { error } = await supabase
+        .from("profiles")
+        .update({ role: newRole })
+        .eq("id", userId);
 
-    if (error) {
-      alert("Failed to update role");
-      return;
+      if (error) {
+        setError("Could not change access. " + error.message);
+        return;
+      }
+
+      await fetchUsers();
+    } finally {
+      setProcessing(false);
     }
-
-    fetchUsers();
   };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Staff & Users</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Account roles</h1>
+      <p className="text-gray-500 mb-6">
+        All customer and employee accounts. Use Staff access to approve pending
+        employees. Your own Admin role is locked to prevent accidental lockout.
+      </p>
+      <Feedback error={error} />
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
@@ -106,6 +142,8 @@ export default function StaffPage() {
                     </td>
                     <td className="px-6 py-4">
                       <select
+                        aria-label={`Role for ${user.full_name || user.email}`}
+                        disabled={processing || user.id === currentUser?.id}
                         value={user.role}
                         onChange={(e) =>
                           handleRoleChange(user.id, e.target.value as UserRole)

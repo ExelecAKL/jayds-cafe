@@ -535,7 +535,12 @@ test(
         cleanupTarget.startsWith(logs + path.sep),
         "Refusing to remove files outside the fixture directory",
       );
-      rmSync(cleanupTarget, { recursive: true, force: true });
+      rmSync(cleanupTarget, {
+        recursive: true,
+        force: true,
+        maxRetries: 8,
+        retryDelay: 250,
+      });
     }
   },
 );

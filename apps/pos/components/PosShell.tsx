@@ -8,6 +8,7 @@ import { useOrders } from "@cafeos/shared/hooks/useOrders";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { PosIcon } from "./PosPrimitives";
 import { BrandArtwork } from "@cafeos/shared/brand";
+import { StaffHelp } from "./StaffHelp";
 const statuses = ["pending", "confirmed", "preparing", "ready"] as const;
 export function PosShell({
   title,
@@ -20,6 +21,7 @@ export function PosShell({
 }) {
   const path = usePathname(),
     router = useRouter();
+  const [helpPath, setHelpPath] = useState<string | null>(null);
   const { profile, user, signOut } = useAuth();
   const { orders } = useOrders({
     statuses: [...statuses],
@@ -79,7 +81,7 @@ export function PosShell({
     const keyboard = (e: KeyboardEvent) => {
       if (
         (e.target as HTMLElement).closest(
-          'input,textarea,select,[role="dialog"]',
+          'input,textarea,select,[role="dialog"],[role="alertdialog"]',
         )
       )
         return;
@@ -143,7 +145,7 @@ export function PosShell({
             aria-current={path.includes("void") ? "page" : undefined}
           >
             <PosIcon name="trash" />
-            <span>Override</span>
+            <span>Cancel order</span>
           </Link>
         </div>
         <button
@@ -165,6 +167,13 @@ export function PosShell({
             <h1>{title}</h1>
           </div>
           <div className="pos-topbar-right">
+            <button
+              className="pos-button"
+              aria-label="Help with this page"
+              onClick={() => setHelpPath(path)}
+            >
+              Help
+            </button>
             <span
               className={
                 "pos-connection " + (connection === "Live" ? "is-live" : "")
@@ -182,6 +191,9 @@ export function PosShell({
         </header>
         <main className="pos-main">{children}</main>
       </div>
+      {helpPath === path && (
+        <StaffHelp path={path} onClose={() => setHelpPath(null)} />
+      )}
     </div>
   );
 }

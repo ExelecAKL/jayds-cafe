@@ -1,6 +1,45 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.pos-cash-acknowledgement {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid #e5d8c8;
+  border-radius: 12px;
+  background: #fffaf3;
+}
+.pos-cash-acknowledgement input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: #a06438;
+  margin-top: 2px;
+}
+.pos-cash-acknowledgement small {
+  display: block;
+  color: #81766d;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-top: 5px;
+}
+.pos-workflow-help h3 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+.pos-workflow-help ol {
+  list-style: decimal;
+  padding-left: 24px;
+  margin: 0 0 24px;
+}
+.pos-workflow-help li {
+  padding-left: 6px;
+  margin-bottom: 16px;
+  font-size: 17px;
+  line-height: 1.5;
+}
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
