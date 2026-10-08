@@ -723,7 +723,7 @@ export function PurchasingWorkspace() {
             Loading purchasing…
           </p>
         ) : tab === "orders" ? (
-          orders.length ? (
+          <>
             <div className="ops-table-wrap">
               <PaginatedTable
                 aria-label="Purchase orders"
@@ -822,12 +822,13 @@ export function PurchasingWorkspace() {
                 </tbody>
               </PaginatedTable>
             </div>
-          ) : (
-            <Empty
-              title="No purchase orders here"
-              description="Create a draft manually or refresh forecasts to generate replenishment drafts."
-            />
-          )
+            {!orders.length && (
+              <Empty
+                title="No purchase orders here"
+                description="Create a draft manually or refresh forecasts to generate replenishment drafts."
+              />
+            )}
+          </>
         ) : tab === "suppliers" ? (
           <div className="ops-table-wrap">
             <PaginatedTable

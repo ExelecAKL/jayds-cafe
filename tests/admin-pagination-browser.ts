@@ -495,6 +495,11 @@ try {
   }
   await open("/purchasing");
   await check("Purchase orders", 23);
+  await filterCheck(
+    "Purchase orders",
+    page.getByRole("searchbox", { name: "Search purchasing" }),
+    "PO-QA-23",
+  );
   await table("Purchase orders")
     .getByRole("button", { name: "PO-QA-1", exact: true })
     .click();
