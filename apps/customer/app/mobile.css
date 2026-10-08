@@ -82,6 +82,11 @@
 .menu-fulfillment .segmented-control {
   max-width: 320px;
 }
+.menu-browser .menu-fulfillment .segmented-control .is-selected {
+  background: #402817;
+  color: #fff7ed;
+  box-shadow: none;
+}
 .menu-branch summary {
   display: flex;
   gap: 7px;

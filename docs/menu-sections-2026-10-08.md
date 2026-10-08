@@ -18,3 +18,5 @@ Returning from a product restores the category and position within it. Opening a
 - The real service-worker demo passed public-cache restrictions, offline menu/product reload, offline draft editing and reconnection without losing notes. It also exercised uncategorized products in More favorites, with no runtime errors.
 
 The browser demo uses isolated fixtures and creates no hosted business transactions. This change does not modify the catalog API, database, payment providers or staff/Admin applications.
+
+Hosted read-only verification passed with the café's 52 published products in seven sections, real menu images, category navigation, search and product return at five phone/tablet/landscape/desktop sizes. No runtime errors or business writes were recorded. The active pickup/delivery style is shared across these sizes.
