@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { chromium } from "@playwright/test";
+import { chromium, expect } from "@playwright/test";
 import { LEGAL_VERSION } from "../apps/customer/lib/legal.ts";
 const root = process.cwd(),
   base =
@@ -431,7 +431,9 @@ try {
     [430, 932],
     [768, 1024],
     [834, 1112],
+    [844, 390],
     [1024, 768],
+    [1180, 820],
     [1280, 900],
   ]) {
     await page.setViewportSize({ width, height });
@@ -452,10 +454,49 @@ try {
       target && target.width >= 48 && target.height >= 48,
       "Consistent Select touch target",
     );
+    const rail = await page
+      .getByRole("navigation", { name: "Menu categories" })
+      .boundingBox();
+    const content = await page
+      .getByRole("region", { name: "Menu products", exact: true })
+      .boundingBox();
+    assert.ok(
+      rail && content && rail.x + rail.width <= content.x,
+      "Category rail beside grouped products at " + width + "×" + height,
+    );
+    await expect(
+      page.getByRole("region", { name: "Ordering location" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "All", exact: true }),
+    ).toHaveCount(0);
+    await expect(page.locator(".menu-group")).toHaveCount(7);
+    await expect(page.locator(".menu-group .product-card")).toHaveCount(55);
+    await page.getByRole("button", { name: "Tea", exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Tea", exact: true }),
+    ).toHaveAttribute("aria-current", "location");
+    await expect
+      .poll(() =>
+        page
+          .getByRole("region", { name: "Tea", exact: true })
+          .evaluate((element) =>
+            Math.abs(element.getBoundingClientRect().top - 20),
+          ),
+      )
+      .toBeLessThan(12);
+    await page.screenshot({
+      path: path.join(output, `menu-sections-${width}-${height}.png`),
+      animations: "disabled",
+    });
+    await page.getByRole("button", { name: "Espresso", exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Espresso", exact: true }),
+    ).toHaveAttribute("aria-current", "location");
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  // Portrait uses a category rail; returning from an item retains browsing
-  // context. Search deliberately spans all categories, even after filtering.
+  // One continuous catalog: category taps jump, scrolling follows sections,
+  // item returns retain the section, and search spans the whole menu.
   const rail = await page
     .getByRole("navigation", { name: "Menu categories" })
     .boundingBox();
@@ -467,23 +508,76 @@ try {
     "Portrait category rail beside products",
   );
   await page.getByRole("button", { name: "Tea", exact: true }).click();
-  await page.getByText("8 products", { exact: true }).waitFor();
+  await expect(
+    page.getByRole("button", { name: "Tea", exact: true }),
+  ).toHaveAttribute("aria-current", "location");
+  await expect(page.locator(".product-card")).toHaveCount(55);
+  await expect(
+    page
+      .getByRole("region", { name: "Tea", exact: true })
+      .locator(".product-card"),
+  ).toHaveCount(8);
   await page
     .getByRole("link", { name: "View Salted Caramel Latte", exact: true })
     .click();
+  await page.waitForURL(base + "/menu/browse/" + products[1].id);
+  assert.equal(
+    await page.evaluate(
+      () =>
+        JSON.parse(sessionStorage.getItem("jayds-menu-view") ?? "{}").category,
+    ),
+    categories[1].id,
+    "Product navigation keeps the section even if a category jump is still animating",
+  );
   await page.getByRole("link", { name: "Go back", exact: true }).click();
-  await page.getByText("8 products", { exact: true }).waitFor();
+  await page.getByText("55 products", { exact: true }).waitFor();
+  await expect(
+    page.getByRole("button", { name: "Tea", exact: true }),
+  ).toHaveAttribute("aria-current", "location");
   assert.equal(
     await page
       .getByRole("button", { name: "Tea", exact: true })
-      .getAttribute("aria-pressed"),
-    "true",
+      .getAttribute("aria-current"),
+    "location",
   );
+  await page
+    .getByRole("region", { name: "Chocolate", exact: true })
+    .evaluate((element) =>
+      window.scrollTo({
+        top: element.getBoundingClientRect().top + scrollY - 20,
+        behavior: "instant",
+      }),
+    );
+  await expect(
+    page.getByRole("button", { name: "Chocolate", exact: true }),
+  ).toHaveAttribute("aria-current", "location");
+  await page.getByRole("button", { name: "Café treats", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Café treats", exact: true }),
+  ).toHaveAttribute("aria-current", "location");
+  const lastButton = await page
+    .getByRole("button", { name: "Café treats", exact: true })
+    .boundingBox();
+  const stickyRail = await page
+    .getByRole("navigation", { name: "Menu categories" })
+    .boundingBox();
+  assert.ok(
+    lastButton &&
+      stickyRail &&
+      lastButton.y >= stickyRail.y &&
+      lastButton.y + lastButton.height <= stickyRail.y + stickyRail.height + 1,
+    "Active category stays visible inside its own rail",
+  );
+  await page.getByRole("button", { name: "Tea", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Tea", exact: true }),
+  ).toHaveAttribute("aria-current", "location");
   await page.getByRole("searchbox").fill("Spanish Latte");
-  await page.getByText("1 product", { exact: true }).waitFor();
+  await page
+    .locator(".menu-results-summary")
+    .getByText("1 product", { exact: true })
+    .waitFor();
   await page.getByRole("button", { name: "Clear search", exact: true }).click();
-  await page.getByText("8 products", { exact: true }).waitFor();
-  await page.getByRole("button", { name: "All", exact: true }).click();
   await page.getByText("55 products", { exact: true }).waitFor();
   await page
     .getByRole("link", { name: "View Spanish Latte", exact: true })
@@ -939,7 +1033,10 @@ try {
     base,
     isolated: true,
     products: 55,
-    widths: [360, 390, 430, 768, 834, 1024, 1280],
+    widths: [360, 390, 430, 768, 834, 844, 1024, 1180, 1280],
+    continuousCategorySections: 7,
+    categoryJumpAndScrollTracking: true,
+    tabletAndLandscapeMenuAligned: true,
     gpsOnlyAfterTap: gpsCalls,
     checkoutRequests: createRequests,
     canonicalSales: orders.size,
@@ -956,6 +1053,30 @@ try {
   );
   console.log(JSON.stringify(report));
   assert.deepEqual(errors, []);
+} catch (error) {
+  await page.screenshot({
+    path: path.join(output, "customer-error.png"),
+    fullPage: true,
+  });
+  console.log(
+    JSON.stringify(
+      await page.evaluate(() => ({
+        url: location.pathname,
+        scrollY,
+        view: sessionStorage.getItem("jayds-menu-view"),
+        sections: Array.from(document.querySelectorAll(".menu-group")).map(
+          (section) => ({
+            id: section.id,
+            top: section.getBoundingClientRect().top,
+          }),
+        ),
+        selected: document.querySelector(
+          '.menu-category-rail [aria-current="location"]',
+        )?.textContent,
+      })),
+    ),
+  );
+  throw error;
 } finally {
   server?.kill();
   await browser.close();
