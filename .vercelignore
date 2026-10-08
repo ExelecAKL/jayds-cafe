@@ -20,3 +20,17 @@ coverage/
 /supabase/
 /schema.sql
 /walkthrough.md
+/apps/*/public/products/
+/assets/product-concepts/
+/assets/menu-products/previews/
+/assets/menu-products/catalog.json
+/assets/menu-products/manifest.json
+/assets/menu-products/prompts.json
+/assets/menu-products/*.zip
+/assets/menu-products/gallery.html
+/assets/menu-products/mascot-reference.png
+/assets/menu-products/horizontal-logo-reference.png
+/assets/menu-products/publication.json
+/assets/menu-products/final-prompts.json
+/assets/menu-products/revisions/
+/assets/menu-products/README.md

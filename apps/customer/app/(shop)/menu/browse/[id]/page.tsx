@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "../../../../../components/OfflineMenuLink";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
+import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
 import { useAvailability } from "@cafeos/shared/hooks/useAvailability";
 import type { ItemVariant, SelectedVariant } from "@cafeos/shared/types";
 import { useCart } from "../../../../../context/CartContext";
@@ -33,6 +34,7 @@ export default function BrowseMenuItemPage() {
   const { menuItems, loading, error, refetch } = useMenu();
   const { addItem } = useCart();
   const item = menuItems.find((product) => product.id === params.id);
+  const imageUrl = menuProductImageUrl(item?.id, item?.image_url);
   const [selected, setSelected] = useState<Record<string, ItemVariant>>({});
   const [quantity, setQuantity] = useState(1),
     [notes, setNotes] = useState(""),
@@ -186,7 +188,7 @@ export default function BrowseMenuItemPage() {
       price: unitPrice,
       quantity,
       variants,
-      image_url: item.image_url,
+      image_url: imageUrl,
       prep_time_minutes: item.prep_time_minutes,
       notes: notes.trim() || null,
     });
@@ -254,9 +256,9 @@ export default function BrowseMenuItemPage() {
       <div className="detail-layout">
         <section className="detail-image-section">
           <div className="detail-art">
-            {item.image_url ? (
+            {imageUrl ? (
               <img
-                src={item.image_url}
+                src={imageUrl}
                 alt={item.name}
                 width={640}
                 height={640}

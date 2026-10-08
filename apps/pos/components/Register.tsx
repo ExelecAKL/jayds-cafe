@@ -1,5 +1,6 @@
 "use client";
 import { createUuid } from "@cafeos/shared/utils/uuid";
+import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -143,7 +144,7 @@ export function Register({ parkedId }: { parkedId?: string }) {
                 variants.reduce((n, v) => n + v.price_modifier, 0),
             quantity: i.quantity,
             notes: i.notes ?? "",
-            image_url: current?.image_url,
+            image_url: menuProductImageUrl(current?.id, current?.image_url),
             variants: variants.map((v) => ({
               ...v,
               price_modifier:
@@ -221,7 +222,7 @@ export function Register({ parkedId }: { parkedId?: string }) {
                 quantity,
                 variants,
                 notes,
-                image_url: item.image_url,
+                image_url: menuProductImageUrl(item.id, item.image_url),
               },
               replacing,
             ),
@@ -508,10 +509,13 @@ export function Register({ parkedId }: { parkedId?: string }) {
                       onClick={() => void quickAdd(item)}
                     >
                       <div className="product-image">
-                        {item.image_url ? (
+                        {menuProductImageUrl(item.id, item.image_url) ? (
                           <img
-                            src={item.image_url}
+                            src={menuProductImageUrl(item.id, item.image_url)!}
                             alt=""
+                            loading="lazy"
+                            width={320}
+                            height={320}
                             onError={(e) => {
                               e.currentTarget.style.display = "none";
                             }}

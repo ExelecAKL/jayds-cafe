@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@cafeos/shared/supabase/client';
-import type { OrderStatus } from '@cafeos/shared/types';
+import type { Order, OrderItem, OrderStatus, Profile } from '@cafeos/shared/types';
+import { menuProductImageUrl } from '@cafeos/shared/utils/product-images';
 
 interface OrderDetailsModalProps {
   orderId: string;
   onClose: () => void;
 }
+
+type DetailedOrder = Omit<Order, 'items' | 'customer'> & {
+  customer?: Pick<Profile, 'full_name' | 'phone' | 'email'> | null;
+  items?: (OrderItem & { menu_item?: { image_url: string | null } | null })[];
+};
 
 const statusColors: Record<OrderStatus, string> = {
   pending: 'bg-yellow-50 text-yellow-700',
@@ -17,11 +23,11 @@ const statusColors: Record<OrderStatus, string> = {
 };
 
 export function OrderDetailsModal({ orderId, onClose }: OrderDetailsModalProps) {
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<DetailedOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [revealed, setRevealed] = useState(false);
 
-  const maskString = (str: string | null, isEmail = false) => {
+  const maskString = (str: string | null | undefined, isEmail = false) => {
     if (!str) return '—';
     if (isEmail) {
       const [local, domain] = str.split('@');
@@ -42,7 +48,7 @@ export function OrderDetailsModal({ orderId, onClose }: OrderDetailsModalProps) 
           *,
           customer:profiles!orders_customer_id_fkey(full_name, phone, email),
           items:order_items(
-            id, name, price, quantity, variants, subtotal, notes,
+            id, menu_item_id, name, price, quantity, variants, subtotal, notes,
             menu_item:menu_items(image_url)
           )
         `)
@@ -50,7 +56,7 @@ export function OrderDetailsModal({ orderId, onClose }: OrderDetailsModalProps) 
         .single();
       
       if (!error && data) {
-        setOrder(data);
+        setOrder(data as DetailedOrder);
       }
       setLoading(false);
     }
@@ -127,11 +133,11 @@ export function OrderDetailsModal({ orderId, onClose }: OrderDetailsModalProps) 
               <div>
                 <h4 className="text-xs font-bold text-gray-500 tracking-wider uppercase mb-3">Receipt Breakdown</h4>
                 <div className="space-y-3">
-                  {order.items?.map((item: any) => (
+                  {order.items?.map((item) => (
                     <div key={item.id} className="flex gap-4 p-4 rounded-xl border border-gray-100 bg-white shadow-sm">
                       <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-                        {item.menu_item?.image_url ? (
-                          <img src={item.menu_item.image_url} alt="" className="w-full h-full object-cover" />
+                        {menuProductImageUrl(item.menu_item_id, item.menu_item?.image_url) ? (
+                          <img src={menuProductImageUrl(item.menu_item_id, item.menu_item?.image_url)!} alt="" className="w-full h-full object-contain" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-lg">☕</div>
                         )}
@@ -148,7 +154,7 @@ export function OrderDetailsModal({ orderId, onClose }: OrderDetailsModalProps) 
                         {/* Variants List */}
                         {item.variants && item.variants.length > 0 && (
                           <div className="mt-2 space-y-1 pl-2 border-l-2 border-amber-200">
-                            {item.variants.map((v: any, idx: number) => (
+                            {item.variants.map((v, idx) => (
                               <div key={idx} className="flex justify-between text-xs text-gray-600">
                                 <span>+ {v.variant_group}: {v.label}</span>
                                 <span>₱{v.price_modifier > 0 ? v.price_modifier.toFixed(2) : '0.00'}</span>
@@ -158,7 +164,7 @@ export function OrderDetailsModal({ orderId, onClose }: OrderDetailsModalProps) 
                         )}
 
                         {item.notes && (
-                          <p className="text-xs mt-2 text-red-600 italic">" {item.notes} "</p>
+                          <p className="text-xs mt-2 text-red-600 italic">&ldquo;{item.notes}&rdquo;</p>
                         )}
                       </div>
                     </div>

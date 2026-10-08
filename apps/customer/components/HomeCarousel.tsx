@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "./OfflineMenuLink";
 import type { MenuItem } from "@cafeos/shared/types";
+import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
 import Icon from "./Icon";
 import LogoArtwork from "./LogoArtwork";
 export default function HomeCarousel({ products }: { products: MenuItem[] }) {
@@ -17,6 +18,7 @@ export default function HomeCarousel({ products }: { products: MenuItem[] }) {
   ];
   const current = Math.min(index, slides.length - 1),
     item = slides[current].item;
+  const imageUrl = menuProductImageUrl(item?.id, item?.image_url);
   useEffect(() => {
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => setReducedMotion(preference.matches);
@@ -98,11 +100,11 @@ export default function HomeCarousel({ products }: { products: MenuItem[] }) {
           </Link>
         </div>
         <div
-          className={`home-carousel-art ${item?.image_url ? "is-product" : "is-welcome"}`}
+          className={`home-carousel-art ${imageUrl ? "is-product" : "is-welcome"}`}
         >
-          {item?.image_url ? (
+          {item && imageUrl ? (
             <Image
-              src={item.image_url}
+              src={imageUrl}
               alt={item.name}
               fill
               unoptimized

@@ -4,6 +4,7 @@ import Link from "../../../components/OfflineMenuLink";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
 import type { CartItem } from "@cafeos/shared/types";
+import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
 import { useCart } from "../../../context/CartContext";
 import AppShell, {
   EmptyState,
@@ -167,13 +168,13 @@ export default function CartPage() {
                       className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-bg-elevated"
                       aria-label={"View " + item.name}
                     >
-                      {item.image_url ? (
+                      {menuProductImageUrl(item.menu_item_id, item.image_url) ? (
                         <img
-                          src={item.image_url}
+                          src={menuProductImageUrl(item.menu_item_id, item.image_url)!}
                           alt={item.name}
                           width={80}
                           height={80}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain"
                         />
                       ) : (
                         <Icon name="coffee" size={32} />

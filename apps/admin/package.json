@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "predev": "node ../../scripts/prepare-brand-assets.mjs",
-    "prebuild": "node ../../scripts/prepare-brand-assets.mjs",
+    "predev": "node ../../scripts/prepare-brand-assets.mjs && node ../../scripts/prepare-menu-images.mjs admin",
+    "prebuild": "node ../../scripts/prepare-brand-assets.mjs && node ../../scripts/prepare-menu-images.mjs admin",
     "dev": "next dev -p 4002",
     "build": "next build",
     "start": "next start -p 4002",

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "predev": "node ../../scripts/prepare-brand-assets.mjs && node ../../scripts/prepare-map-worker.mjs",
+    "predev": "node ../../scripts/prepare-brand-assets.mjs && node ../../scripts/prepare-map-worker.mjs && node ../../scripts/prepare-menu-images.mjs customer",
     "dev": "next dev --webpack -p 4000",
-    "prebuild": "node ../../scripts/prepare-brand-assets.mjs && node ../../scripts/prepare-map-worker.mjs",
+    "prebuild": "node ../../scripts/prepare-brand-assets.mjs && node ../../scripts/prepare-map-worker.mjs && node ../../scripts/prepare-menu-images.mjs customer",
     "build": "next build --webpack",
     "start": "next start -p 4000",
     "lint": "eslint ."

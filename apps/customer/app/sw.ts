@@ -4,6 +4,7 @@ import {
   NetworkFirst,
   NetworkOnly,
   Serwist,
+  StaleWhileRevalidate,
   type PrecacheEntry,
   type SerwistGlobalConfig,
 } from "serwist";
@@ -13,14 +14,25 @@ declare global {
   }
 }
 declare const self: ServiceWorkerGlobalScope;
-const entries = (self.__SW_MANIFEST ?? []).filter((entry) => {
-  const url = typeof entry === "string" ? entry : entry.url;
-  return (
-    /\.(?:m?js|css|woff2?|otf|png|svg|ico)$/.test(url) && !/^\/workbox-/.test(url)
-  );
-});
+const entries = (self.__SW_MANIFEST ?? [])
+  .map((entry) =>
+    typeof entry === "string"
+      ? entry.replace(/\\/g, "/")
+      : { ...entry, url: entry.url.replace(/\\/g, "/") },
+  )
+  .filter((entry) => {
+    const url = typeof entry === "string" ? entry : entry.url;
+    return (
+      /\.(?:m?js|css|woff2?|otf|png|svg|ico)$/.test(url) &&
+      !/^\/workbox-/.test(url) &&
+      !/^\/?products\//.test(url)
+    );
+  });
 const publicMenu = (path: string) =>
   /^\/menu(?:\/browse(?:\/[a-f0-9-]{36})?)?\/?$/.test(path);
+const publicImageOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
+  : null;
 const serwist = new Serwist({
   cacheId: "jayds-public",
   // Explicitly name the precache: Serwist resolves its default before cacheId,
@@ -31,6 +43,22 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
+    {
+      matcher: ({ url, request }) =>
+        request.destination === "image" &&
+        ((url.origin === self.location.origin &&
+          /^\/products\/[a-z0-9-]+\.png$/.test(url.pathname)) ||
+          (url.origin === publicImageOrigin &&
+            /^\/storage\/v1\/object\/public\/jayds-menu-images\/generated\/[a-f0-9-]+\/[a-z0-9-]+\.png$/.test(
+              url.pathname,
+            ))),
+      handler: new StaleWhileRevalidate({
+        cacheName: "jayds-public-products-v1",
+        plugins: [
+          new ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 604800 }),
+        ],
+      }),
+    },
     {
       matcher: ({ url, request }) =>
         url.origin === self.location.origin &&

@@ -1,6 +1,8 @@
 "use client";
+import { useState } from "react";
 import Link from "./OfflineMenuLink";
 import type { MenuItem, SelectedVariant } from "@cafeos/shared/types";
+import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
 import FavoriteButton from "./FavoriteButton";
 import Icon from "./Icon";
 import { categoryIcon } from "../utils/menuArtwork";
@@ -39,6 +41,8 @@ export default function MenuCard({
   className?: string;
 }) {
   const defaults = defaultConfiguration(item);
+  const imageUrl = menuProductImageUrl(item.id, item.image_url);
+  const [failedImage, setFailedImage] = useState<string | null>(null);
   const price =
     Number(item.price) +
     (defaults?.reduce((sum, v) => sum + v.price_modifier, 0) ?? 0);
@@ -50,11 +54,12 @@ export default function MenuCard({
           className="product-image-link"
           aria-label={`View ${item.name}`}
         >
-          {item.image_url ? (
+          {imageUrl && imageUrl !== failedImage ? (
             <img
-              src={item.image_url}
+              src={imageUrl}
               alt={item.name}
               loading="lazy"
+              onError={() => setFailedImage(imageUrl)}
               width={320}
               height={320}
               className="product-image"

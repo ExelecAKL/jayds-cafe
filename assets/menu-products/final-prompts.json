@@ -1,0 +1,715 @@
+[
+  {
+    "id": "e1000000-0000-4000-a000-000000000001",
+    "slug": "americano",
+    "name": "Americano",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Rich double-shot espresso with hot water",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Americano. Menu description: Rich double-shot espresso with hot water.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Dark translucent brown iced black coffee, ordinary clear ice cubes, no milk or foam.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-000000000002",
+    "slug": "coffee-latte",
+    "name": "Coffee Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Smooth espresso with steamed milk",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Coffee Latte. Menu description: Smooth espresso with steamed milk.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Smooth light coffee-tan iced milk and espresso, naturally mixed with a faint espresso swirl near the ice.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-000000000003",
+    "slug": "spanish-latte",
+    "name": "Spanish Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Espresso with sweetened condensed milk",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Spanish Latte. Menu description: Espresso with sweetened condensed milk.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy pale caramel-beige espresso and condensed milk, faint denser creamy layer low in the cup, restrained natural coffee swirl.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-000000000004",
+    "slug": "vanilla-latte",
+    "name": "Vanilla Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Classic latte with vanilla syrup",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Vanilla Latte. Menu description: Classic latte with vanilla syrup.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Even creamy light coffee-tan iced latte, slightly lighter than a plain latte. Vanilla is syrup; no vanilla beans or garnish.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-000000000005",
+    "slug": "french-vanilla",
+    "name": "French Vanilla",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Rich espresso with French vanilla cream",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: French Vanilla. Menu description: Rich espresso with French vanilla cream.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Rich cream-beige iced espresso with vanilla cream, very faint creamy espresso swirls; no garnish.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-000000000006",
+    "slug": "caramel-latte",
+    "name": "Caramel Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Espresso with buttery caramel syrup and milk",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Caramel Latte. Menu description: Espresso with buttery caramel syrup and milk.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy medium caramel-tan iced latte; caramel syrup mixed in, no elaborate topping or sauce decoration.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-000000000007",
+    "slug": "hazelnut-latte",
+    "name": "Hazelnut Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Espresso with roasted hazelnut and milk",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Hazelnut Latte. Menu description: Espresso with roasted hazelnut and milk.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Smooth nut-brown beige iced latte, syrup blended into milk and espresso. No visible nuts.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-000000000008",
+    "slug": "macadamia-latte",
+    "name": "Macadamia Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Espresso with creamy macadamia nut syrup",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Macadamia Latte. Menu description: Espresso with creamy macadamia nut syrup.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Pale creamy tan iced latte with milk and macadamia syrup. No actual nuts or toppings.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-000000000009",
+    "slug": "butterscotch-latte",
+    "name": "Butterscotch Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Espresso with rich butterscotch caramel",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Butterscotch Latte. Menu description: Espresso with rich butterscotch caramel.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Warm butterscotch caramel-tan iced latte, syrup mixed into the beverage. No candy topping.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-00000000000a",
+    "slug": "aussie-latte",
+    "name": "Aussie Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Specialty iced latte with house blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Aussie Latte. Menu description: Specialty iced latte with house blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy iced house-blend latte with a slightly stronger espresso-tan tone and subtle natural espresso marbling.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-00000000000b",
+    "slug": "white-mocha-latte",
+    "name": "White Mocha Latte",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Espresso with white chocolate and steamed milk",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: White Mocha Latte. Menu description: Espresso with white chocolate and steamed milk.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Pale creamy ivory-tan iced espresso and white chocolate milk; subtle coffee swirls. No chocolate chunks or whipped topping.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e1000000-0000-4000-a000-00000000000c",
+    "slug": "cinnamon-cappuccino",
+    "name": "Cinnamon Cappuccino",
+    "category": "Espresso",
+    "is_available": true,
+    "description": "Foamy cappuccino dusted with cinnamon",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Cinnamon Cappuccino. Menu description: Foamy cappuccino dusted with cinnamon.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Iced coffee and milk with a modest thin layer of milk foam under the clear lid, lightly dusted cinnamon on the foam. No whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": false
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000001",
+    "slug": "caramel-macchiato",
+    "name": "Caramel Macchiato",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Layered espresso with vanilla milk and caramel drizzle",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Caramel Macchiato. Menu description: Layered espresso with vanilla milk and caramel drizzle.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Believable layered iced macchiato: pale vanilla milk below, espresso brown through upper ice, modest caramel drizzle against the inner wall. No whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000002",
+    "slug": "caramel-mocha",
+    "name": "Caramel Mocha",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Rich espresso with chocolate and caramel",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Caramel Mocha. Menu description: Rich espresso with chocolate and caramel.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy medium chocolate-brown iced espresso with caramel blended in; subtle caramel-colored traces, no whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000003",
+    "slug": "salted-caramel",
+    "name": "Salted Caramel",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Espresso with sea salt and caramel",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Salted Caramel. Menu description: Espresso with sea salt and caramel.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy caramel-brown iced coffee, caramel blended in. Sea salt is dissolved; no salt crystals or huge sauce trails.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000004",
+    "slug": "mocha",
+    "name": "Mocha",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Rich chocolate espresso blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Mocha. Menu description: Rich chocolate espresso blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Smooth medium chocolate-coffee brown iced mocha, no whipped cream or chocolate garnish.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000005",
+    "slug": "cloud-hazelnut",
+    "name": "Cloud Hazelnut",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Fluffy hazelnut cloud espresso",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Cloud Hazelnut. Menu description: Fluffy hazelnut cloud espresso.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Hazelnut iced espresso and milk, subtle brown/cream layers, with a modest silky pale hazelnut cloud foam layer beneath the lid. No whipped-cream mountain.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000006",
+    "slug": "tres-leche-shaken-espresso",
+    "name": "Tres Leche Shaken Espresso",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Shaken espresso with three-milk blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Tres Leche Shaken Espresso. Menu description: Shaken espresso with three-milk blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Naturally shaken iced espresso with a creamy pale three-milk lower layer, translucent coffee brown through the upper ice, and a very thin shaken-espresso froth.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000007",
+    "slug": "milo-shaken-espresso",
+    "name": "Milo Shaken Espresso",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Shaken espresso with Milo chocolate malt",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Milo Shaken Espresso. Menu description: Shaken espresso with Milo chocolate malt.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Shaken iced espresso with milk and chocolate malt, natural chocolate-tan color and tiny malt speckles; very thin shaken froth. No Milo logo or powder heap.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000008",
+    "slug": "hazelnut-mocha",
+    "name": "Hazelnut Mocha",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Chocolate hazelnut espresso blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Hazelnut Mocha. Menu description: Chocolate hazelnut espresso blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Rich creamy cocoa-coffee brown iced mocha with hazelnut syrup blended in; no visible nuts.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-000000000009",
+    "slug": "biscoff",
+    "name": "Biscoff",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Espresso with Biscoff cookie butter spread",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Biscoff. Menu description: Espresso with Biscoff cookie butter spread.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy cinnamon-cookie caramel-tan iced espresso with Biscoff cookie butter blended in. No whole cookies, no whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-00000000000a",
+    "slug": "cocoa-lava",
+    "name": "Cocoa Lava",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Rich premium hot chocolate",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Cocoa Lava. Menu description: Rich premium hot chocolate.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Deep creamy cocoa-brown chocolate drink, shown in its actual configured default iced option with clear ice. No marshmallows or whipped cream. Do not show hot liquid in a plastic cup.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-00000000000b",
+    "slug": "matcha-latte",
+    "name": "Matcha Latte",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Premium Japanese matcha with milk",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Matcha Latte. Menu description: Premium Japanese matcha with milk.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Muted natural matcha-green upper beverage and ivory milk lower layer, softly marbled at their boundary, ice near the top. No extra cream topping.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-00000000000c",
+    "slug": "strawberry-milk",
+    "name": "Strawberry Milk",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Creamy strawberry milk blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Strawberry Milk. Menu description: Creamy strawberry milk blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Soft natural strawberry-pink iced milk, gently mixed, no floating strawberry slices or puree garnish.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e2000000-0000-4000-a000-00000000000d",
+    "slug": "nom-yen-pink-milk",
+    "name": "Nom Yen Pink Milk",
+    "category": "Signature Drinks",
+    "is_available": true,
+    "description": "Thai-style sweet pink milk",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Nom Yen Pink Milk. Menu description: Thai-style sweet pink milk.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Thai pink milk, opaque creamy pastel rose-pink iced beverage, slightly stronger pink than strawberry milk. No fruit pieces.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\imagegen\\jayds-mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000001",
+    "slug": "vanilla-milkshake",
+    "name": "Vanilla Milkshake",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Classic vanilla ice-blended milkshake",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Vanilla Milkshake. Menu description: Classic vanilla ice-blended milkshake.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Thick ivory vanilla ice-blended milkshake, small frozen texture and softly rounded blended surface under the flat lid. No whipped cream, vanilla bean decoration or ice cubes.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000002",
+    "slug": "cookies-and-cream",
+    "name": "Cookies & Cream",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Oreo cookie ice-blended cream",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Cookies & Cream. Menu description: Oreo cookie ice-blended cream.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Pale ivory-gray ice-blended cream with small dark sandwich-cookie flecks throughout. No whole cookie garnish or whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000003",
+    "slug": "dark-chocolate",
+    "name": "Dark Chocolate",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Rich dark chocolate ice blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Dark Chocolate. Menu description: Rich dark chocolate ice blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Thick deep chocolate-brown ice-blended drink with fine frozen texture. No whipped cream, chunks or garnish.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000004",
+    "slug": "matcha",
+    "name": "Matcha",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Japanese matcha ice-blended cream",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Matcha. Menu description: Japanese matcha ice-blended cream.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Thick muted natural green matcha ice-blended cream, fine frozen texture, no whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000005",
+    "slug": "strawberries-and-cream",
+    "name": "Strawberries & Cream",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Strawberry cream ice blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Strawberries & Cream. Menu description: Strawberry cream ice blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Thick pastel strawberry-pink ice-blended cream with faint strawberry flecks. No fruit slices or whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000006",
+    "slug": "caramel-frappe",
+    "name": "Caramel Frappe",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Coffee with caramel ice blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Caramel Frappe. Menu description: Coffee with caramel ice blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy caramel-tan coffee ice blend with fine frozen texture, no whipped cream or extravagant sauce trails.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000007",
+    "slug": "mocha-frappe",
+    "name": "Mocha Frappe",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Chocolate coffee ice blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Mocha Frappe. Menu description: Chocolate coffee ice blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy medium cocoa-brown coffee and chocolate ice blend with fine frozen texture; no whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000008",
+    "slug": "java-chip",
+    "name": "Java Chip",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Coffee with chocolate chip ice blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Java Chip. Menu description: Coffee with chocolate chip ice blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Light cocoa-coffee brown ice blend with tiny chocolate chip fragments distributed through the drink. No extra cookies, toppings or whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-000000000009",
+    "slug": "salted-caramel-frappe",
+    "name": "Salted Caramel Frappe",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Coffee with sea salt caramel ice blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Salted Caramel Frappe. Menu description: Coffee with sea salt caramel ice blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy golden caramel-tan coffee ice blend, fine frozen texture, dissolved salt invisible; no crystals or whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e3000000-0000-4000-a000-00000000000a",
+    "slug": "biscoff-frappe",
+    "name": "Biscoff Frappe",
+    "category": "Frappes",
+    "is_available": true,
+    "description": "Coffee with Biscoff cookie ice blend",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Biscoff Frappe. Menu description: Coffee with Biscoff cookie ice blend.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy cinnamon-cookie caramel-beige coffee ice blend with fine cookie flecks; no whole cookies or whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e4000000-0000-4000-a000-000000000001",
+    "slug": "classic-milk-tea",
+    "name": "Classic Milk Tea",
+    "category": "Milk Teas",
+    "is_available": true,
+    "description": "Traditional black milk tea",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Classic Milk Tea. Menu description: Traditional black milk tea.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Smooth creamy light black-tea tan iced milk tea. No tapioca pearls or jelly: they are optional add-ons, not the base product.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e4000000-0000-4000-a000-000000000002",
+    "slug": "wintermelon-milk-tea",
+    "name": "Wintermelon Milk Tea",
+    "category": "Milk Teas",
+    "is_available": true,
+    "description": "Sweet wintermelon-flavored milk tea",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Wintermelon Milk Tea. Menu description: Sweet wintermelon-flavored milk tea.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy warm honey-tea beige iced milk tea with a faint amber tint, no pearls or jelly.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e4000000-0000-4000-a000-000000000003",
+    "slug": "okinawa-milk-tea",
+    "name": "Okinawa Milk Tea",
+    "category": "Milk Teas",
+    "is_available": true,
+    "description": "Japanese brown sugar milk tea",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Okinawa Milk Tea. Menu description: Japanese brown sugar milk tea.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy warm brown-sugar tea tan iced milk tea, restrained natural brown-sugar tone, no huge syrup streaks, pearls or jelly.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e4000000-0000-4000-a000-000000000004",
+    "slug": "dark-chocolate-milk-tea",
+    "name": "Dark Chocolate Milk Tea",
+    "category": "Milk Teas",
+    "is_available": true,
+    "description": "Rich dark chocolate milk tea",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Dark Chocolate Milk Tea. Menu description: Rich dark chocolate milk tea.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy cocoa-brown iced milk tea, modestly darker than plain milk tea, no pearls or jelly.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e4000000-0000-4000-a000-000000000005",
+    "slug": "taro-milk-tea",
+    "name": "Taro Milk Tea",
+    "category": "Milk Teas",
+    "is_available": true,
+    "description": "Creamy purple taro milk tea",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Taro Milk Tea. Menu description: Creamy purple taro milk tea.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy muted pastel lavender-purple iced taro milk tea, no pearls, jelly or taro chunks.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e4000000-0000-4000-a000-000000000006",
+    "slug": "cookies-and-cream-milk-tea",
+    "name": "Cookies & Cream Milk Tea",
+    "category": "Milk Teas",
+    "is_available": true,
+    "description": "Oreo cookies blended with milk tea",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Cookies & Cream Milk Tea. Menu description: Oreo cookies blended with milk tea.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Creamy tea-beige iced milk tea with fine dark sandwich-cookie flecks; no whole cookies, pearls or jelly.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e5000000-0000-4000-a000-000000000001",
+    "slug": "strawberry-soda",
+    "name": "Strawberry Soda",
+    "category": "Refreshers",
+    "is_available": true,
+    "description": "Sparkling strawberry refresher",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Strawberry Soda. Menu description: Sparkling strawberry refresher.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Translucent light ruby-red to pink sparkling soda with clear ice, tiny realistic carbonation bubbles, slight syrup gradient. No actual fruit pieces or mint.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e5000000-0000-4000-a000-000000000002",
+    "slug": "blueberry-soda",
+    "name": "Blueberry Soda",
+    "category": "Refreshers",
+    "is_available": true,
+    "description": "Sparkling blueberry refresher",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Blueberry Soda. Menu description: Sparkling blueberry refresher.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Translucent muted purple-blue berry sparkling soda with clear ice and tiny carbonation bubbles, modest syrup gradient. No berries or mint.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e5000000-0000-4000-a000-000000000003",
+    "slug": "green-apple-soda",
+    "name": "Green Apple Soda",
+    "category": "Refreshers",
+    "is_available": true,
+    "description": "Sparkling green apple refresher",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Green Apple Soda. Menu description: Sparkling green apple refresher.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Translucent pale fresh apple-green sparkling soda with clear ice and fine bubbles, no apple slices or mint.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e5000000-0000-4000-a000-000000000004",
+    "slug": "lychee-soda",
+    "name": "Lychee Soda",
+    "category": "Refreshers",
+    "is_available": true,
+    "description": "Sparkling lychee refresher",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Lychee Soda. Menu description: Sparkling lychee refresher.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Nearly clear, faintly cloudy pale blush-white lychee sparkling soda with ice and tiny bubbles. No whole lychees or garnish.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e5000000-0000-4000-a000-000000000005",
+    "slug": "honey-peach-soda",
+    "name": "Honey Peach Soda",
+    "category": "Refreshers",
+    "is_available": true,
+    "description": "Sparkling honey peach refresher",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Honey Peach Soda. Menu description: Sparkling honey peach refresher.\nInput image 1 is the supporting approved brand mascot reference, not an edit target. One ordinary 16oz clear tapered plastic takeaway cup, clear flat snap-on lid, no straw. Standard proportions, subtle natural condensation and restrained rim reflections. The full cup sits upright centered, fills about 75% of the square image height, with generous transparent padding. Use the supplied approved Jayd's full-body coffee-sipping mascot on a small cream oval sticker centered ON THE FRONT OF THE CUP, espresso-brown print, modest label size around 25% of cup width. Preserve the reference cap, closed eyes, cup, holding hand and body proportions. It is a printed cup logo, NOT a separate floating character, not a tongue. No lettering, other logos or watermark. Match the same cup, label scale, lighting and straight-on slightly elevated camera across the set.\nActual product appearance: Translucent pale peach-amber sparkling soda with clear ice and tiny bubbles. No peach slices, mint or honeycomb.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.\nAdditional cup consistency reference: Input image 1 is the completed Americano cup photograph, used ONLY to match the cup shape, clear flat lid, camera angle, framing, soft daylight and cream oval mascot label. Input image 2 is the approved mascot identity. Replace the Americano's drink contents with ONLY the named product above. Do not copy black coffee contents into a different drink. Keep the brand mascot exclusively on the cup, no floating mascot or extra label.",
+    "food": false,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\americano.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\mascot-reference.png"
+    ]
+  },
+  {
+    "id": "e6000000-0000-4000-a000-000000000001",
+    "slug": "just-croffle",
+    "name": "Just Croffle",
+    "category": "Croffles",
+    "is_available": true,
+    "description": "Plain buttery croffle with powdered sugar",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Just Croffle. Menu description: Plain buttery croffle with powdered sugar.\nInput image 1 is the approved croffle style/shape reference. Keep one realistic elongated croissant-dough croffle pressed in a waffle iron, layered flaky golden pastry with irregular edges, and change only its stated flavor toppings. Food has NO mascot, logo, label, branded paper, plate, bowl, cutlery or packaging. Three-quarter elevated camera angle, whole serving centered with clean transparent margins.\nActual product appearance: One plain buttery croffle with a light powdered-sugar dusting. Preserve the approved pastry texture and silhouette, remove the floating mascot completely.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": true
+  },
+  {
+    "id": "e6000000-0000-4000-a000-000000000002",
+    "slug": "smores",
+    "name": "S'mores",
+    "category": "Croffles",
+    "is_available": true,
+    "description": "Croffle with toasted marshmallow and chocolate",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: S'mores. Menu description: Croffle with toasted marshmallow and chocolate.\nInput image 1 is the approved croffle style/shape reference. Keep one realistic elongated croissant-dough croffle pressed in a waffle iron, layered flaky golden pastry with irregular edges, and change only its stated flavor toppings. Food has NO mascot, logo, label, branded paper, plate, bowl, cutlery or packaging. Three-quarter elevated camera angle, whole serving centered with clean transparent margins.\nActual product appearance: One buttery croffle topped with a modest amount of lightly toasted marshmallow and dark chocolate drizzle. No ice cream, fruit or cookies.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": true,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\just-croffle.png"
+    ]
+  },
+  {
+    "id": "e6000000-0000-4000-a000-000000000003",
+    "slug": "banatella",
+    "name": "Banatella",
+    "category": "Croffles",
+    "is_available": true,
+    "description": "Croffle with banana slices and Nutella",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Banatella. Menu description: Croffle with banana slices and Nutella.\nInput image 1 is the approved croffle style/shape reference. Keep one realistic elongated croissant-dough croffle pressed in a waffle iron, layered flaky golden pastry with irregular edges, and change only its stated flavor toppings. Food has NO mascot, logo, label, branded paper, plate, bowl, cutlery or packaging. Three-quarter elevated camera angle, whole serving centered with clean transparent margins.\nActual product appearance: One buttery croffle with a restrained chocolate-hazelnut spread and a few banana slices. No whipped cream, berries or nuts.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": true,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\just-croffle.png"
+    ]
+  },
+  {
+    "id": "e6000000-0000-4000-a000-000000000004",
+    "slug": "biscoff-croffle",
+    "name": "Biscoff Croffle",
+    "category": "Croffles",
+    "is_available": true,
+    "description": "Croffle with Biscoff cookie butter spread",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Biscoff Croffle. Menu description: Croffle with Biscoff cookie butter spread.\nInput image 1 is the approved croffle style/shape reference. Keep one realistic elongated croissant-dough croffle pressed in a waffle iron, layered flaky golden pastry with irregular edges, and change only its stated flavor toppings. Food has NO mascot, logo, label, branded paper, plate, bowl, cutlery or packaging. Three-quarter elevated camera angle, whole serving centered with clean transparent margins.\nActual product appearance: One buttery croffle with a modest smooth golden cookie-butter spread. No whole cookie garnish or invented whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": true,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\just-croffle.png"
+    ]
+  },
+  {
+    "id": "e6000000-0000-4000-a000-000000000005",
+    "slug": "almond-nutella",
+    "name": "Almond Nutella",
+    "category": "Croffles",
+    "is_available": true,
+    "description": "Croffle with Nutella and toasted almonds",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Almond Nutella. Menu description: Croffle with Nutella and toasted almonds.\nInput image 1 is the approved croffle style/shape reference. Keep one realistic elongated croissant-dough croffle pressed in a waffle iron, layered flaky golden pastry with irregular edges, and change only its stated flavor toppings. Food has NO mascot, logo, label, branded paper, plate, bowl, cutlery or packaging. Three-quarter elevated camera angle, whole serving centered with clean transparent margins.\nActual product appearance: One buttery croffle with a modest chocolate-hazelnut spread and lightly toasted sliced almonds. No bananas or whipped cream.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": true,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\just-croffle.png"
+    ]
+  },
+  {
+    "id": "e6000000-0000-4000-a000-000000000006",
+    "slug": "ham-and-cheese",
+    "name": "Ham & Cheese",
+    "category": "Croffles",
+    "is_available": true,
+    "description": "Savory croffle with ham and melted cheese",
+    "prompt": "Use case: product-mockup. Asset: square transparent PNG menu product image for Jayd's Café.\nItem: Ham & Cheese. Menu description: Savory croffle with ham and melted cheese.\nInput image 1 is the approved croffle style/shape reference. Keep one realistic elongated croissant-dough croffle pressed in a waffle iron, layered flaky golden pastry with irregular edges, and change only its stated flavor toppings. Food has NO mascot, logo, label, branded paper, plate, bowl, cutlery or packaging. Three-quarter elevated camera angle, whole serving centered with clean transparent margins.\nActual product appearance: One savory buttery croffle with a modest portion of ham and melted cheese. No powdered sugar, sweet sauce or garnish.\nPhotorealistic café product photography, natural real-world imperfections, restrained appetizing colors, soft daylight, complete product in frame. TRUE alpha-transparent PNG: no white or cream background, no tabletop, no background shadow, no baked checkerboard, no opaque rectangular canvas. Preserve opaque food or drink contents with clean detailed cutout edges. No humans, props, extra products, floating ingredients or promotional text. The item name below is only identification for the prompt, not text to render.",
+    "food": true,
+    "reference_images": [
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\images\\just-croffle.png"
+    ]
+  },
+  {
+    "id": "e7000000-0000-4000-a000-000000000001",
+    "slug": "flavored-fries",
+    "name": "Flavored Fries",
+    "category": "Snacks",
+    "is_available": true,
+    "description": "Crispy fries with your choice of seasoning!",
+    "prompt": "Use case: precise-object-edit / product-mockup.\nAsset: Jayd's Café transparent menu product PNG for Flavored Fries.\nInput image 1 is the food edit target; preserve the identity, realistic food texture, seasoning and warm photographic lighting. Input image 2 is the approved horizontal wordmark to print on the packaging, not an object to place beside the food.\nPrimary edit: put this food (golden straight-cut fries coated with fine dry orange cheese seasoning, not melted cheese sauce) inside a shallow open rectangular brown kraft paperboard carton snack tray, the usual folded takeaway tray with low outward-sloping sides, no lid. Arrange one ordinary snack serving inside the tray. Show the entire filled tray from a slightly elevated front three-quarter angle, wide front outer panel facing the viewer. Natural kraft fiber texture and believable carton folds. Photorealistic commercial food photography, warm soft daylight, appetizing real texture.\nPrint the supplied horizontal JAYD'S CAFE wordmark directly across the wide outside front panel in espresso-brown ink, centered and approximately 60 percent of the panel width. Copy the actual custom letter shapes from input image 2 accurately, including the complete E. Exact lettering JAYD'S CAFE. The wordmark must follow the panel perspective, look printed flat into the carton, remain clearly legible and unclipped.\nConstraints: true transparent background with alpha, not a checkerboard illustration or white backdrop. Square canvas with the whole tray and all food in frame, centered with generous clear margin. No table, plate, other props, floating logo, extra text, mascot, sticker or garnish. Only change the packaging and arrangement necessary to fit the tray; keep the food type and flavor as specified. No hands, no watermark.",
+    "food": true,
+    "reference_images": [
+      "C:\\Users\\Exelec\\.codex\\generated_images\\01a0fa49-9bf7-7471-9c59-da93b1e60515\\exec-7c4346a5-0666-4b5d-8e76-8ba880d500bb.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\horizontal-logo-reference.png"
+    ]
+  },
+  {
+    "id": "e7000000-0000-4000-a000-000000000002",
+    "slug": "nachos",
+    "name": "Nachos",
+    "category": "Snacks",
+    "is_available": false,
+    "description": "Loaded tortilla chips with cheese (coming soon)",
+    "prompt": "Use case: precise-object-edit / product-mockup.\nAsset: Jayd's Café transparent menu product PNG for Nachos.\nInput image 1 is the food edit target; preserve the identity, realistic food texture, seasoning and warm photographic lighting. Input image 2 is the approved horizontal wordmark to print on the packaging, not an object to place beside the food.\nPrimary edit: put this food (golden triangular corn tortilla chips with only glossy yellow cheese sauce, no meat, herbs or vegetables) inside a shallow open rectangular brown kraft paperboard carton snack tray, the usual folded takeaway tray with low outward-sloping sides, no lid. Arrange one ordinary snack serving inside the tray. Show the entire filled tray from a slightly elevated front three-quarter angle, wide front outer panel facing the viewer. Natural kraft fiber texture and believable carton folds. Photorealistic commercial food photography, warm soft daylight, appetizing real texture.\nPrint the supplied horizontal JAYD'S CAFE wordmark directly across the wide outside front panel in espresso-brown ink, centered and approximately 60 percent of the panel width. Copy the actual custom letter shapes from input image 2 accurately, including the complete E. Exact lettering JAYD'S CAFE. The wordmark must follow the panel perspective, look printed flat into the carton, remain clearly legible and unclipped.\nConstraints: true transparent background with alpha, not a checkerboard illustration or white backdrop. Square canvas with the whole tray and all food in frame, centered with generous clear margin. No table, plate, other props, floating logo, extra text, mascot, sticker or garnish. Only change the packaging and arrangement necessary to fit the tray; keep the food type and flavor as specified. No hands, no watermark.",
+    "food": true,
+    "reference_images": [
+      "C:\\Users\\Exelec\\.codex\\generated_images\\01a0fa49-9bf7-7471-9c59-da93b1e60515\\exec-fcb85f83-fa49-4e9f-b39e-ecded89b45ed.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\horizontal-logo-reference.png"
+    ]
+  },
+  {
+    "id": "e7000000-0000-4000-a000-000000000003",
+    "slug": "chicken-pop",
+    "name": "Chicken Pop",
+    "category": "Snacks",
+    "is_available": false,
+    "description": "Crispy chicken poppers (coming soon)",
+    "prompt": "Use case: precise-object-edit / product-mockup.\nAsset: Jayd's Café transparent menu product PNG for Chicken Pop.\nInput image 1 is the food edit target; preserve the identity, realistic food texture, seasoning and warm photographic lighting. Input image 2 is the approved horizontal wordmark to print on the packaging, not an object to place beside the food.\nPrimary edit: put this food (small golden crispy breaded popcorn chicken bites, no sauce, no fries) inside a shallow open rectangular brown kraft paperboard carton snack tray, the usual folded takeaway tray with low outward-sloping sides, no lid. Arrange one ordinary snack serving inside the tray. Show the entire filled tray from a slightly elevated front three-quarter angle, wide front outer panel facing the viewer. Natural kraft fiber texture and believable carton folds. Photorealistic commercial food photography, warm soft daylight, appetizing real texture.\nPrint the supplied horizontal JAYD'S CAFE wordmark directly across the wide outside front panel in espresso-brown ink, centered and approximately 60 percent of the panel width. Copy the actual custom letter shapes from input image 2 accurately, including the complete E. Exact lettering JAYD'S CAFE. The wordmark must follow the panel perspective, look printed flat into the carton, remain clearly legible and unclipped.\nConstraints: true transparent background with alpha, not a checkerboard illustration or white backdrop. Square canvas with the whole tray and all food in frame, centered with generous clear margin. No table, plate, other props, floating logo, extra text, mascot, sticker or garnish. Only change the packaging and arrangement necessary to fit the tray; keep the food type and flavor as specified. No hands, no watermark.",
+    "food": true,
+    "reference_images": [
+      "C:\\Users\\Exelec\\.codex\\generated_images\\01a0fa49-9bf7-7471-9c59-da93b1e60515\\exec-5aea169f-10f8-4d6d-abf8-d54fc98b51a9.png",
+      "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\assets\\menu-products\\horizontal-logo-reference.png"
+    ]
+  }
+]

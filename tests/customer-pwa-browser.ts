@@ -39,10 +39,10 @@ const fixture = {
   categories: [],
   menuItems: [
     {
-      id: "20000000-0000-4000-8000-000000000001",
+      id: "e1000000-0000-4000-a000-000000000001",
       name: "Offline fixture coffee",
       price: 145,
-      image_url: "/brand/jayds-full.svg",
+      image_url: null,
       status: "active",
       is_available: true,
       variants: [],
@@ -109,6 +109,11 @@ try {
   await page
     .getByRole("heading", { name: "Offline fixture coffee", exact: true })
     .waitFor();
+  await page.getByAltText("Offline fixture coffee").waitFor();
+  await page.waitForFunction(() => {
+    const image = document.querySelector<HTMLImageElement>(".product-image");
+    return Boolean(image?.complete && image.naturalWidth > 0);
+  });
   await page.waitForFunction(
     () => Boolean(navigator.serviceWorker.controller),
     null,
@@ -184,9 +189,14 @@ try {
     cachedPaths.includes("/brand/jayds-full.svg"),
     "Jayds vector artwork remains available offline",
   );
+  assert.deepEqual(
+    cachedPaths.filter((p) => p.startsWith("/products/")),
+    ["/products/americano.png"],
+    "Only viewed product images are downloaded and cached",
+  );
   const unexpectedPaths = cachedPaths.filter(
     (p) =>
-      !/^\/(?:_next\/static\/|brand\/(?:jayds|icon)-[\w-]+\.svg$|maplibre\/maplibre-[\w-]+\.mjs$|icons\/|startup\/|fonts\/|favicon|menu(?:\/|$)|illustrations\/jayds-(?:pickup|delivery)\.svg$)/.test(
+      !/^\/(?:_next\/static\/|products\/[a-z0-9-]+\.png$|brand\/(?:jayds|icon)-[\w-]+\.svg$|maplibre\/maplibre-[\w-]+\.mjs$|icons\/|startup\/|fonts\/|favicon|menu(?:\/|$)|illustrations\/jayds-(?:pickup|delivery)\.svg$)/.test(
         p,
       ),
   );
@@ -194,7 +204,7 @@ try {
     console.log(JSON.stringify({ unexpectedCachedPaths: unexpectedPaths }));
   assert.ok(
     cachedPaths.every((p) =>
-      /^\/(?:_next\/static\/|brand\/(?:jayds|icon)-[\w-]+\.svg$|maplibre\/maplibre-[\w-]+\.mjs$|icons\/|startup\/|fonts\/|favicon|menu(?:\/|$)|illustrations\/jayds-(?:pickup|delivery)\.svg$)/.test(
+      /^\/(?:_next\/static\/|products\/[a-z0-9-]+\.png$|brand\/(?:jayds|icon)-[\w-]+\.svg$|maplibre\/maplibre-[\w-]+\.mjs$|icons\/|startup\/|fonts\/|favicon|menu(?:\/|$)|illustrations\/jayds-(?:pickup|delivery)\.svg$)/.test(
         p,
       ),
     ),

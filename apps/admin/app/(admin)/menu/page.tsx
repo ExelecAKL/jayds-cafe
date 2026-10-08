@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
 import { supabase } from "@cafeos/shared/supabase/client";
 import type { MenuItem } from "@cafeos/shared/types";
+import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
 import { MenuItemForm } from "../../../components/MenuItemForm";
 import {
   PageHeader,
@@ -112,13 +113,27 @@ export default function CatalogPage() {
                 {rows.slice((page - 1) * 15, page * 15).map((m) => (
                   <tr key={m.id}>
                     <td>
-                      <button
-                        className="ops-text-button"
-                        onClick={() => setEdit(m)}
-                      >
-                        {m.name}
-                      </button>
-                      <small>{m.tags?.join(" · ")}</small>
+                      <div className="flex items-center gap-3">
+                        {menuProductImageUrl(m.id, m.image_url) && (
+                          <img
+                            src={menuProductImageUrl(m.id, m.image_url)!}
+                            alt=""
+                            width={48}
+                            height={48}
+                            loading="lazy"
+                            className="h-12 w-12 shrink-0 rounded-lg bg-bg-elevated object-contain"
+                          />
+                        )}
+                        <div>
+                          <button
+                            className="ops-text-button"
+                            onClick={() => setEdit(m)}
+                          >
+                            {m.name}
+                          </button>
+                          <small>{m.tags?.join(" · ")}</small>
+                        </div>
+                      </div>
                     </td>
                     <td>{m.category?.name ?? "Uncategorized"}</td>
                     <td className="numeric">{peso(m.price)}</td>
