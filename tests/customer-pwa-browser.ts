@@ -144,6 +144,7 @@ try {
       "/help",
       "/profile/addresses",
       "/api/customer/legal",
+      "/api/customer/recommendations",
       "/api/orders/guest",
     ]) {
       await fetch(pathname, { cache: "no-store" }).catch(() => {});

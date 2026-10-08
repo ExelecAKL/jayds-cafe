@@ -36,16 +36,25 @@ function defaultConfiguration(item: MenuItem): SelectedVariant[] | null {
 export default function MenuCard({
   item,
   className = "",
+  action,
+  configuration,
+  displayPrice,
+  reason,
 }: {
   item: MenuItem;
   className?: string;
+  action?: { label: string; onClick: () => void; disabled?: boolean };
+  configuration?: SelectedVariant[];
+  displayPrice?: number;
+  reason?: string;
 }) {
-  const defaults = defaultConfiguration(item);
+  const defaults = configuration ?? defaultConfiguration(item);
   const imageUrl = menuProductImageUrl(item.id, item.image_url);
   const [failedImage, setFailedImage] = useState<string | null>(null);
   const price =
+    displayPrice ??
     Number(item.price) +
-    (defaults?.reduce((sum, v) => sum + v.price_modifier, 0) ?? 0);
+      (defaults?.reduce((sum, v) => sum + v.price_modifier, 0) ?? 0);
   return (
     <article className={`product-card ${className}`}>
       <div className="product-art">
@@ -84,6 +93,7 @@ export default function MenuCard({
         {item.description && (
           <p className="product-description">{item.description}</p>
         )}
+        {reason && <p className="product-reason">{reason}</p>}
         {defaults && defaults.length > 0 && (
           <p className="product-configuration">
             {defaults.map((v) => v.label).join(" · ")}
@@ -94,14 +104,27 @@ export default function MenuCard({
             {!defaults && (item.variants?.length ?? 0) > 0 ? "From " : ""}₱
             {price.toFixed(2)}
           </span>
-          <Link
-            href={`/menu/browse/${item.id}`}
-            className="product-select"
-            aria-label={`${item.is_available ? "Select" : "View details for"} ${item.name}`}
-          >
-            {item.is_available ? "Select" : "Details"}
-            <Icon name="chevronRight" size={16} />
-          </Link>
+          {action ? (
+            <button
+              type="button"
+              className="product-select"
+              onClick={action.onClick}
+              disabled={action.disabled}
+              aria-label={`${action.label} ${item.name}`}
+            >
+              {action.label}
+              <Icon name="chevronRight" size={16} />
+            </button>
+          ) : (
+            <Link
+              href={`/menu/browse/${item.id}`}
+              className="product-select"
+              aria-label={`${item.is_available ? "Select" : "View details for"} ${item.name}`}
+            >
+              {item.is_available ? "Select" : "Details"}
+              <Icon name="chevronRight" size={16} />
+            </Link>
+          )}
         </div>
       </div>
     </article>

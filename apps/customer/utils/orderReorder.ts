@@ -15,14 +15,41 @@ export function buildReorderDraft(
       issues.push(`${line.name} is currently unavailable.`);
       continue;
     }
-    const variants = (line.variants ?? []).map((v) =>
-      product.variants?.find(
+    const choices = (product.variants ?? []).filter(
+      (v) => !v.applicable_items || v.applicable_items.includes(product.id),
+    );
+    const required = [...new Set(choices.map((v) => v.variant_group))].filter(
+      (group) => group !== "add_on",
+    );
+    const previous = line.variants ?? [];
+    const variants = previous.map((v) =>
+      choices.find(
         (current) =>
           current.variant_group === v.variant_group &&
           current.label === v.label,
       ),
     );
-    if (variants.some((v) => !v || v.is_available === false)) {
+    const temperature = previous.find(
+      (v) => v.variant_group === "temperature",
+    )?.label;
+    const size = previous.find((v) => v.variant_group === "size")?.label;
+    if (
+      variants.some((v) => !v || v.is_available === false) ||
+      required.some(
+        (group) =>
+          previous.filter((v) => v.variant_group === group).length !== 1,
+      ) ||
+      new Set(
+        previous.map((v) =>
+          v.variant_group === "add_on"
+            ? `${v.variant_group}:${v.label}`
+            : v.variant_group,
+        ),
+      ).size !== previous.length ||
+      (size &&
+        ((temperature === "Hot" && !size.includes("12oz")) ||
+          (temperature === "Iced" && size.includes("12oz"))))
+    ) {
       issues.push(`Review ${line.name}: its options have changed.`);
       continue;
     }

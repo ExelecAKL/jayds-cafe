@@ -12,10 +12,11 @@ import AppShell, { InlineNotice } from "../../../components/AppShell";
 import MenuCard from "../../../components/MenuCard";
 import Icon from "../../../components/Icon";
 import HomeCarousel from "../../../components/HomeCarousel";
+import HomeRecommendations from "../../../components/HomeRecommendations";
 
 export default function HomePage() {
   const router = useRouter();
-  const { menuItems, featuredItems, loading, error, refetch } = useMenu();
+  const { menuItems, featuredItems, error, refetch } = useMenu();
   const { user, profile, initialized } = useAuth();
   const { orderType, setOrderType } = useCart();
   const favorites = useCustomerFavorites();
@@ -196,7 +197,7 @@ export default function HomePage() {
               className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-border bg-bg-card text-sm"
             >
               <Icon name="orders" size={18} />
-              Order again
+              My orders
             </Link>
           </div>
         </div>
@@ -244,51 +245,9 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-      {!activeOrder && orders.find((o) => o.status === "completed") && (
-        <Link
-          className="portrait-only home-last-order"
-          href={`/orders/${orders.find((o) => o.status === "completed")!.id}`}
-        >
-          <Icon name="orders" size={22} />
-          <span>
-            <small>Your last coffee run</small>
-            <strong>
-              {orders.find((o) => o.status === "completed")!.order_number}
-            </strong>
-          </span>
-          <span className="text-link">
-            Order again <Icon name="arrowRight" size={16} />
-          </span>
-        </Link>
+      {initialized && user && (
+        <HomeRecommendations key={user.id} catalog={menuItems} />
       )}
-      <section className="mb-8">
-        <div className="section-heading">
-          <h2 className="section-title">
-            {featuredItems.length ? "Café favorites" : "Explore Jayds"}
-          </h2>
-          <Link href="/menu/browse" className="text-link">
-            View menu
-            <Icon name="arrowRight" size={17} />
-          </Link>
-        </div>
-        {loading ? (
-          <div className="product-grid">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="skeleton h-72 rounded-3xl" />
-            ))}
-          </div>
-        ) : recommended.length ? (
-          <div className="product-grid">
-            {recommended.map((item) => (
-              <MenuCard item={item} key={item.id} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-text-secondary">
-            The published menu will appear here when it is available.
-          </p>
-        )}
-      </section>
       {favoriteProducts.length > 0 && (
         <section className="mb-8">
           <div className="section-heading">

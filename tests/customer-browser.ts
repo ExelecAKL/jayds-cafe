@@ -5,6 +5,8 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { chromium, expect } from "@playwright/test";
 import { LEGAL_VERSION } from "../apps/customer/lib/legal.ts";
+import { buildHomeRecommendations } from "../apps/customer/utils/recommendations.ts";
+import type { MenuItem } from "../packages/shared/src/types/index.ts";
 const root = process.cwd(),
   base =
     process.env.JAYDS_DEMO_EXISTING_PORTS === "1"
@@ -127,6 +129,10 @@ const fixtureAccount = {
 };
 let fixtureSignedIn = false,
   currentLegalAccepted = false;
+let recommendationHistory = false,
+  recommendationFailure = false,
+  unavailableReorder = false;
+let recommendationReads = 0;
 const fixtureProfile = {
   id: fixtureAccount.id,
   email: fixtureAccount.email,
@@ -258,7 +264,9 @@ await context.route(/https:\/\/[^/]+\.supabase\.co\/.*/, async (route) => {
     return;
   }
   if (name === "get_configuration_availability") {
-    await route.fulfill({ json: { available: true, reason: null } });
+    await route.fulfill({
+      json: { available: !unavailableReorder, reason: null },
+    });
     return;
   }
   await route.fulfill({ json: [] });
@@ -296,6 +304,54 @@ await context.route(base + "/api/**", async (route) => {
   }
   if (pathname === "/api/customer/favorites") {
     await route.fulfill({ json: { items: [] } });
+    return;
+  }
+  if (pathname === "/api/customer/recommendations") {
+    recommendationReads++;
+    assert.equal(req.method(), "GET");
+    assert.ok(
+      req.headers().authorization?.startsWith("Bearer "),
+      "Personal picks require an account session",
+    );
+    await route.fulfill({
+      status: recommendationFailure ? 503 : 200,
+      json: recommendationFailure
+        ? { error: "Personal picks are temporarily unavailable." }
+        : buildHomeRecommendations(
+            {
+              hasOrderHistory: recommendationHistory,
+              products: recommendationHistory
+                ? [
+                    {
+                      menu_item_id: products[0].id,
+                      name: products[0].name,
+                      price: 145,
+                      variants: [
+                        {
+                          variant_group: "size",
+                          label: "16oz",
+                          price_modifier: 0,
+                        },
+                      ],
+                      last_order_at: "2026-10-08T00:00:00Z",
+                      weight: 2,
+                      purchase_count: 2,
+                    },
+                    {
+                      menu_item_id: products[1].id,
+                      name: products[1].name,
+                      price: 145,
+                      variants: [],
+                      last_order_at: "2026-10-07T00:00:00Z",
+                      weight: 1,
+                      purchase_count: 1,
+                    },
+                  ]
+                : [],
+            },
+            products as unknown as MenuItem[],
+          ),
+    });
     return;
   }
   if (pathname === "/api/customer/legal") {
@@ -946,6 +1002,248 @@ try {
   await page.getByText("Hello, Fixture.", { exact: true }).waitFor();
   await page.reload();
   await page.getByText("Hello, Fixture.", { exact: true }).waitFor();
+  await page.waitForLoadState("networkidle");
+  assert.equal(
+    await page.locator(".home-personal-section").count(),
+    0,
+    "No history means no personal sections",
+  );
+  recommendationHistory = true;
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await page
+    .getByRole("heading", { name: "Order Again", exact: true })
+    .waitFor();
+  const discoveryTitle = await page
+    .locator("#home-discovery-title")
+    .innerText();
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await page.waitForLoadState("networkidle");
+  assert.equal(
+    await page.locator("#home-discovery-title").innerText(),
+    discoveryTitle,
+    "Heading stays stable during refresh",
+  );
+  assert.equal(await page.locator(".home-personal-section").count(), 2);
+  assert.equal(
+    await page
+      .locator('[aria-labelledby="home-order-again-title"] .product-card')
+      .count(),
+    2,
+  );
+  assert.equal(
+    await page
+      .locator('[aria-labelledby="home-discovery-title"] .product-card')
+      .count(),
+    4,
+  );
+  assert.equal(
+    await page
+      .locator('[aria-labelledby="home-discovery-title"]')
+      .getByRole("heading", { name: products[0].name, exact: true })
+      .count(),
+    0,
+  );
+  await page.goto(base + "/menu/browse");
+  assert.equal(await page.locator(".home-personal-section").count(), 0);
+  await page.getByRole("link", { name: "Home", exact: true }).click();
+  await page.locator("#home-discovery-title").waitFor();
+  assert.notEqual(
+    await page.locator("#home-discovery-title").innerText(),
+    discoveryTitle,
+    "Heading alternates on the next Home visit",
+  );
+  for (const [width, height] of [
+    [360, 800],
+    [390, 844],
+    [430, 932],
+    [768, 1024],
+    [834, 1112],
+    [844, 390],
+    [1024, 768],
+    [1180, 820],
+    [1280, 900],
+  ]) {
+    await page.setViewportSize({ width, height });
+    assert.equal(await page.locator(".home-personal-section").count(), 2);
+    assert.ok(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+      `Personal picks fit ${width}x${height}`,
+    );
+    const buttons = await page
+      .locator('[aria-labelledby="home-order-again-title"] .product-select')
+      .evaluateAll((nodes) =>
+        nodes.map((node) => node.getBoundingClientRect().height),
+      );
+    assert.ok(
+      buttons.every((height) => height >= 48),
+      "Reorder controls remain touch accessible",
+    );
+    if ([390, 834, 844, 1280].includes(width)) {
+      await page
+        .locator('[aria-labelledby="home-order-again-title"]')
+        .scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: path.join(output, `home-personal-${width}-${height}.png`),
+        animations: "disabled",
+      });
+    }
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  const existingBag = await page.evaluate(
+    (id) =>
+      JSON.parse(localStorage.getItem(`cafeos-cart:${id}`) ?? "{}").items ?? [],
+    fixtureAccount.id,
+  );
+  products[0].price = 165;
+  await page
+    .getByRole("button", { name: "Order again Spanish Latte", exact: true })
+    .click();
+  await page.getByRole("dialog", { name: "Review your usual" }).waitFor();
+  await page
+    .getByText("Spanish Latte is now ₱165.00 per item.", { exact: true })
+    .waitFor();
+  assert.equal(
+    await page
+      .getByRole("dialog")
+      .getByText("1 item · ₱165.00", { exact: true })
+      .count(),
+    1,
+  );
+  await page
+    .getByRole("button", { name: "Keep browsing", exact: true })
+    .click();
+  assert.deepEqual(
+    await page.evaluate(
+      (id) =>
+        JSON.parse(localStorage.getItem(`cafeos-cart:${id}`) ?? "{}").items ??
+        [],
+      fixtureAccount.id,
+    ),
+    existingBag,
+    "Cancelling review leaves the bag intact",
+  );
+  await page
+    .getByRole("button", { name: "Order again Spanish Latte", exact: true })
+    .click();
+  await page.getByRole("dialog", { name: "Review your usual" }).waitFor();
+  products[0].price = 175;
+  await page
+    .getByRole("button", { name: "Add to my bag", exact: true })
+    .click();
+  await page
+    .getByText("The menu changed during review. Please review it again.", {
+      exact: true,
+    })
+    .waitFor();
+  await page
+    .getByRole("dialog")
+    .getByText("1 item · ₱175.00", { exact: true })
+    .waitFor();
+  await page
+    .getByRole("button", { name: "Add to my bag", exact: true })
+    .click();
+  await page.waitForURL("**/cart");
+  const afterBag = await page.evaluate(
+    (id) =>
+      JSON.parse(localStorage.getItem(`cafeos-cart:${id}`) ?? "{}").items ?? [],
+    fixtureAccount.id,
+  );
+  assert.equal(
+    afterBag.reduce(
+      (sum: number, line: { quantity: number }) => sum + line.quantity,
+      0,
+    ),
+    existingBag.reduce(
+      (sum: number, line: { quantity: number }) => sum + line.quantity,
+      0,
+    ) + 1,
+  );
+  assert.equal(
+    afterBag.find(
+      (line: { menu_item_id: string }) => line.menu_item_id === products[0].id,
+    ).price,
+    175,
+  );
+  await page.goto(base + "/menu");
+  await page
+    .getByRole("button", { name: "Order again Spanish Latte", exact: true })
+    .waitFor();
+  unavailableReorder = true;
+  await page
+    .getByRole("button", { name: "Order again Spanish Latte", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Choose current options", exact: true })
+    .waitFor();
+  await page
+    .getByRole("button", { name: "Choose current options", exact: true })
+    .click();
+  await page.waitForURL(`**/menu/browse/${products[0].id}`);
+  unavailableReorder = false;
+  // A new required group must lead to customization rather than silently defaulting it.
+  products[0].variants.push({
+    id: "milk-dairy",
+    menu_item_id: products[0].id,
+    variant_group: "milk_sub",
+    label: "Dairy",
+    is_default: true,
+    price_modifier: 0,
+    sort_order: 2,
+    is_available: true,
+  });
+  await page.goto(base + "/menu");
+  await page
+    .getByRole("button", { name: "Order again Spanish Latte", exact: true })
+    .click();
+  await page
+    .getByText("Review Spanish Latte: its options have changed.", {
+      exact: true,
+    })
+    .waitFor();
+  await page
+    .getByRole("button", { name: "Keep browsing", exact: true })
+    .click();
+  products[0].variants.pop();
+  products[0].price = 145;
+  recommendationFailure = true;
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await page
+    .getByText("Personal picks are temporarily unavailable.", { exact: false })
+    .waitFor();
+  assert.equal(await page.locator(".home-personal-section").count(), 0);
+  recommendationFailure = false;
+  await page.getByRole("button", { name: "Retry", exact: true }).click();
+  await page.locator("#home-order-again-title").waitFor();
+  await page.waitForLoadState("networkidle");
+  await context.setOffline(true);
+  await page
+    .getByText("Connect to load your personal picks.", { exact: false })
+    .waitFor();
+  assert.equal(await page.locator(".home-personal-section").count(), 0);
+  await context.setOffline(false);
+  await page.locator("#home-order-again-title").waitFor();
+  console.log(
+    "Home personal picks: history gate, ranking, nine responsive sizes, heading rotation, repricing, options, stock, retry and offline recovery passed.",
+  );
+  // Restore the isolated member bag before the existing voucher/points scenario.
+  await page.evaluate(
+    ({ id, items }) =>
+      localStorage.setItem(
+        `cafeos-cart:${id}`,
+        JSON.stringify({
+          items,
+          orderType: "pickup",
+          tableNumber: "",
+          orderNote: "",
+          specialRemarks: "",
+          voucher: null,
+        }),
+      ),
+    { id: fixtureAccount.id, items: existingBag },
+  );
+  await page.goto(base + "/menu");
   for (const route of [
     "/menu/browse",
     "/orders",
@@ -1042,6 +1340,8 @@ try {
     canonicalSales: orders.size,
     voucherValidations,
     voucherAndPointsReview: true,
+    homePersonalRecommendations: true,
+    recommendationReads,
     controlledLocalMetrics: metrics,
     metricScope:
       "Local fixture browser timings, not production measurements or field INP.",

@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 import test from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
+import { emptyRecommendations } from "../apps/customer/utils/recommendations.ts";
 
 // Exercise the actual client components with isolated hook/session/network doubles.
 // No .env, Supabase account, browser storage, or provider is touched.
@@ -60,9 +61,17 @@ function hooks() {
       if (!(position in slots)) slots[position] = { current: initial };
       return slots[position];
     },
-    useCallback(fn: unknown) {
-      index++;
-      return fn;
+    useCallback(fn: unknown, dependencies: unknown[]) {
+      const position = index++,
+        previous = slots[position];
+      if (
+        !previous ||
+        dependencies.some(
+          (value, i) => !Object.is(value, previous.dependencies[i]),
+        )
+      )
+        slots[position] = { dependencies, fn };
+      return slots[position].fn;
     },
     useEffect(effect: () => (() => void) | void, dependencies: unknown[]) {
       const position = index++,
@@ -94,7 +103,7 @@ function hooks() {
       return result;
     },
     async flush() {
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 40; i++) {
         if (dirty) this.render();
         await Promise.resolve();
       }
@@ -185,6 +194,144 @@ function descendants(element: any): Element[] {
     ),
   ];
 }
+
+for (const fails of [false, true])
+  test(`late recommendation ${fails ? "failure" : "success"} is discarded on account switch; guests never request private picks`, async () => {
+    const lifecycle = hooks();
+    let current = authFor(),
+      online = true;
+    const delayed = deferred<{ ok: boolean; json: () => Promise<unknown> }>();
+    const listeners = new Map<string, () => void>(),
+      tokens: string[] = [];
+    const channel = {
+      on: (
+        _kind: string,
+        filter: Record<string, string>,
+        handler: () => void,
+      ) => {
+        assert.equal(filter.filter, `customer_id=eq.${current.user!.id}`);
+        listeners.set("orders", handler);
+        return channel;
+      },
+      subscribe: () => channel,
+    };
+    const client = load<{ useHomeRecommendations: (key: string) => any }>(
+      "apps/customer/hooks/useHomeRecommendations.ts",
+      {
+        react: lifecycle.react,
+        "@cafeos/shared/hooks/useAuth": { useAuth: () => current },
+        "@cafeos/shared/supabase/client": {
+          supabase: { channel: () => channel, removeChannel: async () => {} },
+        },
+        "@cafeos/shared/utils/uuid": { createUuid: () => "isolated" },
+        "../utils/recommendations": { emptyRecommendations },
+        "../context/CustomerFeatures": {
+          customerHeaders: async (expected: string) => {
+            if (expected !== current.user?.id) throw Error("Account changed");
+            return { Authorization: `Bearer token-${expected}` };
+          },
+        },
+      },
+      {
+        window: {
+          addEventListener: (name: string, handler: () => void) =>
+            listeners.set(name, handler),
+          removeEventListener: (name: string) => listeners.delete(name),
+        },
+        document: {
+          hidden: false,
+          addEventListener() {},
+          removeEventListener() {},
+        },
+        navigator: {
+          get onLine() {
+            return online;
+          },
+        },
+        fetch: async (_url: string, init: RequestInit) => {
+          const token = (init.headers as Record<string, string>).Authorization;
+          tokens.push(token);
+          assert.equal(init.cache, "no-store");
+          if (token.endsWith(accountA.id)) return delayed.promise;
+          return {
+            ok: true,
+            json: async () => ({
+              hasOrderHistory: true,
+              orderAgain: [{ product: { id: "b-product" } }],
+              suggestions: [],
+            }),
+          };
+        },
+      },
+    );
+    lifecycle.setComponent(() => ({
+      type: "recommendations",
+      props: { value: client.useHomeRecommendations("catalog") },
+    }));
+    await lifecycle.flush();
+    current = authFor(accountB);
+    lifecycle.change();
+    const immediate = lifecycle.render().props.value;
+    assert.deepEqual(immediate.data, emptyRecommendations);
+    await lifecycle.flush();
+    assert.equal(
+      lifecycle.result.props.value.error,
+      "",
+      JSON.stringify(tokens),
+    );
+    assert.ok(
+      lifecycle.result.props.value.data.orderAgain.length,
+      JSON.stringify({ state: lifecycle.result.props.value, tokens }),
+    );
+    assert.equal(
+      lifecycle.result.props.value.data.orderAgain[0].product.id,
+      "b-product",
+    );
+    delayed.resolve({
+      ok: !fails,
+      json: async () =>
+        fails
+          ? { error: "A failed" }
+          : {
+              hasOrderHistory: true,
+              orderAgain: [{ product: { id: "a-product" } }],
+              suggestions: [],
+            },
+    });
+    await lifecycle.flush();
+    assert.equal(
+      lifecycle.result.props.value.data.orderAgain[0].product.id,
+      "b-product",
+    );
+    assert.equal(lifecycle.result.props.value.error, "");
+    online = false;
+    listeners.get("offline")!();
+    await lifecycle.flush();
+    assert.deepEqual(lifecycle.result.props.value.data, emptyRecommendations);
+    online = true;
+    listeners.get("online")!();
+    await lifecycle.flush();
+    assert.equal(
+      lifecycle.result.props.value.data.orderAgain[0].product.id,
+      "b-product",
+    );
+    const before = tokens.length;
+    listeners.get("orders")!();
+    await lifecycle.flush();
+    assert.equal(
+      tokens.length,
+      before + 1,
+      "Own order events refresh completed history",
+    );
+    current = { user: null, session: null, profile: null, initialized: true };
+    lifecycle.change();
+    await lifecycle.flush();
+    const guestCalls = tokens.length;
+    assert.deepEqual(lifecycle.result.props.value.data, emptyRecommendations);
+    await lifecycle.result.props.value.refresh();
+    assert.equal(tokens.length, guestCalls);
+    lifecycle.unmount();
+  });
 
 test("customer headers reject a late account switch and guest-to-account switch before a private action", async () => {
   let current = authFor(),

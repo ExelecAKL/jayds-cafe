@@ -821,6 +821,20 @@ textarea {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 13px;
 }
+.home-personal-section .section-heading {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.product-reason {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #80532d;
+  overflow-wrap: anywhere;
+}
+.home-personal-section .product-select {
+  min-height: 48px;
+}
 .product-card {
   display: flex;
   flex-direction: column;
