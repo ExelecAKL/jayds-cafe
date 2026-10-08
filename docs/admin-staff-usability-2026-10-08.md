@@ -31,6 +31,15 @@ The owner workflow browser test submits 23 writes to an isolated in-memory API f
 
 Reproduce with `npm test`, `npm run check:browser` and `npm run check:admin-pagination`. On restricted Windows environments the browser/server and native PostgreSQL checks require permission to launch local processes.
 
+## Hosted release
+
+Commit `e33f269` was pushed to the existing private GitHub repository and deployed through the Vercel CLI to Admin and Staff. Both production deployments report READY and identify that commit. The customer deployment also remains READY.
+
+- Admin: https://jaydscafe.vercel.app/admin
+- Staff: https://jaydscafe.vercel.app/staff
+
+Hosted read-only browser checks passed for 19 populated or empty table views, all 15 Admin Help drawers, three Staff Help drawers, menu images, filter reset and phone pagination/Help layout. The purchase-lines drawer was skipped on production because there are no saved purchases; its 23-line fixture passed in the isolated test. No runtime errors or business writes were recorded.
+
 ## Practical limits
 
 This is broad regression coverage, not a guarantee that every possible bug is absent. Actual Maya CAPTCHA/payment completion remains deferred at the user's request. This release does not book a real Lalamove rider or perform destructive changes against production business records. Hosted verification uses read-only data access.
