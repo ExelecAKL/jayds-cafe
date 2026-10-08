@@ -8,4 +8,8 @@ Search/filter changes reset local tables to page 1. Refreshes that shrink a resu
 
 The production Admin build and focused ESLint checks passed. `npm run check:admin-pagination` runs the production application with synthetic auth/database responses and verifies all 20 tables: first/next/final/previous pages, 55-product and 49-stock ranges, row changes, both detail drawers, filter reset, empty results, out-of-order search responses, keyboard activation, a 390px mobile footer, and 10-record server queries. No browser runtime errors occurred. This test creates no live business transactions.
 
-Deployment and live checks will be recorded after release.
+Deployed application commit `017b8ff634de7f17f9cba2cd0d80ccb334174ab6` through Vercel CLI to the existing Admin project. Vercel confirmed production deployment `dpl_5qeZrKvX8N6LaffS1M1wUmwygzmq` is READY. The customer and POS image deployments remain READY. All changes are backed up in the existing private GitHub repository.
+
+Live read-only browser checks passed through `https://jaydscafe.vercel.app/admin` for all 19 tables with accessible saved data, including empty purchase/supplier/receipt lists. No saved purchases exist, so purchase-line drawer paging was verified with the isolated 23-line fixture instead. Actual loaded counts included 55 menu products, 67 stock items, 55 recipe entries, 144 stock movements, 53 product margins, 200 recent audit records, and 49 orders. Next/Previous changed displayed rows correctly wherever multiple pages were available. The menu search reset page 2 to page 1, the public Fries PNG still decoded with containment, and the footer fit a 390px mobile viewport. No browser runtime errors or live business writes occurred.
+
+An additional regression check covers a purchase-order search with no matches: it now retains the table footer with “Showing 0 to 0 of 0 entries” and disabled navigation.
