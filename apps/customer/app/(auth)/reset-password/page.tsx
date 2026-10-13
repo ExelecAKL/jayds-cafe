@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -62,6 +63,7 @@ export default function ResetPasswordPage() {
         <form className="space-y-4" onSubmit={save}>
           <label className="block">
             New password
+            <FieldRequirement required={true} />
             <PasswordInput
               id="new-password"
               value={password}
@@ -73,6 +75,7 @@ export default function ResetPasswordPage() {
           </label>
           <label className="block">
             Confirm password
+            <FieldRequirement required={true} />
             <PasswordInput
               id="confirm-new-password"
               value={confirmation}

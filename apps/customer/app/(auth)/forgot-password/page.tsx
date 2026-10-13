@@ -3,6 +3,7 @@
 
 "use client";
 
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -73,6 +74,7 @@ export default function ForgotPasswordPage() {
           <div>
             <label htmlFor="reset-email" className="section-label mb-1.5 block">
               Email Address
+              <FieldRequirement required={true} />
             </label>
             <div className="relative">
               <svg

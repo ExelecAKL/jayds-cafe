@@ -97,7 +97,7 @@ export async function adminWorkflowJourneys(
   await page.getByRole("button", { name: "Add item", exact: true }).click();
   let drawer = page.getByRole("dialog");
   await drawer
-    .getByLabel("Item name", { exact: true })
+    .getByLabel(/^Item name(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .fill("Workflow test ingredient");
   await drawer.getByRole("button", { name: "Save item" }).click();
   await expect(drawer).toHaveCount(0);
@@ -110,7 +110,7 @@ export async function adminWorkflowJourneys(
   await drawer.getByRole("combobox").selectOption({ label: "Stock 01 · g" });
   await drawer.getByLabel(/^Quantity/).fill("10");
   await drawer
-    .getByLabel("Delivery reference / notes", { exact: true })
+    .getByLabel(/^Delivery reference \/ notes(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .fill("QA delivery physically received");
   await unchanged(() =>
     drawer.getByRole("button", { name: "Post movement" }).click(),
@@ -155,7 +155,7 @@ export async function adminWorkflowJourneys(
   await page.getByRole("tab", { name: "Stock planning" }).click();
   await page.getByRole("button", { name: "Refresh forecasts" }).click();
   await expect(
-    page.getByRole("status").filter({ hasText: /Forecasts refreshed/ }),
+    page.locator("main").getByRole("status").filter({ hasText: /Forecasts refreshed/ }),
   ).toBeVisible();
   completed.push(
     "Stock item creation, receipt, waste, physical count, forecast refresh, unchanged drafts on cancelled confirmations",
@@ -163,31 +163,31 @@ export async function adminWorkflowJourneys(
 
   await open("/staff");
   await expect(
-    page.getByLabel("Role for Pagination QA", { exact: true }),
+    page.getByLabel(/^Role for Pagination QA(?:\s*(?:\*|\(optional\)))?$/, { exact: true }),
   ).toBeDisabled();
   await unchanged(() =>
-    page.getByLabel("Role for Staff 1", { exact: true }).selectOption("admin"),
+    page.getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).selectOption("admin"),
   );
   await expect(
-    page.getByLabel("Role for Staff 1", { exact: true }),
+    page.getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true }),
   ).toHaveValue("staff");
   await page
-    .getByLabel("Role for Staff 1", { exact: true })
+    .getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .selectOption("admin");
   await accept("Change access");
   await expect(
-    page.getByLabel("Role for Staff 1", { exact: true }),
+    page.getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true }),
   ).toHaveValue("admin");
   fixture.failNext = "profiles";
   await page
-    .getByLabel("Role for Staff 2", { exact: true })
+    .getByLabel(/^Role for Staff 2(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .selectOption("admin");
   await accept("Change access");
   await expect(page.locator(".ops-feedback.error")).toContainText(
     "Could not change access",
   );
   await expect(
-    page.getByLabel("Role for Staff 2", { exact: true }),
+    page.getByLabel(/^Role for Staff 2(?:\s*(?:\*|\(optional\)))?$/, { exact: true }),
   ).toHaveValue("staff");
   completed.push(
     "Role changes, self-lockout prevention, cancellation and failed-save recovery",
@@ -333,7 +333,7 @@ export async function adminWorkflowJourneys(
   await page.getByRole("button", { name: "Supplier", exact: true }).click();
   drawer = page.getByRole("dialog");
   await drawer
-    .getByLabel("Supplier name", { exact: true })
+    .getByLabel(/^Supplier name(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .fill("Workflow test supplier");
   await drawer.getByRole("button", { name: "Save supplier" }).click();
   await expect(drawer).toHaveCount(0);
@@ -342,20 +342,20 @@ export async function adminWorkflowJourneys(
     "Supplier creation; purchase approval, order and partial receiving covered by the PostgreSQL browser demo",
   );
   await open("/scheduling");
-  await page.getByLabel("Branch name", { exact: true }).fill("Workflow café");
+  await page.getByLabel(/^Branch name(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill("Workflow café");
   await unchanged(() =>
     page.getByRole("button", { name: "Save settings", exact: true }).click(),
   );
   await expect(
     page
-      .getByRole("status")
+      .locator("main").getByRole("status")
       .filter({ hasText: "Branch and pickup settings saved." }),
   ).toHaveCount(0);
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
   await accept("Save settings");
-  await expect(page.getByRole("status")).toContainText(
+  await expect(page.locator("main").getByRole("status")).toContainText(
     "Branch and pickup settings saved.",
   );
   completed.push(

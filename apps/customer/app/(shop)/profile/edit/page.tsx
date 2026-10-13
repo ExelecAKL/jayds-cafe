@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
@@ -7,6 +8,10 @@ import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import PasswordInput from "../../../../components/PasswordInput";
 import AppShell, { InlineNotice } from "../../../../components/AppShell";
 import { getCustomerAuthErrorMessage } from "../../../../utils/authMessages";
+import {
+  normalizeContactPhone,
+  isValidContactPhone,
+} from "@cafeos/shared/customer/phone";
 export default function EditProfilePage() {
   const { user } = useAuth();
   return <ProfileForm key={user?.id ?? "guest"} />;
@@ -69,14 +74,11 @@ function ProfileForm() {
       });
       return;
     }
-    const normalizedPhone = phone.trim().replace(/[\s()-]/g, "");
-    if (
-      normalizedPhone &&
-      !/^(?:\+?[1-9]\d{7,14}|09\d{9})$/.test(normalizedPhone)
-    ) {
+    const normalizedPhone = normalizeContactPhone(phone);
+    if (!isValidContactPhone(normalizedPhone)) {
       setProfileMessage({
         error: true,
-        text: "Enter a valid phone number, or leave it blank.",
+        text: "Enter a valid phone number so the delivery rider can contact you.",
       });
       return;
     }
@@ -102,7 +104,7 @@ function ProfileForm() {
         .from("profiles")
         .update({
           full_name: name.trim(),
-          phone: normalizedPhone || null,
+          phone: normalizedPhone,
           updated_at: new Date().toISOString(),
         })
         .eq("id", user.id)
@@ -224,6 +226,7 @@ function ProfileForm() {
                   className="mb-2 block text-sm font-semibold"
                 >
                   Full name
+                  <FieldRequirement required={true} />
                 </label>
                 <input
                   id="profile-name"
@@ -240,13 +243,11 @@ function ProfileForm() {
                   htmlFor="profile-phone"
                   className="mb-2 block text-sm font-semibold"
                 >
-                  Phone number{" "}
-                  <span className="font-normal text-text-secondary">
-                    (optional)
-                  </span>
+                  Phone number <FieldRequirement required={true} />
                 </label>
                 <input
                   id="profile-phone"
+                  required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel"
@@ -262,6 +263,7 @@ function ProfileForm() {
                   className="mb-2 block text-sm font-semibold"
                 >
                   Email
+                  <span className="ml-1 font-normal">(read-only)</span>
                 </label>
                 <input
                   id="profile-email"
@@ -306,6 +308,7 @@ function ProfileForm() {
                     className="mb-2 block text-sm font-semibold"
                   >
                     Current password
+                    <FieldRequirement required={true} />
                   </label>
                   <PasswordInput
                     id="profile-current-password"
@@ -321,6 +324,7 @@ function ProfileForm() {
                     className="mb-2 block text-sm font-semibold"
                   >
                     New password
+                    <FieldRequirement required={true} />
                   </label>
                   <PasswordInput
                     id="profile-new-password"
@@ -337,6 +341,7 @@ function ProfileForm() {
                     className="mb-2 block text-sm font-semibold"
                   >
                     Confirm new password
+                    <FieldRequirement required={true} />
                   </label>
                   <PasswordInput
                     id="profile-confirm-password"

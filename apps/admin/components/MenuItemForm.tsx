@@ -1,4 +1,6 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
+import { notifyAdmin } from "./AdminToasts";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
@@ -189,6 +191,7 @@ export function MenuItemForm({
         p_recipes: recipes,
         p_variants: options,
       });
+      notifyAdmin("Product saved.", "success");
       onClose();
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "Save failed");
@@ -231,6 +234,7 @@ export function MenuItemForm({
             <>
               <label>
                 Product name
+                <FieldRequirement required={true} />
                 <input
                   required
                   value={form.name}
@@ -239,6 +243,7 @@ export function MenuItemForm({
               </label>
               <label>
                 Description
+                <FieldRequirement required={false} />
                 <textarea
                   value={form.description}
                   onChange={(e) =>
@@ -249,6 +254,7 @@ export function MenuItemForm({
               <div className="ops-form-grid">
                 <label>
                   Category
+                  <FieldRequirement required={true} />
                   <select
                     required
                     value={form.category_id}
@@ -267,6 +273,7 @@ export function MenuItemForm({
                 </label>
                 <label>
                   Preparation time (minutes)
+                  <FieldRequirement required={false} />
                   <input
                     type="number"
                     min="0"
@@ -280,6 +287,7 @@ export function MenuItemForm({
               </div>
               <label>
                 Image URL
+                <FieldRequirement required={false} />
                 <input
                   type="url"
                   value={form.image_url}
@@ -290,6 +298,7 @@ export function MenuItemForm({
               </label>
               <label>
                 Product tags
+                <FieldRequirement required={false} />
                 <input
                   value={form.tags}
                   onChange={(e) => setForm({ ...form, tags: e.target.value })}
@@ -308,6 +317,7 @@ export function MenuItemForm({
                   }
                 />
                 Featured product
+                <FieldRequirement required={false} />
               </label>
             </>
           )}
@@ -315,6 +325,7 @@ export function MenuItemForm({
             <>
               <label>
                 Base price (PHP)
+                <FieldRequirement required={true} />
                 <input
                   type="number"
                   min="0"
@@ -331,59 +342,71 @@ export function MenuItemForm({
               </p>
               {options.map((option, index) => (
                 <div className="ops-option-row" key={index}>
-                  <select
-                    aria-label="Option group"
-                    value={option.variant_group}
-                    onChange={(e) =>
-                      setOptions(
-                        options.map((v, i) =>
-                          i === index
-                            ? { ...v, variant_group: e.target.value }
-                            : v,
-                        ),
-                      )
-                    }
-                  >
-                    {[
-                      ...new Set([
-                        "size",
-                        "temperature",
-                        "milk_sub",
-                        "sugar_level",
-                        "add_on",
-                        ...options.map((v) => v.variant_group),
-                      ]),
-                    ].map((g) => (
-                      <option key={g}>{g}</option>
-                    ))}
-                  </select>
-                  <input
-                    aria-label="Option label"
-                    value={option.label}
-                    onChange={(e) =>
-                      setOptions(
-                        options.map((v, i) =>
-                          i === index ? { ...v, label: e.target.value } : v,
-                        ),
-                      )
-                    }
-                  />
-                  <input
-                    aria-label="Additional price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={option.price_modifier}
-                    onChange={(e) =>
-                      setOptions(
-                        options.map((v, i) =>
-                          i === index
-                            ? { ...v, price_modifier: Number(e.target.value) }
-                            : v,
-                        ),
-                      )
-                    }
-                  />
+                  <label>
+                    Option group
+                    <FieldRequirement required={true} />
+                    <select
+                      aria-label="Option group"
+                      value={option.variant_group}
+                      onChange={(e) =>
+                        setOptions(
+                          options.map((v, i) =>
+                            i === index
+                              ? { ...v, variant_group: e.target.value }
+                              : v,
+                          ),
+                        )
+                      }
+                    >
+                      {[
+                        ...new Set([
+                          "size",
+                          "temperature",
+                          "milk_sub",
+                          "sugar_level",
+                          "add_on",
+                          ...options.map((v) => v.variant_group),
+                        ]),
+                      ].map((g) => (
+                        <option key={g}>{g}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Option label
+                    <FieldRequirement required={true} />
+                    <input
+                      aria-label="Option label"
+                      value={option.label}
+                      onChange={(e) =>
+                        setOptions(
+                          options.map((v, i) =>
+                            i === index ? { ...v, label: e.target.value } : v,
+                          ),
+                        )
+                      }
+                    />
+                  </label>
+                  <label>
+                    Additional price
+                    <FieldRequirement required={false} />
+                    <input
+                      aria-label="Additional price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={option.price_modifier}
+                      onChange={(e) =>
+                        setOptions(
+                          options.map((v, i) =>
+                            i === index
+                              ? { ...v, price_modifier: Number(e.target.value) }
+                              : v,
+                          ),
+                        )
+                      }
+                    />
+                  </label>
                   <label className="ops-check-label">
                     <input
                       type="checkbox"
@@ -402,6 +425,7 @@ export function MenuItemForm({
                       }
                     />
                     Default
+                    <FieldRequirement required={false} />
                   </label>
                   <button
                     type="button"
@@ -433,29 +457,33 @@ export function MenuItemForm({
                 >
                   Add option
                 </button>
-                <select
-                  aria-label="Add existing option"
-                  value=""
-                  onChange={(e) => {
-                    const v = library[Number(e.target.value)];
-                    if (
-                      v &&
-                      !options.some(
-                        (o) =>
-                          o.label === v.label &&
-                          o.variant_group === v.variant_group,
+                <label>
+                  Add existing option
+                  <FieldRequirement required={false} />
+                  <select
+                    aria-label="Add existing option"
+                    value=""
+                    onChange={(e) => {
+                      const v = library[Number(e.target.value)];
+                      if (
+                        v &&
+                        !options.some(
+                          (o) =>
+                            o.label === v.label &&
+                            o.variant_group === v.variant_group,
+                        )
                       )
-                    )
-                      setOptions([...options, v]);
-                  }}
-                >
-                  <option value="">Add from option library</option>
-                  {library.map((v, i) => (
-                    <option key={i} value={i}>
-                      {v.variant_group} · {v.label}
-                    </option>
-                  ))}
-                </select>
+                        setOptions([...options, v]);
+                    }}
+                  >
+                    <option value="">Add from option library</option>
+                    {library.map((v, i) => (
+                      <option key={i} value={i}>
+                        {v.variant_group} · {v.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </div>
             </>
           )}
@@ -475,6 +503,7 @@ export function MenuItemForm({
                     <div className="ops-form-grid">
                       <label>
                         Stock item
+                        <FieldRequirement required={true} />
                         <select
                           value={recipe.ingredient_id}
                           onChange={(e) =>
@@ -498,6 +527,7 @@ export function MenuItemForm({
                       </label>
                       <label>
                         Base quantity {stock ? "(" + stock.unit + ")" : ""}
+                        <FieldRequirement required={true} />
                         <input
                           type="number"
                           min="0.001"
@@ -527,6 +557,7 @@ export function MenuItemForm({
                       ].map((size) => (
                         <label key={size}>
                           {size} multiplier
+                          <FieldRequirement required={false} />
                           <input
                             type="number"
                             min="0.001"
@@ -605,6 +636,7 @@ export function MenuItemForm({
                   }
                 />
                 Manually enable ordering
+                <FieldRequirement required={false} />
               </label>
               <div className="ops-form-summary">
                 <p>

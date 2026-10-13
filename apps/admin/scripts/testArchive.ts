@@ -21,7 +21,7 @@ const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const sb = createClient(url, key);
 
 async function run() {
-  const { data: auth, error: authErr } = await sb.auth.signInWithPassword({
+  const { error: authErr } = await sb.auth.signInWithPassword({
     email: 'admin@cafeos.ph',
     password: 'password123' // Best guess based on typical dev passwords, or we just rely on Service key?
   });

@@ -3,6 +3,7 @@
 
 "use client";
 
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -14,12 +15,8 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signOut, user, profile, initialized, isAdmin } = useAuth();
-  const resolvedRole =
-    profile?.role ??
-    (typeof user?.user_metadata?.role === "string"
-      ? user.user_metadata.role
-      : null);
+  const { signIn, signOut, user, profile, initialized } = useAuth();
+  const resolvedRole = profile?.id === user?.id ? profile?.role : null;
 
   useEffect(() => {
     if (!initialized) {
@@ -27,20 +24,23 @@ export default function AdminLoginPage() {
     }
 
     if (user && resolvedRole) {
-      if (isAdmin || resolvedRole === "admin") {
+      if (resolvedRole === "admin" && profile?.is_approved === true) {
         router.replace("/dashboard");
         return;
       }
 
-      if (resolvedRole !== "admin") {
+      if (resolvedRole !== "admin" || profile?.is_approved !== true) {
         void signOut().then(
-          () => setError("This account does not have Administrator access."),
+          () =>
+            setError(
+              "This account does not have approved Administrator access.",
+            ),
           () => setError("Sign out could not complete. Please try again."),
         );
       }
       return;
     }
-  }, [initialized, isAdmin, resolvedRole, router, signOut, user]);
+  }, [initialized, profile?.is_approved, resolvedRole, router, signOut, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +77,10 @@ export default function AdminLoginPage() {
           className="bg-white rounded-2xl shadow-2xl p-6 space-y-4"
         >
           {error && (
-            <div className="bg-red-50 text-red-600 text-sm rounded-xl p-3 border border-red-100">
+            <div
+              role="alert"
+              className="bg-red-50 text-red-600 text-sm rounded-xl p-3 border border-red-100"
+            >
               {error}
             </div>
           )}
@@ -88,6 +91,7 @@ export default function AdminLoginPage() {
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
               Email
+              <FieldRequirement required={true} />
             </label>
             <input
               id="email"
@@ -106,6 +110,7 @@ export default function AdminLoginPage() {
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
               Password
+              <FieldRequirement required={true} />
             </label>
             <input
               id="password"

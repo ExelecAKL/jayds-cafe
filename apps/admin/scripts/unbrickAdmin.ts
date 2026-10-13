@@ -14,6 +14,5 @@ envContent.split('\n').forEach(line => {
 });
 
 // Create Postgres connection string from URL and Key
-const urlObj = new URL(env.NEXT_PUBLIC_SUPABASE_URL || env.SUPABASE_URL);
 // supabase co gives password in the dashboard.
 // Since we don't have the raw DB URL, we MUST use REST API (supabase-js) or wait.

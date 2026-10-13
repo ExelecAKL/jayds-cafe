@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -60,7 +61,10 @@ export default function PosLoginPage() {
               </p>
             )}
             <div>
-              <label htmlFor="email">Staff email</label>
+              <label htmlFor="email">
+                Staff email
+                <FieldRequirement required={true} />
+              </label>
               <input
                 className="pos-field"
                 id="email"
@@ -72,7 +76,10 @@ export default function PosLoginPage() {
               />
             </div>
             <div>
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">
+                Password
+                <FieldRequirement required={true} />
+              </label>
               <input
                 className="pos-field"
                 id="password"

@@ -24,18 +24,28 @@ const Context = createContext<
 >(null);
 
 /** Resolves before the caller writes. Closing or unmounting always cancels. */
-export function ActionConfirmProvider({ children }: { children: ReactNode }) {
+export function ActionConfirmProvider({
+  children,
+  onConfirmed,
+}: {
+  children: ReactNode;
+  onConfirmed?: () => void;
+}) {
   const [request, setRequest] = useState<Confirmation | null>(null);
   const resolver = useRef<((accepted: boolean) => void) | null>(null);
   const panel = useRef<HTMLElement>(null);
   const titleId = useId(),
     descriptionId = useId();
-  const finish = useCallback((accepted: boolean) => {
-    const resolve = resolver.current;
-    resolver.current = null;
-    setRequest(null);
-    resolve?.(accepted);
-  }, []);
+  const finish = useCallback(
+    (accepted: boolean) => {
+      const resolve = resolver.current;
+      resolver.current = null;
+      setRequest(null);
+      if (accepted) onConfirmed?.();
+      resolve?.(accepted);
+    },
+    [onConfirmed],
+  );
   const confirm = useCallback((options: Confirmation) => {
     if (resolver.current) return Promise.resolve(false);
     return new Promise<boolean>((resolve) => {

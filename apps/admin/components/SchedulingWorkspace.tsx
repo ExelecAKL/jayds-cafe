@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import Link from "next/link";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
@@ -161,14 +162,17 @@ export default function SchedulingWorkspace() {
             <div className="ops-form-grid">
               <label>
                 Branch name
+                <FieldRequirement required={true} />
                 <input required minLength={2} {...field("name")} />
               </label>
               <label>
                 Address
+                <FieldRequirement required={true} />
                 <input required minLength={5} {...field("address")} />
               </label>
               <label>
                 Latitude
+                <FieldRequirement required={true} />
                 <input
                   required
                   type="number"
@@ -180,6 +184,7 @@ export default function SchedulingWorkspace() {
               </label>
               <label>
                 Longitude
+                <FieldRequirement required={true} />
                 <input
                   required
                   type="number"
@@ -191,6 +196,7 @@ export default function SchedulingWorkspace() {
               </label>
               <label>
                 Delivery radius (km)
+                <FieldRequirement required={true} />
                 <input
                   required
                   type="number"
@@ -202,6 +208,7 @@ export default function SchedulingWorkspace() {
               </label>
               <label>
                 Public contact phone
+                <FieldRequirement required={false} />
                 <input {...field("contact_phone")} />
               </label>
             </div>
@@ -232,12 +239,14 @@ export default function SchedulingWorkspace() {
                         }
                       />{" "}
                       {name} open
+                      <FieldRequirement required={false} />
                     </span>
                   </label>
                   {day && (
                     <>
                       <label>
                         Opens
+                        <FieldRequirement required={true} />
                         <input
                           type="time"
                           required
@@ -249,6 +258,7 @@ export default function SchedulingWorkspace() {
                       </label>
                       <label>
                         Closes
+                        <FieldRequirement required={true} />
                         <input
                           type="time"
                           required
@@ -265,6 +275,7 @@ export default function SchedulingWorkspace() {
             })}
             <label>
               Full-day closures
+              <FieldRequirement required={false} />
               <textarea
                 rows={3}
                 value={closures}
@@ -280,6 +291,9 @@ export default function SchedulingWorkspace() {
             <div className="ops-form-grid">
               <label>
                 Orders per 15-minute window
+                <FieldRequirement
+                  required={settings.scheduled_pickup_enabled}
+                />
                 <input
                   type="number"
                   min={1}
@@ -290,6 +304,9 @@ export default function SchedulingWorkspace() {
               </label>
               <label>
                 Item units per 15-minute window
+                <FieldRequirement
+                  required={settings.scheduled_pickup_enabled}
+                />
                 <input
                   type="number"
                   min={1}
@@ -302,6 +319,7 @@ export default function SchedulingWorkspace() {
               </label>
               <label>
                 Minimum notice (minutes)
+                <FieldRequirement required={true} />
                 <input
                   type="number"
                   min={20}
@@ -311,6 +329,7 @@ export default function SchedulingWorkspace() {
               </label>
               <label>
                 Preparation lead (minutes)
+                <FieldRequirement required={true} />
                 <input
                   type="number"
                   min={1}
@@ -334,6 +353,7 @@ export default function SchedulingWorkspace() {
                   }
                 />{" "}
                 Enable scheduled pickup
+                <FieldRequirement required={false} />
               </span>
               <small>
                 Maya prepayment, today and tomorrow only. Production
@@ -375,6 +395,7 @@ export default function SchedulingWorkspace() {
             )}
             <label>
               Verification record
+              <FieldRequirement required={true} />
               <textarea
                 rows={3}
                 minLength={20}

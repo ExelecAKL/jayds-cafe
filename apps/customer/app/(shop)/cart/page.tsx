@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useRef, useState } from "react";
 import Link from "../../../components/OfflineMenuLink";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -168,9 +169,15 @@ export default function CartPage() {
                       className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-bg-elevated"
                       aria-label={"View " + item.name}
                     >
-                      {menuProductImageUrl(item.menu_item_id, item.image_url) ? (
+                      {menuProductImageUrl(
+                        item.menu_item_id,
+                        item.image_url,
+                      ) ? (
                         <img
-                          src={menuProductImageUrl(item.menu_item_id, item.image_url)!}
+                          src={menuProductImageUrl(
+                            item.menu_item_id,
+                            item.image_url,
+                          )!}
                           alt={item.name}
                           width={80}
                           height={80}
@@ -249,6 +256,7 @@ export default function CartPage() {
                 </summary>
                 <label className="sr-only" htmlFor="cart-order-note">
                   Order note
+                  <FieldRequirement required={false} />
                 </label>
                 <textarea
                   id="cart-order-note"
@@ -367,7 +375,8 @@ export default function CartPage() {
         onCancel={() => setEditing(null)}
       >
         <label className="block" htmlFor="edit-item-note">
-          Optional request for this item
+          Request for this item
+          <FieldRequirement required={false} />
         </label>
         <textarea
           id="edit-item-note"

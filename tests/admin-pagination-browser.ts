@@ -9,10 +9,13 @@ import {
   adminWorkflowJourneys,
   type AdminWorkflowFixture,
 } from "./admin-workflow-journeys";
+import { extraAdminAudit } from "./system-audit-extra-admin.ts";
 
 const root = process.cwd();
 const port = 4282;
-const origin = `http://127.0.0.1:${port}`;
+const origin = process.env.JAYDS_AUDIT_ADMIN_URL || `http://127.0.0.1:${port}`;
+const siteOrigin = new URL(origin).origin;
+const appPrefix = new URL(origin).pathname.replace(/\/$/, "");
 const output = path.join(root, ".codex-logs", "admin-pagination");
 mkdirSync(output, { recursive: true });
 const timestamp = new Date().toISOString();
@@ -308,7 +311,7 @@ const slowDone = new Promise<void>((resolve) => {
   slowFinished = resolve;
 });
 try {
-  server = spawn(
+  server = process.env.JAYDS_AUDIT_ADMIN_URL ? undefined : spawn(
     process.execPath,
     [
       path.join(root, "node_modules/next/dist/bin/next"),
@@ -338,7 +341,7 @@ try {
     {
       name: "sb-admin-auth-token",
       value: encodeURIComponent(JSON.stringify(session)),
-      domain: "127.0.0.1",
+      domain: new URL(origin).hostname,
       path: "/",
     },
   ]);
@@ -346,7 +349,7 @@ try {
   await context.route("**/*", async (route) => {
     const request = route.request(),
       url = new URL(request.url());
-    if (url.origin === origin && !url.pathname.startsWith("/api/")) {
+    if (url.origin === siteOrigin && !url.pathname.startsWith(appPrefix + "/api/") && !url.pathname.startsWith("/api/")) {
       await route.continue();
       return;
     }
@@ -737,6 +740,10 @@ try {
     );
     throw error;
   });
+  if (process.env.JAYDS_SYSTEM_AUDIT === "1") {
+    const extra = await extraAdminAudit(page, origin);
+    if (extra.some(result => result.status === "FAIL")) process.exitCode = 1;
+  }
   if (!process.env.ADMIN_WORKFLOW_ONLY)
     assert.equal(seen.size, 20, "All twenty Admin tables exercised");
   assert.deepEqual(errors, [], "No browser runtime errors");

@@ -711,6 +711,7 @@ export default function OrderTrackingPage() {
         <div className="space-y-5">
           <section className="rounded-3xl border border-border bg-bg-card p-6">
             <h2 className="section-title mb-5">Your accepted ticket</h2>
+            <p className="mb-4 text-sm font-semibold">{order.order_number}</p>
             <div className="space-y-5">
               {order.items?.map((item) => (
                 <div key={item.id} className="flex justify-between gap-4">

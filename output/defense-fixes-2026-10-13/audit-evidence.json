@@ -1,0 +1,3248 @@
+{
+  "generatedAt": "2026-10-13T02:12:33.893Z",
+  "dateTimezone": "Asia/Manila",
+  "hosted": "https://jaydscafe.vercel.app",
+  "sourceCommit": "c70b2157d157c75a1075fb9e5e78f27a30035af0",
+  "applicationChanges": true,
+  "liveBusinessWrites": true,
+  "liveWriteScope": "Temporary customer owner writes cleaned up; two repair identities soft-retired with immutable legal acknowledgements retained; unpaid guest audit orders cancelled and retained in history, no charge or physical stock consumption",
+  "backend": {
+    "checks": 120,
+    "passed": 120,
+    "failed": 0,
+    "skipped": 0,
+    "executionNote": "Complete backend regression run, including every forward migration and voucher-tier/category preservation controls; normal process access and --no-wasm-code-gc"
+  },
+  "routes": [
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/check-email",
+      "source": "apps/customer/app/(auth)/check-email/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/forgot-password",
+      "source": "apps/customer/app/(auth)/forgot-password/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/login",
+      "source": "apps/customer/app/(auth)/login/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/register",
+      "source": "apps/customer/app/(auth)/register/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/reset-password",
+      "source": "apps/customer/app/(auth)/reset-password/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/account",
+      "source": "apps/customer/app/(shop)/account/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/cart",
+      "source": "apps/customer/app/(shop)/cart/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/checkout/confirm",
+      "source": "apps/customer/app/(shop)/checkout/confirm/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/checkout",
+      "source": "apps/customer/app/(shop)/checkout/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/favorites",
+      "source": "apps/customer/app/(shop)/favorites/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/help",
+      "source": "apps/customer/app/(shop)/help/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/menu/browse",
+      "source": "apps/customer/app/(shop)/menu/browse/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/menu/browse/[id]",
+      "source": "apps/customer/app/(shop)/menu/browse/[id]/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/menu",
+      "source": "apps/customer/app/(shop)/menu/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/menu/[id]",
+      "source": "apps/customer/app/(shop)/menu/[id]/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/notifications",
+      "source": "apps/customer/app/(shop)/notifications/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/orders",
+      "source": "apps/customer/app/(shop)/orders/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/orders/[id]",
+      "source": "apps/customer/app/(shop)/orders/[id]/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/privacy",
+      "source": "apps/customer/app/(shop)/privacy/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/profile/addresses",
+      "source": "apps/customer/app/(shop)/profile/addresses/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/profile/edit",
+      "source": "apps/customer/app/(shop)/profile/edit/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/rewards",
+      "source": "apps/customer/app/(shop)/rewards/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/terms",
+      "source": "apps/customer/app/(shop)/terms/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/vouchers",
+      "source": "apps/customer/app/(shop)/vouchers/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/branch",
+      "source": "apps/customer/app/api/branch/route.ts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/customer/favorites",
+      "source": "apps/customer/app/api/customer/favorites/route.ts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/customer/legal",
+      "source": "apps/customer/app/api/customer/legal/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/customer/push",
+      "source": "apps/customer/app/api/customer/push/route.ts",
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/customer/recommendations",
+      "source": "apps/customer/app/api/customer/recommendations/route.ts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/customer/support",
+      "source": "apps/customer/app/api/customer/support/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/jobs/customer-notifications",
+      "source": "apps/customer/app/api/jobs/customer-notifications/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/lalamove/dispatch",
+      "source": "apps/customer/app/api/lalamove/dispatch/route.ts",
+      "methods": [
+        "OPTIONS",
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/lalamove/order",
+      "source": "apps/customer/app/api/lalamove/order/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/lalamove/quotation",
+      "source": "apps/customer/app/api/lalamove/quotation/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/lalamove/status",
+      "source": "apps/customer/app/api/lalamove/status/route.ts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/location",
+      "source": "apps/customer/app/api/location/route.ts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/maya/checkout",
+      "source": "apps/customer/app/api/maya/checkout/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/maya/verify",
+      "source": "apps/customer/app/api/maya/verify/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/maya/webhook",
+      "source": "apps/customer/app/api/maya/webhook/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/orders/cancel",
+      "source": "apps/customer/app/api/orders/cancel/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/orders/create",
+      "source": "apps/customer/app/api/orders/create/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/orders/guest",
+      "source": "apps/customer/app/api/orders/guest/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/orders/[id]",
+      "source": "apps/customer/app/api/orders/[id]/route.ts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/pickup/slots",
+      "source": "apps/customer/app/api/pickup/slots/route.ts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "api",
+      "route": "/api/vouchers/validate",
+      "source": "apps/customer/app/api/vouchers/validate/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/",
+      "source": "apps/customer/app/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "customer",
+      "kind": "page",
+      "route": "/receipt/[token]",
+      "source": "apps/customer/app/receipt/[token]/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/check-email",
+      "source": "apps/pos/app/(auth)/check-email/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/forgot-password",
+      "source": "apps/pos/app/(auth)/forgot-password/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/login",
+      "source": "apps/pos/app/(auth)/login/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/pending-approval",
+      "source": "apps/pos/app/(auth)/pending-approval/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/register",
+      "source": "apps/pos/app/(auth)/register/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/dashboard",
+      "source": "apps/pos/app/(pos)/dashboard/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/new-order",
+      "source": "apps/pos/app/(pos)/new-order/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/payment/[id]",
+      "source": "apps/pos/app/(pos)/payment/[id]/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/void",
+      "source": "apps/pos/app/(pos)/void/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "api",
+      "route": "/api/account/lookup",
+      "source": "apps/pos/app/api/account/lookup/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "pos",
+      "kind": "api",
+      "route": "/api/orders/action",
+      "source": "apps/pos/app/api/orders/action/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "pos",
+      "kind": "api",
+      "route": "/api/orders/checkout",
+      "source": "apps/pos/app/api/orders/checkout/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "pos",
+      "kind": "api",
+      "route": "/api/orders/create",
+      "source": "apps/pos/app/api/orders/create/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "pos",
+      "kind": "api",
+      "route": "/api/orders/delivery",
+      "source": "apps/pos/app/api/orders/delivery/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "pos",
+      "kind": "api",
+      "route": "/api/orders/pickup",
+      "source": "apps/pos/app/api/orders/pickup/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "pos",
+      "kind": "api",
+      "route": "/api/orders/queue",
+      "source": "apps/pos/app/api/orders/queue/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/kds",
+      "source": "apps/pos/app/kds/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "pos",
+      "kind": "page",
+      "route": "/",
+      "source": "apps/pos/app/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/analytics",
+      "source": "apps/admin/app/(admin)/analytics/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/audit",
+      "source": "apps/admin/app/(admin)/audit/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/categories",
+      "source": "apps/admin/app/(admin)/categories/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/customer-care",
+      "source": "apps/admin/app/(admin)/customer-care/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/dashboard",
+      "source": "apps/admin/app/(admin)/dashboard/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/inventory",
+      "source": "apps/admin/app/(admin)/inventory/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/loyalty",
+      "source": "apps/admin/app/(admin)/loyalty/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/menu",
+      "source": "apps/admin/app/(admin)/menu/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/orders",
+      "source": "apps/admin/app/(admin)/orders/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/purchasing",
+      "source": "apps/admin/app/(admin)/purchasing/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/scheduling",
+      "source": "apps/admin/app/(admin)/scheduling/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/staff",
+      "source": "apps/admin/app/(admin)/staff/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/staff-accounts",
+      "source": "apps/admin/app/(admin)/staff-accounts/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/void-security",
+      "source": "apps/admin/app/(admin)/void-security/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/vouchers",
+      "source": "apps/admin/app/(admin)/vouchers/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/login",
+      "source": "apps/admin/app/(auth)/login/page.tsx",
+      "methods": []
+    },
+    {
+      "app": "admin",
+      "kind": "api",
+      "route": "/api/customer-care/reconcile",
+      "source": "apps/admin/app/api/customer-care/reconcile/route.ts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "admin",
+      "kind": "page",
+      "route": "/",
+      "source": "apps/admin/app/page.tsx",
+      "methods": []
+    }
+  ],
+  "groups": [
+    {
+      "name": "Hosted public/API/role checks",
+      "scope": "live public reads and isolated role identities",
+      "data": [
+        {
+          "feature": "GET /api/branch",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "publicConfiguration": {
+              "name": "Jayds Café · Main branch",
+              "hours": [],
+              "address": "Jayds Cafe, Dasmariñas, Cavite",
+              "version": "2026-10-03T14:41:48.674144+00:00",
+              "closures": [],
+              "latitude": 14.346621,
+              "timezone": "Asia/Manila",
+              "longitude": 120.981057,
+              "contact_phone": null,
+              "delivery_radius_km": 8,
+              "scheduled_pickup_enabled": false
+            }
+          }
+        },
+        {
+          "feature": "GET /api/customer/push",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "publicConfiguration": {
+              "configured": true,
+              "publicKey": "BHiKuopJJ106BNiv9o7bQwQTcp2xH4D4R5ZsZ1tmZ5Psf_v_QNcaPl5I7h2DLLRKM0KJl8Rqzf7KpUVbmqnqFUU"
+            }
+          }
+        },
+        {
+          "feature": "GET /api/location?q=a",
+          "status": "PASS",
+          "detail": {
+            "status": 400,
+            "error": "Enter an address or valid coordinates.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "GET /api/pickup/slots?date=invalid&item_units=0",
+          "status": "PASS",
+          "detail": {
+            "status": 400,
+            "error": "Choose a valid date and cart quantity.",
+            "cache": "no-store"
+          }
+        },
+        {
+          "feature": "GET /api/customer/recommendations",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Please sign in to continue.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "GET /api/customer/favorites",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Please sign in to continue.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "GET /api/customer/legal",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Please sign in to continue.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "GET /api/customer/support",
+          "status": "PASS",
+          "detail": {
+            "status": 400,
+            "error": "Invalid order ID.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "GET /api/orders/00000000-0000-4000-8000-000000000099",
+          "status": "PASS",
+          "detail": {
+            "status": 404,
+            "error": "Order not found.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "GET /api/lalamove/status",
+          "status": "PASS",
+          "detail": {
+            "status": 400,
+            "error": "Invalid order ID.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/orders/guest",
+          "status": "PASS",
+          "detail": {
+            "status": 400,
+            "error": "Provide at most 20 guest order IDs.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/orders/guest",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "Guest orders require their original device. Contact the cafe for recovery.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/orders/create",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/orders/cancel",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/maya/checkout",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/maya/verify",
+          "status": "PASS",
+          "detail": {
+            "status": 400,
+            "error": "Invalid checkout ID.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/maya/webhook",
+          "status": "PASS",
+          "detail": {
+            "status": 400,
+            "error": "Invalid checkout ID",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/lalamove/quotation",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/lalamove/order",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/lalamove/dispatch",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/vouchers/validate",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/customer/favorites",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "DELETE /api/customer/favorites",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/customer/legal",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/customer/support",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "error": "This request origin is not allowed.",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /api/customer/push",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "publicConfiguration": {
+              "error": "This request origin is not allowed."
+            }
+          }
+        },
+        {
+          "feature": "DELETE /api/customer/push",
+          "status": "PASS",
+          "detail": {
+            "status": 403,
+            "publicConfiguration": {
+              "error": "This request origin is not allowed."
+            }
+          }
+        },
+        {
+          "feature": "POST /api/jobs/customer-notifications",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Unauthorized",
+            "cache": "private, no-store"
+          }
+        },
+        {
+          "feature": "POST /staff/api/orders/create",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Missing staff session",
+            "cache": "public, max-age=0, must-revalidate"
+          }
+        },
+        {
+          "feature": "POST /staff/api/orders/checkout",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Sign in to the POS to continue",
+            "cache": "public, max-age=0, must-revalidate"
+          }
+        },
+        {
+          "feature": "POST /staff/api/orders/action",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Sign in to the POS to continue",
+            "cache": "public, max-age=0, must-revalidate"
+          }
+        },
+        {
+          "feature": "POST /staff/api/orders/pickup",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Sign in to the POS to continue",
+            "cache": "public, max-age=0, must-revalidate"
+          }
+        },
+        {
+          "feature": "POST /staff/api/orders/delivery",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Sign in to the POS to continue",
+            "cache": "public, max-age=0, must-revalidate"
+          }
+        },
+        {
+          "feature": "POST /staff/api/orders/queue",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Sign in to the POS to continue",
+            "cache": "public, max-age=0, must-revalidate"
+          }
+        },
+        {
+          "feature": "POST /staff/api/account/lookup",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Missing staff session",
+            "cache": "public, max-age=0, must-revalidate"
+          }
+        },
+        {
+          "feature": "POST /admin/api/customer-care/reconcile",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "error": "Sign in as an approved Admin to review provider references.",
+            "cache": "no-store"
+          }
+        },
+        {
+          "feature": "Voucher validation rejects malformed same-origin input",
+          "status": "PASS",
+          "detail": {
+            "status": 400,
+            "error": "Enter a valid voucher code and cart."
+          }
+        },
+        {
+          "feature": "Live page /menu",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/menu",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nWELCOME TO JAYDS\n\nA little cup of happy.\nJayds Café · Main branch\nJayds rewards\nJoin the routine\nMade for you\nFavorites\n\nMADE FOR YOUR EVERYDAY\n\nYour usual,\nyour w"
+          }
+        },
+        {
+          "feature": "Live page /menu/browse",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/menu/browse",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nTHE JAYDS MENU\n\nMenu\nPickup\nDelivery\nJayds Café · Main branch\nSearch the menu\nEspresso\nSignature Drinks\nFrappes\nMilk Teas\nRefreshers\nCroffles\nSnacks\n52 products\nEs"
+          }
+        },
+        {
+          "feature": "Live page /cart",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/cart",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nYOUR JAYDS ORDER\n\nYour bag\nA little room for your favorites.\n\nFind coffee, something sweet, or a café treat. Your unfinished bag is saved on this device.\n\nExplore "
+          }
+        },
+        {
+          "feature": "Live page /checkout",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/checkout",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\nCheckout\n\nMade your way. Confirmed securely.\n\nHow would you like your order?*\n\nJayds Café · Main branch · Pickup is available wherever you are.\n\nPickup\nDelivery\nAs "
+          }
+        },
+        {
+          "feature": "Live page /checkout/confirm",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/checkout",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\nCheckout\n\nMade your way. Confirmed securely.\n\nHow would you like your order?*\n\nJayds Café · Main branch · Pickup is available wherever you are.\n\nPickup\nDelivery\nAs "
+          }
+        },
+        {
+          "feature": "Live page /orders",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/orders",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nMY ORDERS\n\nMy orders\nYour guest orders are available on this browser while its secure access is retained. Sign in for account history\nActive\nHistory\nNothing brewin"
+          }
+        },
+        {
+          "feature": "Live page /account",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/account",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nYOUR ACCOUNT\n\nAccount\nGood coffee. More rewards.\n\nSave your favorites, keep your order history, and make every coffee run a little more rewarding.\n\nSign in\nCreate "
+          }
+        },
+        {
+          "feature": "Live page /favorites",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/favorites",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nFAVORITES\n\nFavorites\nThese favorites are saved on this device. Sign in for account favorites\nKeep the good ones close.\n\nTap the heart on a product to save it for y"
+          }
+        },
+        {
+          "feature": "Live page /rewards",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/rewards",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nJAYDS WALLET\n\nRewards\nPoints & rewards\nVouchers\nA rewarding little routine.\n\nSign in to see your points, current tier, and the café’s loyalty benefits.\n\nSign in to"
+          }
+        },
+        {
+          "feature": "Live page /vouchers",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/vouchers",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nJAYDS WALLET\n\nVouchers\nPoints & rewards\nVouchers\n\nPublished offers for your next order. Minimum spend, eligible products, and remaining uses are checked again when"
+          }
+        },
+        {
+          "feature": "Live page /help",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/help",
+            "width": 390,
+            "scroll": 390,
+            "text": "Getting your café ready…\n\nWelcome to your little cup of happy.\n\nSkip to content\n\nJAYDS CAFÉ\n\nHelp & support\nUseful answers\nCan I order offline?\nWhere can I pick up?\nMy payment did "
+          }
+        },
+        {
+          "feature": "Live page /notifications",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/notifications",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nJAYDS CAFÉ\n\nNotifications\nOrder updates on your Home Screen\n\nChoose background alerts for ready orders and courier milestones. No marketing permission is required."
+          }
+        },
+        {
+          "feature": "Live page /terms",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/terms",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nJAYDS CAFÉ\n\nTerms & conditions\n\nJayds Café · Effective 7 October 2026\n\nJAYDS CAFÉ\n\nTerms and Conditions\n\nEffective 7 October 2026 · Version 2026-10-07\n\nThese Terms"
+          }
+        },
+        {
+          "feature": "Live page /privacy",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/privacy",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nJAYDS CAFÉ\n\nPrivacy notice\n\nJayds Café · Effective 7 October 2026\n\nJAYDS CAFÉ\n\nPrivacy Policy and Notice\n\nEffective 7 October 2026 · Version 2026-10-07\n\nJayds Café"
+          }
+        },
+        {
+          "feature": "Live page /login",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/login",
+            "width": 390,
+            "scroll": 390,
+            "text": "Jayds Café\n\nWelcome back, coffee lover\n\nEMAIL*\nPASSWORD*\nShow\nForgot Password?\nSign In\n\nDon't have an account? Create one\n\nOR\nBrowse as Guest"
+          }
+        },
+        {
+          "feature": "Live page /register",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/register",
+            "width": 390,
+            "scroll": 390,
+            "text": "Create Account\n\nJoin Jayds Cafe today\n\nFULL NAME*\nEMAIL*\nPHONE NUMBER *\nPASSWORD*\nShow\nCONFIRM PASSWORD*\nShow\nI agree to the Terms and have read the Privacy Notice. Optional notifi"
+          }
+        },
+        {
+          "feature": "Live page /forgot-password",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/forgot-password",
+            "width": 390,
+            "scroll": 390,
+            "text": "Getting your café ready…\n\nWelcome to your little cup of happy.\n\nReset Password\n\nEnter your email and we'll send you a reset link\n\nEMAIL ADDRESS*\nSend Reset Link\n\nRemember your pass"
+          }
+        },
+        {
+          "feature": "Live page /reset-password",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/reset-password",
+            "width": 390,
+            "scroll": 390,
+            "text": "JAYDS CAFÉ\n\nSet a new password\n\nThis link has expired or is unavailable. Request another link."
+          }
+        },
+        {
+          "feature": "Live page /check-email",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/check-email",
+            "width": 390,
+            "scroll": 390,
+            "text": "Verify Your Email\n\nWe sent a verification link to\n\nyour email\n\nOpen Gmail\nOpen Email App\nResend verification email\n\nDidn't receive the email? Check your spam folder or change email"
+          }
+        },
+        {
+          "feature": "Live page /profile/edit",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/login",
+            "width": 390,
+            "scroll": 390,
+            "text": "Jayds Café\n\nWelcome back, coffee lover\n\nEMAIL*\nPASSWORD*\nShow\nForgot Password?\nSign In\n\nDon't have an account? Create one\n\nOR\nBrowse as Guest"
+          }
+        },
+        {
+          "feature": "Live page /profile/addresses",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/profile/addresses",
+            "width": 390,
+            "scroll": 390,
+            "text": "Skip to content\n\nJAYDS CAFÉ\n\nSaved addresses\n\nChoose a destination once. Use it at checkout.\n\nSign in to save private delivery addresses.\nHome\nMenu\nOrders\nAccount"
+          }
+        },
+        {
+          "feature": "Live page /staff/login",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/login",
+            "width": 390,
+            "scroll": 390,
+            "text": "MAIN BRANCH · CASHIER TERMINAL\n\nJayds Café cashier login\n\nGood coffee starts here.\n\nStaff email*\nPassword*\nOpen terminal\nForgot password?\nRequest staff access"
+          }
+        },
+        {
+          "feature": "Live page /staff/register",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/register",
+            "width": 390,
+            "scroll": 390,
+            "text": "JAYDS CAFÉ · TEAM ACCESS\n\nJoin the team\n\nA manager will approve cashier access.\n\nFull name*\nEmail*\nPhone (optional)\nPassword · at least 8 characters*\nConfirm password*\nRequest staf"
+          }
+        },
+        {
+          "feature": "Live page /staff/forgot-password",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/forgot-password",
+            "width": 390,
+            "scroll": 390,
+            "text": "JAYDS CAFÉ · TEAM ACCESS\n\nReset password\n\nReceive a reset link at your staff email.\n\nStaff email*\nSend reset link\nBack to sign in"
+          }
+        },
+        {
+          "feature": "Live page /staff/check-email",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/check-email",
+            "width": 390,
+            "scroll": 390,
+            "text": "JAYDS CAFÉ · TEAM ACCESS\n\nCheck your inbox\n\nEmail verification instructions were sent to your email. Check your spam folder too.\n\nBack to sign in\nUse another email"
+          }
+        },
+        {
+          "feature": "Live page /staff/pending-approval",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/pending-approval",
+            "width": 390,
+            "scroll": 390,
+            "text": "JAYDS CAFÉ · TEAM ACCESS\n\nAwaiting approval\n\nAsk your manager to approve this account in Admin before using the cashier terminal.\n\nCheck approval\nSign out"
+          }
+        },
+        {
+          "feature": "Live page /staff/kds",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/kds",
+            "width": 390,
+            "scroll": 390,
+            "text": "Jayds Café · Main branch\n\nA little wait. A lovely cup.\nLive\nVoice off\nPreparing · 0\n\nFreshly made, just for you.\n\nReady to collect · 0\n\nYour order number will appear here.\n\nPlease "
+          }
+        },
+        {
+          "feature": "Live page /admin/login",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/admin/login",
+            "width": 390,
+            "scroll": 390,
+            "text": "Jayds Café administrator login\n\nThe café operations center\n\nEmail*\nPassword*\nSign In"
+          }
+        },
+        {
+          "feature": "Live pages have no uncaught browser errors",
+          "status": "PASS",
+          "detail": []
+        },
+        {
+          "feature": "Guest cannot enter Admin (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/admin/login",
+            "allowed": false
+          }
+        },
+        {
+          "feature": "Customer cannot enter Admin (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/admin/login",
+            "allowed": false
+          }
+        },
+        {
+          "feature": "Staff cannot enter Admin (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/menu",
+            "allowed": false
+          }
+        },
+        {
+          "feature": "Approved Admin can enter Admin (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/admin/dashboard",
+            "allowed": true
+          }
+        },
+        {
+          "feature": "Unapproved Admin cannot enter Admin (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/admin/login",
+            "allowed": false
+          }
+        },
+        {
+          "feature": "Guest cannot enter POS (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/login",
+            "allowed": false
+          }
+        },
+        {
+          "feature": "Customer cannot enter POS (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/login",
+            "allowed": false
+          }
+        },
+        {
+          "feature": "Unapproved staff cannot enter POS (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/pending-approval",
+            "allowed": false
+          }
+        },
+        {
+          "feature": "Approved staff can enter POS (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/new-order",
+            "allowed": true
+          }
+        },
+        {
+          "feature": "Approved Admin can enter POS (isolated identity)",
+          "status": "PASS",
+          "detail": {
+            "url": "https://jaydscafe.vercel.app/staff/new-order",
+            "allowed": true
+          }
+        }
+      ],
+      "checks": 76,
+      "passed": 76,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual hosted authenticated sessions",
+      "scope": "real approved staff/admin accounts; customer UI using staff account; read-only",
+      "data": [
+        {
+          "feature": "POS: real designated account login",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "POS: live dashboard",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "POS: live new-order",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "POS: live void",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "POS: no uncaught errors or attempted business writes",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "POS: real logout clears protected access",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: real designated account login",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live dashboard",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live orders",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live menu",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live categories",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live vouchers",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live inventory",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live purchasing",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live scheduling",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live customer-care",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live analytics",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live staff",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live staff-accounts",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live loyalty",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live void-security",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: live audit",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: no uncaught errors or attempted business writes",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Admin: real logout clears protected access",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): real designated account login",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live menu",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live menu/browse",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live orders",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live account",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live favorites",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live rewards",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live vouchers",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live help",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live notifications",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live profile/edit",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live profile/addresses",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live cart",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): live checkout",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): no uncaught errors or attempted business writes",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        },
+        {
+          "feature": "Customer UI (staff test account): real logout clears protected access",
+          "status": "PASS",
+          "detail": "Verified against live authentication and database"
+        }
+      ],
+      "checks": 40,
+      "passed": 40,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Hosted backend read-only checks",
+      "scope": "real Supabase anon/service read projections",
+      "data": [
+        {
+          "name": "Anonymous private-table boundary: profiles",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Anonymous private-table boundary: orders",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Anonymous private-table boundary: order_items",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Anonymous private-table boundary: saved_addresses",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Anonymous private-table boundary: customer_support_cases",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Anonymous private-table boundary: customer_provider_attempts",
+          "status": "PASS",
+          "detail": {
+            "status": 401,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Anonymous private-table boundary: admin_audit",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Anonymous private-table boundary: stock_movements",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Anonymous private-table boundary: guest_receipts",
+          "status": "PASS",
+          "detail": {
+            "status": 200,
+            "code": null,
+            "visibleCount": 0
+          }
+        },
+        {
+          "name": "Live public catalog",
+          "status": "PASS",
+          "detail": {
+            "products": 52,
+            "categories": 7,
+            "unavailable": 2,
+            "missingImages": 0,
+            "negativeOrInvalidPrices": 0
+          }
+        },
+        {
+          "name": "Live read-only RPC: get_inventory_readiness",
+          "status": "PASS",
+          "detail": {
+            "ready": false,
+            "active_orders": 0,
+            "invalid_stock": [],
+            "missing_counts": [
+              {
+                "id": "e5c284ec-e161-4e85-8582-53abd7ef0a70",
+                "name": "Bread Flour"
+              },
+              {
+                "id": "03573f83-bab7-46c4-ba31-28150d51f928",
+                "name": "Butter"
+              },
+              {
+                "id": "bc73e213-ea80-46e0-bb0d-d6004ef081f0",
+                "name": "Eggs"
+              },
+              {
+                "id": "eb23526f-a06c-4fa6-b4e8-d97e41c7d634",
+                "name": "French Fries (frozen)"
+              },
+              {
+                "id": "737914bc-d1aa-4e23-8666-1334161ced05",
+                "name": "Frying Oil"
+              }
+            ],
+            "missing_recipes": [],
+            "active_stock_items": 67,
+            "enforcement_enabled": true
+          }
+        },
+        {
+          "name": "Live read-only RPC: get_customer_branch",
+          "status": "PASS",
+          "detail": {
+            "name": "Jayds Café · Main branch",
+            "hours": [],
+            "address": "Jayds Cafe, Dasmariñas, Cavite",
+            "version": "2026-10-03T14:41:48.674144+00:00",
+            "closures": [],
+            "latitude": 14.346621,
+            "timezone": "Asia/Manila",
+            "longitude": 120.981057,
+            "contact_phone": null,
+            "delivery_radius_km": 8,
+            "scheduled_pickup_enabled": false
+          }
+        },
+        {
+          "name": "Live read-only RPC: get_customer_scheduling_admin",
+          "status": "PASS",
+          "detail": {
+            "settings": {
+              "id": true,
+              "name": "Jayds Café · Main branch",
+              "address": "Jayds Cafe, Dasmariñas, Cavite",
+              "latitude": 14.346621,
+              "longitude": 120.981057,
+              "updated_at": "2026-10-03T14:41:48.674144+00:00",
+              "closure_dates": [],
+              "contact_phone": null,
+              "regular_hours": [],
+              "delivery_radius_km": 8,
+              "slot_item_capacity": null,
+              "slot_order_capacity": null,
+              "minimum_notice_minutes": 20,
+              "production_verified_at": null,
+              "production_verified_by": null,
+              "preparation_lead_minutes": 10,
+              "scheduled_pickup_enabled": false,
+              "production_recipe_fingerprint": null,
+              "production_verification_reason": null
+            },
+            "production_ready": false
+          }
+        },
+        {
+          "name": "Live profile role and approval counts",
+          "status": "PASS",
+          "detail": {
+            "staff:approved": 1,
+            "customer:approved": 3,
+            "admin:approved": 1,
+            "customer:unapproved": 3
+          }
+        },
+        {
+          "name": "Live stock has no negative physical balances",
+          "status": "PASS",
+          "detail": {
+            "negativeBalanceCount": 0
+          }
+        }
+      ],
+      "checks": 15,
+      "passed": 15,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Extra customer forms",
+      "scope": "hosted UI with isolated account/address writes",
+      "data": [
+        {
+          "feature": "profile: missing phone is required and cannot clear the saved contact",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "profile: invalid phone rejects without write",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "profile: failed save retains values",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "profile: retry saves normalized phone",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "password: mismatched confirmation blocks verification",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "password: current-password verification failure retains entry",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "password: successful isolated change clears password fields",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "saved addresses: missing destination validation",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "saved addresses: map search and selection",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "saved addresses: save failure retains destination",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "saved addresses: create and reload",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "saved addresses: edit complete address",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "saved addresses: cancel removal performs no write",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        },
+        {
+          "feature": "saved addresses: remove failure and successful retry",
+          "status": "PASS",
+          "detail": "Verified in Playwright with isolated writes"
+        }
+      ],
+      "checks": 14,
+      "passed": 14,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Extra admin modals",
+      "scope": "hosted UI with isolated data and failure injection",
+      "data": [
+        {
+          "feature": "margin: opens and displays data",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "margin: accessible dialog semantics",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "margin: Escape dismissal",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "margin: close button works",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "best-seller: opens and displays data",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "best-seller: accessible dialog semantics",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "best-seller: Escape dismissal",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "best-seller: close button works",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "heatmap: opens and displays data",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "heatmap: accessible dialog semantics",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "heatmap: Escape dismissal",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "heatmap: close button works",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "category options: opens",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "category options: accessible dialog semantics",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "category options: Escape dismissal",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "margin: failed item read remains dismissible",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "margin: failed item read retries successfully and focus returns after Escape",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        },
+        {
+          "feature": "analytics: PNG report download",
+          "status": "PASS",
+          "detail": "Verified in Playwright"
+        }
+      ],
+      "checks": 18,
+      "passed": 18,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Signup/email recovery forms",
+      "scope": "hosted UI, intercepted Auth; no email/account creation",
+      "data": [
+        {
+          "feature": "Customer: missing phone blocks registration without an Auth request",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Customer: malformed phone blocks registration without an Auth request",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Customer: mismatched registration passwords block request",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Customer: registration failure retains fields",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Customer: successful signup goes to email verification",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Customer: recovery failure retains email",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Customer: recovery retry goes to check-email",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Customer: recovery resend has a cooldown",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Staff: mismatched registration passwords block request",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Staff: registration failure retains fields",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Staff: successful signup goes to email verification",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Staff: recovery failure retains email",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        },
+        {
+          "feature": "Staff: recovery retry goes to check-email",
+          "status": "PASS",
+          "detail": "Hosted form with isolated Auth responses"
+        }
+      ],
+      "checks": 13,
+      "passed": 13,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Remaining Admin forms, states and legacy modal",
+      "scope": "served UI, actual isolated SQL and explicit provider-response fixtures",
+      "data": [
+        {
+          "feature": "Categories: create with description, reject case-insensitive duplicate without extra row",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 2676ms"
+        },
+        {
+          "feature": "Categories: rename + description, disable and re-enable persist after reload",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 2968ms"
+        },
+        {
+          "feature": "Menu: create product with all four tabs, recipe multiplier, option and confirmation cancellation",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 3226ms"
+        },
+        {
+          "feature": "Menu editor: copy option library once, add-on fields, duplicate recipe validation and saved option/multiplier persistence",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 4282ms"
+        },
+        {
+          "feature": "Menu: archive removes published catalog, restore preserves recipe/options and re-publishes",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 2297ms"
+        },
+        {
+          "feature": "Categories: positive permanent deletion keeps linked product and removes its category",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1087ms"
+        },
+        {
+          "feature": "Option recipe editor: save replacement, size multiplier, injected failure/retry, remove mapping",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 4177ms"
+        },
+        {
+          "feature": "Supplier: all fields create, edit, deactivate/reactivate and server-error input retention",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 4836ms"
+        },
+        {
+          "feature": "Purchase: positive create with pack conversion, retained failed save, edit and no premature stock movement",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 14170ms"
+        },
+        {
+          "feature": "Purchase: positive cancellation, failed transition retention and final cancelled history",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1796ms"
+        },
+        {
+          "feature": "Receiving: blank reference/over-receipt cannot post; failure/retry posts full receipt exactly once",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 5982ms"
+        },
+        {
+          "feature": "Voucher edit: selected-item requirement, percentage cap/tier/date/uses, failed save retention and confirmed retry",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 6434ms"
+        },
+        {
+          "feature": "Scheduling: UI production gate rejects uncounted stock and retains verification record",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 2478ms"
+        },
+        {
+          "feature": "Scheduling: counted fixture verification, seven days/hours/closures/capacities save, real SQL slots",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 5111ms"
+        },
+        {
+          "feature": "Provider reconciliation UI: maya blank gate, failed read retains ID, trimmed retry and verified association notice",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1893ms"
+        },
+        {
+          "feature": "Provider reconciliation UI: lalamove blank gate, failed read retains ID, trimmed retry and verified association notice",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1441ms"
+        },
+        {
+          "feature": "Order history details: all six order states, paid/failed/refunded, app/POS and pickup/delivery/legacy data render",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 12225ms"
+        },
+        {
+          "feature": "Order Details: accessible labelled dialog semantics",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 32ms"
+        },
+        {
+          "feature": "Order Details: Escape dismissal",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 77ms"
+        },
+        {
+          "feature": "Admin toasts: incomplete voucher form announces its first invalid field and preserves focus/input",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1768ms"
+        },
+        {
+          "feature": "Admin toasts: duplicate announcements collapse; focused toast pauses dismissal on a phone viewport",
+          "status": "PASS",
+          "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 6985ms"
+        }
+      ],
+      "checks": 21,
+      "passed": 21,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Customer wallet",
+      "scope": "served UI, isolated vouchers and loyalty tiers",
+      "data": [
+        {
+          "feature": "Voucher wallet: current offer only; expired/future/exhausted offers excluded; copy and denied clipboard fallback",
+          "status": "PASS",
+          "detail": "Served customer wallet with isolated catalog/profile/voucher responses"
+        },
+        {
+          "feature": "Voucher wallet: empty bag refuses apply without validation request",
+          "status": "PASS",
+          "detail": "Served customer wallet with isolated catalog/profile/voucher responses"
+        },
+        {
+          "feature": "Voucher wallet: failed validation retains bag; retry applies and Review bag displays discount",
+          "status": "PASS",
+          "detail": "Served customer wallet with isolated catalog/profile/voucher responses"
+        },
+        {
+          "feature": "Voucher wallet: read failure and empty offers states; Rewards navigation",
+          "status": "PASS",
+          "detail": "Served customer wallet with isolated catalog/profile/voucher responses"
+        },
+        {
+          "feature": "Rewards wallet: zero/intermediate/top tier, safe malformed perks and navigation to vouchers",
+          "status": "PASS",
+          "detail": "Served customer wallet with isolated catalog/profile/voucher responses"
+        }
+      ],
+      "checks": 5,
+      "passed": 5,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Customer scheduling UI",
+      "scope": "served UI, isolated windows/capacity/closures",
+      "data": [
+        {
+          "feature": "Customer scheduling UI: cash disabled, full-order and insufficient-item slots disabled, available slot selectable",
+          "status": "PASS",
+          "detail": "Served customer UI with isolated slot fixtures; actual scheduling SQL tested separately"
+        },
+        {
+          "feature": "Customer scheduling UI: tomorrow selection changes request date and review preserves Maya/window without auto-submission",
+          "status": "PASS",
+          "detail": "Served customer UI with isolated slot fixtures; actual scheduling SQL tested separately"
+        },
+        {
+          "feature": "Customer scheduling UI: unavailable read reports error; navigation retry recovers slots",
+          "status": "PASS",
+          "detail": "Served customer UI with isolated slot fixtures; actual scheduling SQL tested separately"
+        },
+        {
+          "feature": "Customer scheduling UI: closure shows no slots and review rejects missing window",
+          "status": "PASS",
+          "detail": "Served customer UI with isolated slot fixtures; actual scheduling SQL tested separately"
+        },
+        {
+          "feature": "Customer scheduling UI: switching to immediate pickup restores cash and clears scheduled review window",
+          "status": "PASS",
+          "detail": "Served customer UI with isolated slot fixtures; actual scheduling SQL tested separately"
+        }
+      ],
+      "checks": 5,
+      "passed": 5,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual customer cloud writes",
+      "scope": "temporary real customer accounts and owner-only writes; cleanup verified",
+      "data": [
+        {
+          "feature": "Real customer identities: create isolated test accounts and verify customer-only profiles",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Hosted customer login uses real customer role and all protected account pages load",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real profile form: normalized phone/name save persists across new session",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real cloud favorites: add/idempotent retry, reload in UI, second account isolation and remove",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real account QR: customer UI generates image, approved cashier resolves same customer, customer-role lookup denied",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real saved address: customer owns create/read; other customer cannot read/update/delete it",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real saved address UI rename and reload",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real support: customer submission/read, other account isolation, actual Admin inbox sees the same case",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real customer privilege boundaries: role/points escalation rejected and Admin/POS access denied",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real current-password verification + password change, old login rejected and new login accepted",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Real customer logout removes private account access",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        },
+        {
+          "feature": "Cleanup: exact temporary customer records/accounts removed; no café transaction created",
+          "status": "PASS",
+          "detail": "Actual hosted Auth, customer identity, API and database"
+        }
+      ],
+      "checks": 12,
+      "passed": 12,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual cash order interconnection",
+      "scope": "real unpaid guest order, POS/Admin reads and Realtime, cancellation and stock comparison",
+      "data": [
+        {
+          "feature": "Live interconnection setup: authenticated POS/Admin and approved-staff Realtime subscription",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live guest order creation and canonical duplicate retry reserve one order",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live original guest sees private order; fresh guest is denied",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live order appears in already-open POS and Admin; stock version broadcasts to approved staff",
+          "status": "PASS",
+          "detail": "Actual approved-staff database event observed 1848ms after submission; same order visible in both open apps"
+        },
+        {
+          "feature": "Live customer cancellation twice is idempotent and releases all unconsumed reservations",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live test cleanup: unpaid order is cancelled and physical stock was never consumed",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        }
+      ],
+      "checks": 6,
+      "passed": 6,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual Maya cancellation interconnection",
+      "scope": "real unpaid Maya guest order, hosted checkout/reuse/provider cancellation return and supported order cancellation",
+      "data": [
+        {
+          "feature": "Live interconnection setup: authenticated POS/Admin and approved-staff Realtime subscription",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live guest order creation and canonical duplicate retry reserve one order",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live original guest sees private order; fresh guest is denied",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live Maya integration: hosted checkout creation/reuse, provider page and signed cancellation return to same guest order",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live order appears in already-open POS and Admin; stock version broadcasts to approved staff",
+          "status": "PASS",
+          "detail": "Actual approved-staff database event observed 1598ms after submission; same order visible in both open apps"
+        },
+        {
+          "feature": "Live customer cancellation twice is idempotent and releases all unconsumed reservations",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        },
+        {
+          "feature": "Live test cleanup: unpaid order is cancelled and physical stock was never consumed",
+          "status": "PASS",
+          "detail": "Actual hosted applications, API, PostgreSQL and Auth"
+        }
+      ],
+      "checks": 7,
+      "passed": 7,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual sandbox providers",
+      "scope": "hosted quote, sandbox booking/lookup/cancel, Maya checkout/merchant cancellation",
+      "data": [
+        {
+          "feature": "Hosted courier quotation: real sandbox quote, PHP fee, signed token and unexpired result",
+          "status": "PASS",
+          "detail": "Actual hosted quotation returned PHP, valid expiry and signed destination token"
+        },
+        {
+          "feature": "Courier sandbox: real quotation and supported motorcycle route",
+          "status": "PASS",
+          "detail": "Real external sandbox API; no café sale or physical stock change"
+        },
+        {
+          "feature": "Courier sandbox: booking, retrieve canonical order and cancellation",
+          "status": "PASS",
+          "detail": "Actual sandbox booking and canonical lookup succeeded; cancellation returned 204. Rider transitions/webhook delivery are separate gates."
+        },
+        {
+          "feature": "Maya sandbox: real checkout creation through maintained service",
+          "status": "PASS",
+          "detail": "Actual provider checkout created. This provider-only checkout is not a café order and cannot establish café settlement."
+        },
+        {
+          "feature": "Maya sandbox: hosted provider page opens and Back to Merchant follows cancellation URL",
+          "status": "PASS",
+          "detail": "Real provider UI cancellation redirected to the merchant. Success/decline/expiry and real webhook settlement remain unverified."
+        }
+      ],
+      "checks": 5,
+      "passed": 5,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "QR optical decoder",
+      "scope": "actual served decoder, synthetic camera pixels at three rotations",
+      "data": [
+        {
+          "feature": "Real browser QR decoder reads synthetic camera pixels at 0 degrees once and stops the stream",
+          "status": "PASS",
+          "detail": "Served POS + actual html5-qrcode decoder + canvas camera stream. Physical lens/lighting/phone screen remain a hands-on gate."
+        },
+        {
+          "feature": "Real browser QR decoder reads synthetic camera pixels at 90 degrees once and stops the stream",
+          "status": "PASS",
+          "detail": "Served POS + actual html5-qrcode decoder + canvas camera stream. Physical lens/lighting/phone screen remain a hands-on gate."
+        },
+        {
+          "feature": "Real browser QR decoder reads synthetic camera pixels at 180 degrees once and stops the stream",
+          "status": "PASS",
+          "detail": "Served POS + actual html5-qrcode decoder + canvas camera stream. Physical lens/lighting/phone screen remain a hands-on gate."
+        }
+      ],
+      "checks": 3,
+      "passed": 3,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual Maya success outcome",
+      "scope": "real provider UI, published sandbox card; CAPTCHA gate",
+      "data": [
+        {
+          "feature": "Maya actual sandbox success card outcome",
+          "status": "BLOCKED",
+          "detail": "Published sandbox card fields completed; Confirm and pay remains disabled beside the unchecked I'm not a robot reCAPTCHA. Human completion is required. No challenge-solving/bypass attempted."
+        }
+      ],
+      "checks": 1,
+      "passed": 0,
+      "failed": 0,
+      "blocked": 1
+    },
+    {
+      "name": "Final hosted cleanup",
+      "scope": "cancelled unpaid audit orders; zero temporary Auth/support records; read-only",
+      "data": [
+        {
+          "feature": "All recorded audit orders are cancelled, unpaid and unconsumed, with no active stock reservations",
+          "status": "PASS",
+          "detail": "Actual hosted final read-only cleanup verification"
+        },
+        {
+          "feature": "No active temporary audit Auth identities or support cases remain; immutable legal records may be retained",
+          "status": "PASS",
+          "detail": "Actual hosted final read-only cleanup verification"
+        }
+      ],
+      "checks": 2,
+      "passed": 2,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual hosted receipt print control",
+      "scope": "browser print action and print media on a cancelled audit order; no physical printer",
+      "data": [
+        {
+          "feature": "Accepted receipt: Print accepted order invokes the browser print action once",
+          "status": "PASS",
+          "detail": "Actual hosted accepted order; browser print function/media only; no receipt printer"
+        },
+        {
+          "feature": "Accepted receipt: print media preserves total/items and hides the print action",
+          "status": "PASS",
+          "detail": "Actual hosted accepted order; browser print function/media only; no receipt printer"
+        },
+        {
+          "feature": "Accepted receipt: printed ticket retains its order number",
+          "status": "PASS",
+          "detail": "Actual hosted accepted order; browser print function/media only; no receipt printer"
+        }
+      ],
+      "checks": 3,
+      "passed": 3,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual hosted geocoding",
+      "scope": "public hosted search/reverse Photon responses",
+      "data": [
+        {
+          "feature": "Actual hosted address search returns bounded Philippine destinations",
+          "status": "PASS",
+          "detail": "Actual hosted route and Photon provider response; public test coordinates only"
+        },
+        {
+          "feature": "Actual hosted reverse geocoding returns a valid destination",
+          "status": "PASS",
+          "detail": "Actual hosted route and Photon provider response; public test coordinates only"
+        }
+      ],
+      "checks": 2,
+      "passed": 2,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Required and optional form guidance",
+      "scope": "rendered field markers, red colour, phone layout and conditional guest help",
+      "data": [
+        {
+          "feature": "Customer /login: required and optional labels",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        },
+        {
+          "feature": "Customer /register: required and optional labels",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        },
+        {
+          "feature": "Customer /forgot-password: required and optional labels",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        },
+        {
+          "feature": "Staff /login: required and optional labels",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        },
+        {
+          "feature": "Staff /register: required and optional labels",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        },
+        {
+          "feature": "Staff /forgot-password: required and optional labels",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        },
+        {
+          "feature": "Admin /login: required and optional labels",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        },
+        {
+          "feature": "Guest help: order ID is required; message and subject are required",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        },
+        {
+          "feature": "Customer registration: blank and malformed phone cannot submit an account",
+          "status": "PASS",
+          "detail": "Rendered labels, marker colour, conditional guest requirement and phone layout; no account/email/order writes"
+        }
+      ],
+      "checks": 9,
+      "passed": 9,
+      "failed": 0,
+      "blocked": 0
+    },
+    {
+      "name": "Actual hosted repair regressions",
+      "scope": "hidden archived fixtures and future voucher, temporary customer tiers, scheduled push worker; exact cleanup",
+      "data": [
+        {
+          "feature": "Hosted category deletion preserves an archived product, its option and its recipe",
+          "status": "PASS",
+          "detail": "Verified on hosted backend"
+        },
+        {
+          "feature": "Temporary Bronze/Gold identities and an unpublished future voucher are isolated",
+          "status": "PASS",
+          "detail": "Verified on hosted backend"
+        },
+        {
+          "feature": "Hosted voucher validation rejects Bronze and guests; Gold passes tier checking",
+          "status": "PASS",
+          "detail": "Verified on hosted backend"
+        },
+        {
+          "feature": "Hosted authoritative order pricing rejects ineligible tiers before any order or voucher usage",
+          "status": "PASS",
+          "detail": "Verified on hosted backend"
+        },
+        {
+          "feature": "Configured push cron has executed and its hosted worker returned HTTP 200",
+          "status": "PASS",
+          "detail": {
+            "cron_active": true,
+            "last_request_at": "2026-10-13T01:11:00.050782+00:00",
+            "last_cron_status": "succeeded",
+            "last_http_status": 200,
+            "vault_configured": true
+          }
+        },
+        {
+          "feature": "Owned fixture records cleaned; legal-acknowledgement identities retired without deleting legal evidence",
+          "status": "PASS",
+          "detail": {
+            "retiredIdentities": 2,
+            "pointsReset": true,
+            "approvalRemoved": true,
+            "oldEmailIdentityRemoved": true,
+            "immutableLegalRecordsRetained": 2,
+            "noSaleOrStockMovement": true
+          }
+        }
+      ],
+      "checks": 6,
+      "passed": 6,
+      "failed": 0,
+      "blocked": 0
+    }
+  ],
+  "units": [
+    {
+      "name": "mounted staff and Admin operations stay in their own app",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "valid guest order uses the catalog name, price, and zero earned points",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "rejects the audited zero-total order",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "rejects forged unit prices and item subtotals",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "uses catalog variant prices and rejects unknown variants",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "rejects unavailable items and fractional quantities",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "calculates voucher caps and points discounts from stored values",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "rejects fake discounts, expired vouchers, and insufficient points",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "delivery fees require a valid, unaltered quote for the submitted address",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Maya verification requires the merchant key and rejects invalid checkout IDs",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "only merchant-retrieved payment data reaches the checked settlement transaction",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Maya rejects payments with the wrong amount, currency, or identity",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "merchant-retrieved Maya cancellations close the attempt as failed and never record a paid sale",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "delayed payment callbacks cannot undo paid or refunded payments",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "a successful payment callback does not reopen a cancelled order",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "a forged success webhook cannot bypass provider verification",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "account order cannot be cancelled without authentication",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "another account cannot cancel the order",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "paid customer cancellation requires Admin refund review and cannot alter payment or stock",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "guest UUID possession cannot bypass the signed guest grant",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "inventory backfills preserve original records and legacy UPDATE trigger states without replaying events",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "LAN HTTP UUID generation preserves version, variant and cryptographic entropy without randomUUID",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "blocked browser storage retains the same submission key and immutable retry payload until cleared",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "category permanent deletion preserves linked products as the Admin confirmation promises",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "native PostgreSQL locks channel orders, cash sales, duplicate retries, receiving, and stale counts",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "late recommendation success is discarded on account switch; guests never request private picks",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "late recommendation failure is discarded on account switch; guests never request private picks",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "customer headers reject a late account switch and guest-to-account switch before a private action",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "late favorite success never replaces the next account's favorites or error",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "late favorite failure never replaces the next account's favorites or error",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "profile fields and passwords remount for another account while a failed save retains the current account's entry",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "delayed current-password verification never changes global auth or completes a password change after account switch",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "customer bag preserves distinct notes and options while merging normalized configurations",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "corrupt persisted drafts cannot introduce nonfinite totals or fractional quantities",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "reorder explains changed prices and excludes removed options without replacing an existing bag",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "provider checkout/tracking URLs allow only known HTTPS hosts, without credential or hostname tricks",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "push endpoints and key lengths reject arbitrary/private destinations and malformed subscriptions",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "push registration derives account/guest ownership from verified access and logout revocation remains owner scoped",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "push worker revalidates the claimed authorization and terminal provider failure disables the subscription",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "legal revision preserves old acknowledgements and requires distinct acceptance of the current version",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "customer feature SQL protects legal/support records and guest notification grants across lease recovery",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "delivery requires a valid contact before pricing or provider calls, while formatted mobile contacts reach pricing",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "personal suggestions exclude bought, archived, sold-out and unrelated products; no-history gets none",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "recency/frequency weights change each account's ranking and order-again uses newest purchases",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "suggestions diversify similarly ranked categories, cap at four, and remain empty without relevant anchors",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "reorder rejects newly required groups, incompatible sizes and duplicate options, but allows distinct add-ons",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "database history includes linked app/POS paid completions, deduplicates units and reads beyond 200 orders",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "recommendation route derives owner from authentication, returns private reads and propagates unavailable data",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Manila day boundaries and pickup quantity checks are stable",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Scheduling is disabled until real physical counts, recipe verification, hours and both capacities exist",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Atomic booking enforces item and order capacity, reserves pickup-eligible physical batches, and retries once",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Unpaid deadlines release stock and capacity once; late or failed Maya cannot resurrect a booking",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Preparation due gate consumes once, cancellation retains consumed stock and committed slot load, and demand uses pickup date",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Near-term payment deadline is preparation due, closures and minimum notice reject stale windows, and unchanged historical fields survive migration",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "order QR presentation is restricted to its authorized ready pickup, including cash at handover, and never delivery",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "guest access requires an untampered signed device cookie and matching scoped server grant",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "explicit LAN preview origins pass without trusting forwarded Host headers or lookalike origins",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "account ownership, approved staff, origin, and field projection are enforced",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "security SQL blocks escalation, preserves growing numbering, deduplicates attempts and records late paid honestly",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "cashier receipt URLs follow the actual private LAN host while configured public domains remain authoritative",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "full-schema Maya/voucher pickup, Register cash and mobile cash handover credit loyalty and consume once",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "inventory RPCs and RLS require approved Admin, retain trusted paths and helper privileges",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Inventory setup reports exact blockers and activates demo balances without changing old stock or orders",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "PostgreSQL reserves stock across simultaneous channel submissions and rejects overselling atomically",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "stock is consumed once at preparation and cancellation releases only unconsumed reservations",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "submission retries are idempotent and snapshots survive recipe edits",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "expired batches cannot be sold and unauthenticated callers cannot access operational records or RPCs",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "receipts remain idempotent, waste is audited, and stale physical counts require recounting",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "purchase approval never adds stock; partial receiving validates outstanding quantities",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "forecast math includes calendar zeros, uses weekday history, and rounds replenishment packs",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "rewards and voucher counters roll back completely when reservations fail",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "replacement ingredients and size multipliers resolve exact configuration availability",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "maintenance reallocates expired batches, flags unresolved shortages, and expires unpaid orders",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "forecast fixtures generate pack-rounded drafts and preserve human edits without duplicates",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "manual disabling and archived publication survive receiving; private RPCs reject customer roles",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "parked orders reserve nothing and revalidate stock, prices, recipes, and cost when resumed",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "same-ingredient substitutions can reduce or remove sugar without changing accepted requirements",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "sparse forecasts include calendar zeros, expose expiry, and leave threshold purchases to an administrator",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "activation requires fresh physical counts and settled orders",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "expiry and cancellation atomically return points and vouchers once; reversal failures retain stock reservations",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "legacy approval migration closes direct role-only gaps while preserving owners, approved Admin and cashier flows",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Maya return state binds order, attempt and outcome, expires promptly, and rejects tampering",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Maya returns preserve trusted LAN customers, retain cashier portal routing, and reject spoofed origins",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "signed Maya links retain existing order paths and status parameters for each return outcome",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "browser state never bypasses order authorization or canonical payment-attempt matching",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "checkout uses real accepted buyer data, omits fabricated defaults, and embeds signed durable-attempt returns",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "inventory migrations apply over the entire existing production schema and preserve opening balances",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "unexpected order database failures hide SQL details and remain retryable; business conflicts retain their explanation",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "production guards preserve approved manager voids, atomic reward reversals, reservation release, and actor scope",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "production manager void rejects null PIN and identity forgery, retains prepared consumption, and rolls back failed reversals",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "production receipts use accepted prices and recorded tender, reuse snapshots, and leave historical cash tender unknown",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "mobile cash handover forwards its matching private QR and tender to the checked operation",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "cash checkout retry returns the stored receipt before repricing an unavailable catalog",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "cashier delivery bridge preserves staff identity, separates pickup, and delegates only checked booking/status endpoints",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "cash checkout reports missing migration before creating any sale",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "cashier mutations verify approved database roles rather than token metadata",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "delivery cannot use pickup tokens or counter collection; ordinary pickup is unchanged",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "guest app pickup requires its order QR and cannot be collected through a counter action",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "register line identities preserve notes, normalize options, merge quantities, and recover drafts safely",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "cash checkout commits canonical orders, rewards, reservations, tender and one reusable receipt",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "invalid tender, changed totals, insufficient stock, and receipt failure leave no partial sale or rewards",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "parked drafts accept reviewed current prices while preserving the original ticket and accepted snapshots",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "existing cash orders reject expiry, cancellation, wrong payment method and unapproved staff",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "pickup checks paid and ready state, updates token and order atomically, and exposes only safe TV and receipt projections",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "parked edits preserve customer selection, reserve nothing, and replace only unpaid parked tickets",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "JSON reader accepts valid UTF-8 split inside a character and counts bytes exactly",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "order allowance accepts 100 tickets with long notes and multiple modifiers",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "streamed oversize bodies without Content-Length or with a forged small length are cancelled",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "oversize declared length rejects before reading and does not await a stalled cancel hook",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "malformed JSON, malformed UTF-8, empty and nonobject bodies have sanitized 400 errors",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "stalled reads time out, release their reader, and do not await underlying cancellation",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "a steady trickle cannot reset the whole-body deadline",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "continuously available empty chunks cannot starve the read deadline",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "client aborts and failing body streams return sanitized errors and cancel promptly",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "guest JSON route preserves private public 400/413 responses before grant or database access",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Maya webhook uses the larger byte limit and rejects invalid bodies before provider verification",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Admin reconciliation preserves 400/413 public errors before authentication or provider forwarding",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Gold-only voucher pricing accepts an eligible Gold customer (positive control)",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Gold-only voucher pricing rejects a Bronze customer before accepting a discount",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    },
+    {
+      "name": "Gold-only voucher pricing rejects an unauthenticated guest before accepting a discount",
+      "status": "PASS",
+      "scope": "isolated backend/migrations"
+    }
+  ],
+  "limits": [
+    "Actual Maya success/decline/expiry/refund/settlement still requires human CAPTCHA and merchant workflow",
+    "Sandbox courier quote/booking/cancel verified; real rider/provider webhook transitions remain unverified",
+    "Physical phone installation, laptop webcam scan, audible alerts and background phone push remain direct device checks; no receipt printer is expected",
+    "Scheduled pickup remains disabled until operator supplies capacities, closure/weekdays and fresh physical stock counts; supplied 13:00–22:00 hours are recorded without inventing missing values",
+    "Build-tool dependency advisories remain; production dependency audit reports zero",
+    "Sustained load/soak and backup/restore are not certified; passing counts are named scenarios, not exhaustive coverage percentages",
+    "Dedicated tax/VAT, net profit after expenses/tax and business net worth are absent; user requested information only, no implementation"
+  ]
+}

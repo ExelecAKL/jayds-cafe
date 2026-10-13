@@ -35,9 +35,9 @@ export function useNotifications(userId: string | null | undefined) {
   }, [userId]);
 
   useEffect(() => {
-    void fetchNotifications();
+    const timer = window.setTimeout(() => void fetchNotifications(), 0);
 
-    if (!userId) return;
+    if (!userId) return () => window.clearTimeout(timer);
 
     // Clean up any existing channel first
     if (channelRef.current) {
@@ -61,6 +61,7 @@ export function useNotifications(userId: string | null | undefined) {
     channelRef.current = channel;
 
     return () => {
+      window.clearTimeout(timer);
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;

@@ -1,4 +1,6 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
+import { notifyAdmin } from "./AdminToasts";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { useState, type FormEvent } from "react";
@@ -47,6 +49,7 @@ function SupplierForm({
         : await supabase.from("suppliers").insert(form);
       if (result.error) throw new Error(result.error.message);
       await ops.refresh();
+      notifyAdmin("Supplier saved.", "success");
       onClose();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Save failed");
@@ -64,6 +67,7 @@ function SupplierForm({
       <form className="ops-form" onSubmit={save}>
         <label>
           Supplier name
+          <FieldRequirement required={true} />
           <input
             required
             value={form.name}
@@ -72,6 +76,7 @@ function SupplierForm({
         </label>
         <label>
           Contact person
+          <FieldRequirement required={false} />
           <input
             value={form.contact_name}
             onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
@@ -80,6 +85,7 @@ function SupplierForm({
         <div className="ops-form-grid">
           <label>
             Email
+            <FieldRequirement required={false} />
             <input
               type="email"
               value={form.email}
@@ -88,6 +94,7 @@ function SupplierForm({
           </label>
           <label>
             Phone
+            <FieldRequirement required={false} />
             <input
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -96,6 +103,7 @@ function SupplierForm({
         </div>
         <label>
           Default lead time (days)
+          <FieldRequirement required={true} />
           <input
             type="number"
             min="0"
@@ -110,6 +118,7 @@ function SupplierForm({
         </label>
         <label>
           Notes
+          <FieldRequirement required={false} />
           <textarea
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
@@ -122,6 +131,7 @@ function SupplierForm({
             onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
           />
           Active supplier
+          <FieldRequirement required={false} />
         </label>
         <div className="ops-form-actions">
           <button
@@ -189,6 +199,7 @@ function PurchaseForm({
         p_notes: notes,
         p_lines: lines,
       });
+      notifyAdmin("Purchase draft saved.", "success");
       onClose();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Save failed");
@@ -209,6 +220,7 @@ function PurchaseForm({
         <div className="ops-form-grid">
           <label>
             Supplier
+            <FieldRequirement required={true} />
             <select
               required
               value={supplier}
@@ -226,6 +238,7 @@ function PurchaseForm({
           </label>
           <label>
             Expected delivery
+            <FieldRequirement required={false} />
             <input
               type="date"
               value={expected}
@@ -239,6 +252,7 @@ function PurchaseForm({
             <div className="ops-recipe-line" key={index}>
               <label>
                 Stock item
+                <FieldRequirement required={true} />
                 <select
                   required
                   value={line.ingredient_id}
@@ -273,6 +287,7 @@ function PurchaseForm({
               <div className="ops-form-grid">
                 <label>
                   Purchasing packs
+                  <FieldRequirement required={true} />
                   <input
                     type="number"
                     min="0.001"
@@ -300,6 +315,7 @@ function PurchaseForm({
                 </label>
                 <label>
                   Cost per base unit (PHP)
+                  <FieldRequirement required={false} />
                   <input
                     type="number"
                     min="0"
@@ -341,6 +357,7 @@ function PurchaseForm({
         </button>
         <label>
           Notes
+          <FieldRequirement required={false} />
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
         </label>
         <div className="ops-form-summary">
@@ -448,6 +465,7 @@ function ReceiveForm({
         })),
         p_key: key,
       });
+      notifyAdmin("Stock received.", "success");
       onClose();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Receiving failed");
@@ -467,6 +485,7 @@ function ReceiveForm({
       <form className="ops-form" onSubmit={save}>
         <label>
           Delivery / invoice reference
+          <FieldRequirement required={true} />
           <input
             required
             value={reference}
@@ -484,6 +503,7 @@ function ReceiveForm({
               <div className="ops-form-grid">
                 <label>
                   Actual quantity ({stock?.unit})
+                  <FieldRequirement required={false} />
                   <input
                     type="number"
                     min="0"
@@ -503,6 +523,7 @@ function ReceiveForm({
                 </label>
                 <label>
                   Actual cost / base unit
+                  <FieldRequirement required={false} />
                   <input
                     type="number"
                     min="0"
@@ -521,6 +542,7 @@ function ReceiveForm({
                 </label>
                 <label>
                   Batch / lot
+                  <FieldRequirement required={false} />
                   <input
                     value={line.batch_code}
                     onChange={(e) =>
@@ -535,7 +557,8 @@ function ReceiveForm({
                   />
                 </label>
                 <label>
-                  Expiry (optional)
+                  Expiry
+                  <FieldRequirement required={false} />
                   <input
                     type="date"
                     value={line.expires_on}

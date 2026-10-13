@@ -1,4 +1,6 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
+import { normalizeContactPhone, isValidContactPhone } from "@cafeos/shared/customer/phone";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -268,7 +270,7 @@ export default function CheckoutPage() {
         !quote ||
         Date.parse(quote.expiresAt) <= Date.now() ||
         !name.trim() ||
-        !/^\+?[0-9 ()-]{10,20}$/.test(phone))
+        !isValidContactPhone(normalizeContactPhone(phone)))
     ) {
       setError(
         "Choose a destination, recipient and valid phone number, then refresh the quotation.",
@@ -299,7 +301,7 @@ export default function CheckoutPage() {
           deliveryQuoteToken: quote?.quoteToken ?? "",
           deliveryQuoteExpiry: quote?.expiresAt ?? "",
           recipientName: name.trim(),
-          recipientPhone: phone.trim(),
+          recipientPhone: normalizeContactPhone(phone),
           pickupSlotStart: !delivery && schedule ? slot : null,
           legalVersion: LEGAL_VERSION,
         }),
@@ -320,6 +322,7 @@ export default function CheckoutPage() {
           <section className="surface-card p-5">
             <h2 className="text-xl font-semibold">
               How would you like your order?
+              <FieldRequirement required={true} />
             </h2>
             <p className="mb-4 text-sm text-text-muted">
               {branch.name} · Pickup is available wherever you are.
@@ -358,6 +361,7 @@ export default function CheckoutPage() {
                   <>
                     <label className="block text-sm">
                       Pickup date
+                      <FieldRequirement required={true} />
                       <select
                         className="input-field mt-1 w-full"
                         value={date}
@@ -368,6 +372,10 @@ export default function CheckoutPage() {
                       </select>
                     </label>
                     {slotReason && <InlineNotice>{slotReason}</InlineNotice>}
+                    <p className="text-sm">
+                      Pickup time
+                      <FieldRequirement required={true} />
+                    </p>
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                       {slots.map((s) => (
                         <button
@@ -411,6 +419,7 @@ export default function CheckoutPage() {
                 {addresses.length > 0 && (
                   <label className="block text-sm">
                     Saved destination
+                    <FieldRequirement required={false} />
                     <select
                       className="input-field w-full"
                       value=""
@@ -441,6 +450,7 @@ export default function CheckoutPage() {
                 )}
                 <label className="block text-sm">
                   Recipient name
+                  <FieldRequirement required={true} />
                   <input
                     autoComplete="name"
                     className="input-field mt-1 w-full"
@@ -451,6 +461,7 @@ export default function CheckoutPage() {
                 </label>
                 <label className="block text-sm">
                   Recipient phone
+                  <FieldRequirement required={true} />
                   <input
                     type="tel"
                     autoComplete="tel"
@@ -479,7 +490,10 @@ export default function CheckoutPage() {
             )}
           </section>
           <section className="surface-card p-5">
-            <h2 className="mb-3 text-xl font-semibold">Payment</h2>
+            <h2 className="mb-3 text-xl font-semibold">
+              Payment
+              <FieldRequirement required={true} />
+            </h2>
             <div className="segmented-control">
               <button
                 className={paymentMethod === "cash" ? "is-selected" : ""}
@@ -500,6 +514,7 @@ export default function CheckoutPage() {
             <h2 className="text-xl font-semibold">Make it yours</h2>
             <label className="block text-sm">
               Order notes
+              <FieldRequirement required={false} />
               <textarea
                 className="input-field mt-1 w-full"
                 rows={2}
@@ -513,13 +528,17 @@ export default function CheckoutPage() {
                 Voucher and rewards
               </summary>
               <div className="flex gap-2">
-                <input
-                  aria-label="Voucher code"
-                  className="input-field min-w-0 flex-1"
-                  value={voucherCode}
-                  onChange={(e) => setVoucherCode(e.target.value)}
-                  placeholder="Voucher code"
-                />
+                <label className="block min-w-0 flex-1 text-sm">
+                  Voucher code
+                  <FieldRequirement required={false} />
+                  <input
+                    aria-label="Voucher code"
+                    className="input-field min-w-0 flex-1"
+                    value={voucherCode}
+                    onChange={(e) => setVoucherCode(e.target.value)}
+                    placeholder="Voucher code"
+                  />
+                </label>
                 <button
                   className="btn-secondary"
                   disabled={!voucherCode || busy}
@@ -542,6 +561,7 @@ export default function CheckoutPage() {
               {user && (
                 <label className="mt-3 block text-sm">
                   Use points · up to {maxPoints}
+                  <FieldRequirement required={false} />
                   <input
                     type="number"
                     min={0}

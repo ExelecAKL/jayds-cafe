@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState, type FormEvent } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { appPath } from "@cafeos/shared/utils/app-path";
@@ -110,6 +111,7 @@ export default function ProviderReconciliation({
             {attempt.provider === "maya"
               ? "Existing Maya checkout ID"
               : "Existing Lalamove order ID"}
+            <FieldRequirement required={true} />
             <input
               id={"provider-reference-" + attempt.id}
               value={providerId}

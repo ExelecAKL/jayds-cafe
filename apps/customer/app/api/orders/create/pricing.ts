@@ -6,6 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { readQuoteToken } from "../../lalamove/quote-token";
 import { readCustomerBranch } from "../../branch/lib";
 import { withinCoverage } from "../../../../lib/location";
+import { assertVoucherTier, VoucherEligibilityError } from "../../../../lib/voucher-eligibility";
 
 export class OrderValidationError extends Error {
   constructor(
@@ -18,6 +19,7 @@ export class OrderValidationError extends Error {
 
 interface Voucher {
   id: string;
+  target_tier: string | null;
   uses_count: number;
   max_uses: number | null;
   valid_from: string | null;
@@ -95,7 +97,7 @@ export async function priceOrder(
     const { data: voucherData, error: voucherError } = await db
       .from("vouchers")
       .select(
-        "id, uses_count, max_uses, valid_from, valid_until, min_order_amount, discount_type, discount_value, application_mode, applicable_item_ids, max_discount_amount",
+        "id, target_tier, uses_count, max_uses, valid_from, valid_until, min_order_amount, discount_type, discount_value, application_mode, applicable_item_ids, max_discount_amount",
       )
       .eq("code", body.voucher_code.trim().toUpperCase())
       .eq("is_active", true)
@@ -104,6 +106,11 @@ export async function priceOrder(
       throw new OrderValidationError("Failed to validate voucher", 500);
     if (!voucherData) throw new OrderValidationError("Invalid voucher code");
     voucher = voucherData as Voucher;
+    try { await assertVoucherTier(db, voucher.target_tier, userId); }
+    catch (error) {
+      if (error instanceof VoucherEligibilityError) throw new OrderValidationError(error.message, error.status);
+      throw error;
+    }
     const now = Date.now();
     if (
       (voucher.valid_from && Date.parse(voucher.valid_from) > now) ||

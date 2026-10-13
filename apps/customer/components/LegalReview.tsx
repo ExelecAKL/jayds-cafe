@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -89,6 +90,7 @@ export default function LegalReview({
             Privacy Notice
           </Link>
           . Optional alerts are a separate choice.
+          <FieldRequirement required={true} />
         </span>
       </label>
       {error && (

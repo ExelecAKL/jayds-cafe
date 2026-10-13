@@ -3,6 +3,7 @@
 
 "use client";
 
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import type { LoyaltyTier, Profile } from "@cafeos/shared/types";
@@ -320,6 +321,7 @@ export default function LoyaltyPage() {
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Amount (positive=add, negative=deduct)
+              <FieldRequirement required={true} />
             </label>
             <input
               id="points-adjustment"
@@ -334,7 +336,8 @@ export default function LoyaltyPage() {
               htmlFor="points-review-note"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Review note (optional)
+              Review note
+              <FieldRequirement required={false} />
             </label>
             <input
               id="points-review-note"

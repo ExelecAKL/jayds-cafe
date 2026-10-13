@@ -1,8 +1,9 @@
 import html2canvas from 'html2canvas';
+import { notifyAdmin } from '../components/AdminToasts';
 
-export const exportAsCsv = (data: any[], filename: string) => {
+export const exportAsCsv = (data: Record<string, unknown>[], filename: string) => {
   if (!data || data.length === 0) {
-    alert("No data available to export.");
+    notifyAdmin("No data available to export.", "error");
     return;
   }
   
@@ -37,6 +38,8 @@ export const exportAsCsv = (data: any[], filename: string) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  notifyAdmin("CSV export downloaded.", "success");
 };
 
 export const exportAsPng = async (elementId: string, filename: string) => {
@@ -58,8 +61,9 @@ export const exportAsPng = async (elementId: string, filename: string) => {
     link.download = `${filename}.png`;
     link.href = image;
     link.click();
+    notifyAdmin("PNG export downloaded.", "success");
   } catch (err) {
     console.error('Error generating image export:', err);
-    alert('Failed to generate image export.');
+    notifyAdmin('Failed to generate image export. Please retry.', 'error');
   }
 };

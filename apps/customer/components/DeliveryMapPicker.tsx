@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -236,6 +237,7 @@ export default function DeliveryMapPicker({
       <div className="delivery-map-search">
         <label className="block text-sm font-medium" htmlFor="map-search">
           Search address
+          <FieldRequirement required={false} />
         </label>
         <input
           id="map-search"
@@ -287,6 +289,7 @@ export default function DeliveryMapPicker({
       <div className="delivery-map-details">
         <label className="block text-sm font-medium">
           Complete delivery address
+          <FieldRequirement required={true} />
           <input
             className="input-field mt-1 w-full"
             value={address}
@@ -304,6 +307,7 @@ export default function DeliveryMapPicker({
           <div className="grid grid-cols-2 gap-3">
             <label className="text-xs">
               Latitude
+              <FieldRequirement required={true} />
               <input
                 className="input-field w-full"
                 type="number"
@@ -317,6 +321,7 @@ export default function DeliveryMapPicker({
             </label>
             <label className="text-xs">
               Longitude
+              <FieldRequirement required={true} />
               <input
                 className="input-field w-full"
                 type="number"

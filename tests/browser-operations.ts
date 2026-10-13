@@ -4,6 +4,8 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { readFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { cashierJourneys } from "./pos-browser-journeys.ts";
+import { completeAdminJourneys } from "./system-audit-admin-complete.ts";
+import { scannerAudit } from "./system-audit-scanner.ts";
 import {
   submissionIdentity,
   priceCatalogItems,
@@ -24,6 +26,11 @@ const demoHost = existingDemoServers
 const ports = existingDemoServers
   ? { customer: 4000, pos: 4001, admin: 4002 }
   : { customer: 4250, pos: 4251, admin: 4252 };
+const auditUrls: Record<string, string | undefined> = {
+  customer: process.env.JAYDS_AUDIT_CUSTOMER_URL,
+  pos: process.env.JAYDS_AUDIT_POS_URL,
+  admin: process.env.JAYDS_AUDIT_ADMIN_URL,
+};
 const servers: ChildProcess[] = [];
 const adminId = "10000000-0000-4000-8000-000000000001";
 const itemId = "20000000-0000-4000-8000-000000000001";
@@ -152,6 +159,9 @@ const numericFields = new Set([
   "total",
   "subtotal",
   "discount",
+  "discount_value",
+  "min_order_amount",
+  "max_discount_amount",
   "balance_after",
 ]);
 const restNumbers = (data: unknown) =>
@@ -164,6 +174,10 @@ const restNumbers = (data: unknown) =>
   );
 
 async function start(app: string, port: number) {
+  if (auditUrls[app]) {
+    assert.equal((await fetch(auditUrls[app] + "/login")).status, 200);
+    return;
+  }
   if (existingDemoServers) {
     assert.equal(
       (await fetch(`http://${demoHost}:${port}/login`)).status,
@@ -200,6 +214,11 @@ async function attach(
   port: number,
   host = demoHost,
 ) {
+  const base = auditUrls[scope] || `http://${host}:${port}`;
+  host = new URL(base).hostname;
+  const prefix = new URL(base).pathname.replace(/\/$/, "");
+  const apiPath = (url: URL) => url.pathname.startsWith(prefix + "/api/")
+    ? url.pathname.slice(prefix.length) : url.pathname;
   const user = {
     id: adminId,
     email: "qa@example.test",
@@ -228,7 +247,7 @@ async function attach(
   // Register the catch-all first: later fixtures handle known APIs. An unknown
   // operation fails locally instead of sending a synthetic mutation upstream.
   await context.route(
-    (url) => url.hostname === host && url.pathname.startsWith("/api/"),
+    (url) => url.hostname === host && apiPath(url).startsWith("/api/"),
     (route) =>
       route.fulfill({
         status: 503,
@@ -240,7 +259,7 @@ async function attach(
     (url) =>
       url.hostname === host &&
       /^\/api\/(orders\/(checkout|create|action|pickup)|account\/lookup)$/.test(
-        url.pathname,
+        apiPath(url),
       ),
     async (route) => {
       const request = route.request(),
@@ -442,7 +461,7 @@ async function attach(
     });
   });
   await context.route(
-    (url) => url.hostname === host && url.pathname === "/api/orders/delivery",
+    (url) => url.hostname === host && apiPath(url) === "/api/orders/delivery",
     async (route) => {
       const { order_id: id, action } = route.request().postDataJSON();
       const order = (
@@ -498,7 +517,7 @@ async function attach(
     },
   );
   await context.route(
-    (url) => url.hostname === host && url.pathname === "/api/orders/queue",
+    (url) => url.hostname === host && apiPath(url) === "/api/orders/queue",
     async (route) => {
       const { queue = "active", page = 0 } = route.request().postDataJSON();
       const where =
@@ -540,7 +559,7 @@ async function attach(
     await context.route(
       (url) =>
         url.hostname === host &&
-        /^\/api\/(branch|customer\/.*|pickup\/.*)$/.test(url.pathname),
+        /^\/api\/(branch|customer\/.*|pickup\/.*)$/.test(apiPath(url)),
       (route) => {
         const pathname = new URL(route.request().url()).pathname;
         return route.fulfill({
@@ -643,7 +662,7 @@ async function attach(
         const filters = [...url.searchParams].filter(
           ([k, v]) =>
             k !== "select" &&
-            (v.startsWith("eq.") || v.startsWith("in.(")) &&
+            /^(eq|neq|ilike|in)\./.test(v) &&
             /^[a-z_]+$/.test(k),
         );
         const where = filters.length
@@ -652,11 +671,16 @@ async function attach(
               .map(([k, v], i) =>
                 v.startsWith("in.(")
                   ? `${k}::text=ANY($${i + 1}::text[])`
-                  : `${k}=$${i + 1}`,
+                  : v.startsWith("neq.") ? `${k}<>$${i + 1}`
+                  : v.startsWith("ilike.") ? `${k} ILIKE $${i + 1}` : `${k}=$${i + 1}`,
               )
               .join(" AND ")
           : "";
-        if (request.method() !== "GET") {
+        const filterValues = filters.map(([, v]) => v.startsWith("in.(") ? v.slice(4, -1).split(",") : v.slice(v.indexOf(".") + 1));
+        if (request.method() === "DELETE") {
+          assert.ok(filters.length, "Destructive fixture requests require an explicit filter");
+          data = (await db.query<Record<string, unknown>>(`DELETE FROM ${name}${where} RETURNING *`, filterValues)).rows;
+        } else if (!["GET", "HEAD"].includes(request.method())) {
           const body = request.postDataJSON() as Record<string, unknown>;
           const entries = Object.entries(body);
           const sql =
@@ -670,16 +694,14 @@ async function attach(
               ),
               ...(request.method() === "POST"
                 ? []
-                : filters.map(([, v]) => v.slice(3))),
+                : filterValues),
             ])
           ).rows;
         } else
           data = (
             await db.query<Record<string, unknown>>(
               `SELECT * FROM ${name}${where}`,
-              filters.map(([, v]) =>
-                v.startsWith("in.(") ? v.slice(4, -1).split(",") : v.slice(3),
-              ),
+              filterValues,
             )
           ).rows;
         if (name === "menu_items")
@@ -720,6 +742,7 @@ async function attach(
             o.customer = null;
           }
       }
+      if (request.method() === "HEAD") return route.fulfill({ status: 200, headers: { "content-range": `0-${Math.max(0, data.length - 1)}/${data.length}`, "access-control-allow-origin": "*", "access-control-expose-headers": "content-range" }, body: "" });
       await route.fulfill({
         json: restNumbers(
           request.headers().accept?.includes("object+json")
@@ -745,10 +768,10 @@ async function attach(
   // No test token, credentials, or mutations can reach another external service.
   await context.route(
     (url) =>
-      url.protocol === "https:" && !url.hostname.endsWith(".supabase.co"),
+      url.protocol === "https:" && url.origin !== new URL(base).origin && !url.hostname.endsWith(".supabase.co"),
     (route) => route.abort(),
   );
-  return `http://${host}:${port}`;
+  return base;
 }
 const browser = await chromium.launch({
   channel: "chrome",
@@ -837,6 +860,21 @@ try {
     start("pos", ports.pos),
     start("customer", ports.customer),
   ]);
+  if (process.env.JAYDS_ADMIN_COMPLETE_ONLY === "1") {
+    const deepContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "block" });
+    const deepBase = await attach(deepContext, "admin", ports.admin);
+    try {
+      const completed = await completeAdminJourneys({ page: await deepContext.newPage(), base: deepBase, db, stockId, actor: adminId });
+      if (completed.some(row => row.status === "FAIL")) process.exitCode = 1;
+    } finally { await deepContext.close(); }
+  } else if (process.env.JAYDS_SCANNER_ONLY === "1") {
+    const scanContext = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: "block", permissions: ["camera"] });
+    const scanBase = await attach(scanContext, "pos", ports.pos);
+    try {
+      const results = await scannerAudit(await scanContext.newPage(), scanBase);
+      if (results.some(row => row.status === "FAIL")) process.exitCode = 1;
+    } finally { await scanContext.close(); }
+  } else {
   const context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
     serviceWorkers: "block",
@@ -947,7 +985,7 @@ try {
     },
   );
   await page.goto(base + "/customer-care");
-  await page.getByText(/Provider recovery is unavailable/).waitFor();
+  await page.locator("main").getByText(/Provider recovery is unavailable/).waitFor();
   assert.equal(
     await page.getByText("No uncertain provider attempts to review.").count(),
     0,
@@ -959,8 +997,8 @@ try {
   await page.getByText("ORD-10123", { exact: true }).waitFor();
   operationsUnavailable = true;
   await page.getByRole("button", { name: "Refresh operations" }).click();
-  await page.getByText(/Showing the last loaded references/).waitFor();
-  await page.getByText(/Showing the last loaded review list/).waitFor();
+  await page.locator("main").getByText(/Showing the last loaded references/).waitFor();
+  await page.locator("main").getByText(/Showing the last loaded review list/).waitFor();
   await page.getByText("ORD-10123", { exact: true }).waitFor();
   await page.getByText("Failed notification deliveries: 3").waitFor();
   assert.equal(
@@ -972,7 +1010,7 @@ try {
     .getByLabel("Private reply")
     .fill("The receipt review is in progress.");
   await page.getByRole("button", { name: "Save review" }).click();
-  await page.getByText(/The response could not save/).waitFor();
+  await page.locator("main").getByText(/The response could not save/).waitFor();
   assert.equal(
     await page.getByLabel("Private reply").inputValue(),
     "The receipt review is in progress.",
@@ -1363,13 +1401,27 @@ try {
     .click();
   await cameraPage.getByLabel("Pickup QR code").waitFor();
   await cameraPage.getByLabel("Close dialog").click();
+  if (process.env.JAYDS_SYSTEM_AUDIT === "1") {
+    const scanResults = await scannerAudit(cameraPage, cameraBase);
+    if (scanResults.some(row => row.status === "FAIL")) process.exitCode = 1;
+  }
   await cameraContext.close();
+  if (process.env.JAYDS_SYSTEM_AUDIT === "1") {
+    const deepContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "block" });
+    const deepBase = await attach(deepContext, "admin", ports.admin);
+    const deepPage = await deepContext.newPage();
+    try {
+      const completed = await completeAdminJourneys({ page: deepPage, base: deepBase, db, stockId, actor: adminId });
+      if (completed.some(row => row.status === "FAIL")) process.exitCode = 1;
+    } finally { await deepContext.close(); }
+  }
   assert.equal(errors.length, 0, errors.join("\n"));
   await posContext.close();
   await customerContext.close();
   console.log(
     "Admin desktop/tablet/phone, keyboard focus, failed saves, approval, partial receiving, all operations routes, and POS/mobile configuration availability passed against isolated PostgreSQL and Realtime protocol fixtures.",
   );
+  }
 } finally {
   await browser.close();
   await db.close();

@@ -1,4 +1,6 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
+import { notifyAdmin } from "./AdminToasts";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -117,6 +119,7 @@ function StockForm({
         : await supabase.from("ingredients").insert(payload);
       if (result.error) throw new Error(result.error.message);
       await ops.refresh();
+      notifyAdmin("Stock item saved.", "success");
       onClose();
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "Save failed");
@@ -135,15 +138,18 @@ function StockForm({
       <form className="ops-form" onSubmit={save}>
         <label>
           Item name
+          <FieldRequirement required={true} />
           <input required {...field("name")} />
         </label>
         <div className="ops-form-grid">
           <label>
-            Item code (SKU, optional)
+            Item code (SKU)
+            <FieldRequirement required={false} />
             <input {...field("sku")} />
           </label>
           <label>
             Stock type
+            <FieldRequirement required={true} />
             <select {...field("stock_kind")}>
               <option value="ingredient">Ingredient</option>
               <option value="packaging">Packaging</option>
@@ -152,6 +158,7 @@ function StockForm({
           </label>
           <label>
             Base unit
+            <FieldRequirement required={true} />
             <select
               {...field("unit")}
               disabled={!!item && Number(item.current_stock) > 0}
@@ -166,6 +173,7 @@ function StockForm({
           </label>
           <label>
             Estimated cost / base unit
+            <FieldRequirement required={true} />
             <input
               type="number"
               min="0"
@@ -176,6 +184,7 @@ function StockForm({
           </label>
           <label>
             Minimum stock alert
+            <FieldRequirement required={true} />
             <input
               type="number"
               min="0"
@@ -185,13 +194,15 @@ function StockForm({
             />
           </label>
           <label>
-            Maximum stock (optional)
+            Maximum stock
+            <FieldRequirement required={false} />
             <input type="number" min="0" step="any" {...field("max_stock")} />
           </label>
         </div>
         <h3 className="ops-section-title">Supplier & stock planning</h3>
         <label>
           Preferred supplier
+          <FieldRequirement required={false} />
           <select {...field("supplier_id")}>
             <option value="">No supplier assigned</option>
             {ops.suppliers
@@ -206,6 +217,7 @@ function StockForm({
         <div className="ops-form-grid">
           <label>
             Base units per purchasing pack
+            <FieldRequirement required={true} />
             <input
               type="number"
               min="0.001"
@@ -217,6 +229,7 @@ function StockForm({
           </label>
           <label>
             Minimum packs
+            <FieldRequirement required={true} />
             <input
               type="number"
               min="1"
@@ -227,6 +240,7 @@ function StockForm({
           </label>
           <label>
             Supplier delivery time (days)
+            <FieldRequirement required={true} />
             <input
               type="number"
               min="0"
@@ -237,6 +251,7 @@ function StockForm({
           </label>
           <label>
             Extra stock buffer (days)
+            <FieldRequirement required={true} />
             <input
               type="number"
               min="0"
@@ -247,6 +262,7 @@ function StockForm({
           </label>
           <label>
             Days between stock reviews
+            <FieldRequirement required={true} />
             <input
               type="number"
               min="1"
@@ -268,6 +284,7 @@ function StockForm({
             }
           />
           Active stock item
+          <FieldRequirement required={false} />
         </label>
         <div className="ops-form-actions">
           <button
@@ -399,6 +416,7 @@ function MovementForm({
           p_expiry: expiry || null,
           p_key: key,
         });
+      notifyAdmin("Stock movement posted.", "success");
       onClose();
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "Posting failed");
@@ -443,6 +461,7 @@ function MovementForm({
       <form className="ops-form" onSubmit={save}>
         <label>
           Stock item
+          <FieldRequirement required={true} />
           <select
             required
             value={id}
@@ -488,6 +507,7 @@ function MovementForm({
         <label>
           {kind === "count" ? "Actual count" : "Quantity"}
           {item ? ` (${item.unit})` : ""}
+          <FieldRequirement required={true} />
           <input
             type="number"
             min={kind === "count" ? 0 : 0.001}
@@ -503,6 +523,7 @@ function MovementForm({
             <div className="ops-form-grid">
               <label>
                 Unit cost
+                <FieldRequirement required={true} />
                 <input
                   type="number"
                   min="0"
@@ -514,6 +535,7 @@ function MovementForm({
               </label>
               <label>
                 Batch / lot code
+                <FieldRequirement required={false} />
                 <input
                   value={batch}
                   onChange={(e) => setBatch(e.target.value)}
@@ -521,7 +543,8 @@ function MovementForm({
               </label>
             </div>
             <label>
-              Expiry date (optional)
+              Expiry date
+              <FieldRequirement required={false} />
               <input
                 type="date"
                 value={expiry}
@@ -532,6 +555,7 @@ function MovementForm({
         )}
         <label>
           {kind === "receipt" ? "Delivery reference / notes" : "Reason"}
+          <FieldRequirement required={true} />
           <textarea
             required
             value={reason}
@@ -630,6 +654,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
         p_label: option.label,
         p_lines: lines,
       });
+      notifyAdmin("Requirements saved.", "success");
       onClose();
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "Save failed");
@@ -649,6 +674,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
       <form className="ops-form" onSubmit={save}>
         <label>
           Customization
+          <FieldRequirement required={true} />
           <select
             value={selected}
             onChange={(event) => {
@@ -670,6 +696,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
           <div className="ops-form-grid ops-option-row" key={index}>
             <label>
               Stock item
+              <FieldRequirement required={true} />
               <select
                 required
                 value={line.ingredient_id}
@@ -693,6 +720,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
             </label>
             <label>
               Quantity per item
+              <FieldRequirement required={true} />
               <input
                 type="number"
                 min="0"
@@ -711,7 +739,8 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
               />
             </label>
             <label>
-              Replaces (optional)
+              Replaces
+              <FieldRequirement required={false} />
               <select
                 value={line.replaces_ingredient_id ?? ""}
                 onChange={(event) =>
@@ -750,6 +779,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
                 .map((o) => (
                   <label key={o.label}>
                     {o.label} multiplier
+                    <FieldRequirement required={false} />
                     <input
                       type="number"
                       min="0.001"

@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "../../../../../components/OfflineMenuLink";
@@ -257,12 +258,7 @@ export default function BrowseMenuItemPage() {
         <section className="detail-image-section">
           <div className="detail-art">
             {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={item.name}
-                width={640}
-                height={640}
-              />
+              <img src={imageUrl} alt={item.name} width={640} height={640} />
             ) : (
               <div className="product-placeholder">
                 <Icon
@@ -308,9 +304,10 @@ export default function BrowseMenuItemPage() {
               <div className="mb-3 flex items-center justify-between gap-2">
                 <h3 className="font-display text-xl font-semibold">
                   {labels[group] ?? group.replaceAll("_", " ")}
+                  <FieldRequirement required={group !== "add_on"} />
                 </h3>
                 <span className="text-xs text-text-secondary">
-                  {group === "add_on" ? "Optional" : "Choose one"}
+                  {group === "add_on" ? "Choose any" : "Choose one"}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -367,6 +364,7 @@ export default function BrowseMenuItemPage() {
               className="font-display text-xl font-semibold"
             >
               A little note
+              <FieldRequirement required={false} />
             </label>
             <p className="mt-1 text-xs text-text-secondary">
               Optional · instructions may affect preparation.

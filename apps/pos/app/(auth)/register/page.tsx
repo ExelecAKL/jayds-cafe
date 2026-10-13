@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -53,7 +54,10 @@ export default function PosRegisterPage() {
             </p>
           )}
           <div>
-            <label htmlFor="staff-name">Full name</label>
+            <label htmlFor="staff-name">
+              Full name
+              <FieldRequirement required={true} />
+            </label>
             <input
               className="pos-field"
               id="staff-name"
@@ -64,7 +68,10 @@ export default function PosRegisterPage() {
             />
           </div>
           <div>
-            <label htmlFor="staff-email">Email</label>
+            <label htmlFor="staff-email">
+              Email
+              <FieldRequirement required={true} />
+            </label>
             <input
               className="pos-field"
               id="staff-email"
@@ -76,7 +83,9 @@ export default function PosRegisterPage() {
             />
           </div>
           <div>
-            <label htmlFor="staff-phone">Phone · optional</label>
+            <label htmlFor="staff-phone">
+              Phone <FieldRequirement required={false} />
+            </label>
             <input
               className="pos-field"
               id="staff-phone"
@@ -89,6 +98,7 @@ export default function PosRegisterPage() {
           <div>
             <label htmlFor="staff-password">
               Password · at least 8 characters
+              <FieldRequirement required={true} />
             </label>
             <input
               className="pos-field"
@@ -102,7 +112,10 @@ export default function PosRegisterPage() {
             />
           </div>
           <div>
-            <label htmlFor="staff-confirm">Confirm password</label>
+            <label htmlFor="staff-confirm">
+              Confirm password
+              <FieldRequirement required={true} />
+            </label>
             <input
               className="pos-field"
               id="staff-confirm"

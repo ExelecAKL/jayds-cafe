@@ -67,7 +67,8 @@ export function useGeofence(): GeofenceResult {
   }, []);
 
   useEffect(() => {
-    check();
+    const timer = window.setTimeout(check, 0);
+    return () => window.clearTimeout(timer);
   }, [check]);
 
   return { status, zone, distance, recheck: check };

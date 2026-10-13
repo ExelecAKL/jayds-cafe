@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -148,7 +149,10 @@ export default function VoidOrderPage() {
                   ? " Paid orders still require the existing refund workflow."
                   : ""}
               </p>
-              <label htmlFor="manager-pin">Manager PIN</label>
+              <label htmlFor="manager-pin">
+                Manager PIN
+                <FieldRequirement required={true} />
+              </label>
               <label className="pos-cash-acknowledgement">
                 <input
                   type="checkbox"
@@ -161,6 +165,7 @@ export default function VoidOrderPage() {
                 />
                 <span>
                   I understand the stock and refund consequences above.
+                  <FieldRequirement required={true} />
                 </span>
               </label>
               <input

@@ -62,7 +62,7 @@ export async function showReadyOrderNativeNotification({
     const notification = new Notification(title, options);
     notification.onclick = () => {
       window.focus();
-      window.location.href = url;
+      window.location.assign(new URL(url, window.location.origin).href);
       notification.close();
     };
     return true;
