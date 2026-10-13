@@ -1,0 +1,258 @@
+{
+  "baseCommit": "b4d402f9c18b57b540f5245576c9b608460d3e4b",
+  "recordedAt": "2026-10-13T02:12:34.129Z",
+  "files": [
+    {
+      "file": "apps/admin/app/(admin)/categories/page.tsx",
+      "sha256": "b687da80a8342b06d81e941799763f06a2b70fbbbdad5f258d1169ba69fb235a"
+    },
+    {
+      "file": "apps/admin/app/(admin)/customer-care/page.tsx",
+      "sha256": "2e0c81b2b3b4803926bbfb30d2611e60cacd9dcf2ef5fd6672619542431cb38b"
+    },
+    {
+      "file": "apps/admin/app/(admin)/layout.tsx",
+      "sha256": "26755fd36924fb6ee41ec8b48ae09ab0f0d945f497a43657117cd645a85ea3e7"
+    },
+    {
+      "file": "apps/admin/app/(admin)/loyalty/page.tsx",
+      "sha256": "758845bcf75e0f78873dca2ffd06f0d6899704aab4aaed2a789c08c34e7bf7b7"
+    },
+    {
+      "file": "apps/admin/app/(admin)/void-security/page.tsx",
+      "sha256": "44e16eee4cf45b55af41b295cbd2bb5016ac05955c97126d50baf548b1e7f364"
+    },
+    {
+      "file": "apps/admin/app/(admin)/vouchers/page.tsx",
+      "sha256": "d9a843be7aa43044761b5152e22e9ddc4f4abdf4ee366f79fd3a746f5f6bcfd5"
+    },
+    {
+      "file": "apps/admin/app/(auth)/login/page.tsx",
+      "sha256": "bd47190935afc00bb6df334890176a5cb6d6a52273713304bdb0673ef710f521"
+    },
+    {
+      "file": "apps/admin/app/globals.css",
+      "sha256": "52cc16fd8dd9954cca52839adf6fb29bc86940c6fa181f83be163b8b2eb7928f"
+    },
+    {
+      "file": "apps/admin/app/providers.tsx",
+      "sha256": "6c93bee2f4e2d472df0bbe407b831ae7da173b7c7d1043cbb90d68d125af434d"
+    },
+    {
+      "file": "apps/admin/components/AdminDialog.tsx",
+      "sha256": "6f97383acd3cfdaec33107534b100b9031066942850ec8b2fd6db7a9ef778364"
+    },
+    {
+      "file": "apps/admin/components/AdminToasts.tsx",
+      "sha256": "597d821de8f80351bf066e1a3d469a6fef03b44f52977f4a8d3703dfe1b412d0"
+    },
+    {
+      "file": "apps/admin/components/AnalyticsModals.tsx",
+      "sha256": "be493cf088c38466708a5f995f21bcf3d83aa1b29c200b6c9cc3f49417eb7496"
+    },
+    {
+      "file": "apps/admin/components/InventoryWorkspace.tsx",
+      "sha256": "67a294629fdb53fe3f448e44a898b8ff8ccc9bfd4381e2dbfc0248478e36bed9"
+    },
+    {
+      "file": "apps/admin/components/MenuItemForm.tsx",
+      "sha256": "0439e7c74e663ff24fe2339055e64a431e909575d4e81fc1b6d73785c8d98582"
+    },
+    {
+      "file": "apps/admin/components/OrderDetailsModal.tsx",
+      "sha256": "fd8e40433ca655000b7eb4fd625bf6e6c1f1363c620ee46fdc40b19b9092abf3"
+    },
+    {
+      "file": "apps/admin/components/ProviderReconciliation.tsx",
+      "sha256": "5cafe31dc6717699466d28d64c7f26fd1ce9e811d1f752baaf67ce96f077e885"
+    },
+    {
+      "file": "apps/admin/components/PurchasingWorkspace.tsx",
+      "sha256": "bc2c8a4aeb88b898e8d409da8d6892696f46a276374ec4a45830aa22413e2165"
+    },
+    {
+      "file": "apps/admin/components/SchedulingWorkspace.tsx",
+      "sha256": "6fc53f3cd11cca852f4e26d508e413a28680b69c3b78d13438e515e93d6a9976"
+    },
+    {
+      "file": "apps/admin/scripts/checkProfiles.ts",
+      "sha256": "cb22f99197643f73d83e23dc2e8b48ccfd0b9292a46e5e8a6dace9c0de798aef"
+    },
+    {
+      "file": "apps/admin/scripts/checkVouchers.ts",
+      "sha256": "aaf8dd9e89466fd51c5ce9809a7b9aafa39cdf6206dc6f594e73747c6fc61741"
+    },
+    {
+      "file": "apps/admin/scripts/seedPremiumAddons.ts",
+      "sha256": "0c5fdf60938c9d6a1bc69b1313da587fca35e349f15f4a9369a01dd4adcf4916"
+    },
+    {
+      "file": "apps/admin/scripts/testArchive.ts",
+      "sha256": "6bba7bb9e96cda72c2be7fdc8d9bb922a5836c4a5de80686d3a2761338ce41de"
+    },
+    {
+      "file": "apps/admin/scripts/unbrickAdmin.ts",
+      "sha256": "5bcddc6a505b4dd0f4b11754c5292358e4704d5bd4272c4bb87729d068e6ab39"
+    },
+    {
+      "file": "apps/admin/utils/exportMetrics.ts",
+      "sha256": "f14e3624bd19ca37c55911a17aafdf0b49c7cca7de6f1618dc556b4360dc7946"
+    },
+    {
+      "file": "apps/customer/app/(auth)/forgot-password/page.tsx",
+      "sha256": "79e6ba413d2280fe5f46804ff2e0a28d3e94648fd695f046ec7df023743d4f1f"
+    },
+    {
+      "file": "apps/customer/app/(auth)/login/page.tsx",
+      "sha256": "9dcfefcf587e4286cbbc8be4092b3829661322d68a2e76b4dcc0e07ae71df227"
+    },
+    {
+      "file": "apps/customer/app/(auth)/register/page.tsx",
+      "sha256": "802d19b038713f03d0119e8b1c5b882f4e62d2c25d3d9efe4c898c93f01238e0"
+    },
+    {
+      "file": "apps/customer/app/(auth)/reset-password/page.tsx",
+      "sha256": "d0df23dac42dfbf1b16d30ace07f0a81d835d186b47e4009e1eab60752e3956e"
+    },
+    {
+      "file": "apps/customer/app/(shop)/cart/page.tsx",
+      "sha256": "0b63b70b3fac70d76b60f15b24b2b9b454d313d23d4a657a0d9a476c1f68c3d0"
+    },
+    {
+      "file": "apps/customer/app/(shop)/checkout/page.tsx",
+      "sha256": "90b2d926b628fc527e5d4d08a5df9485a61dd06920aba79d16620422d14d815d"
+    },
+    {
+      "file": "apps/customer/app/(shop)/help/page.tsx",
+      "sha256": "61d483069c87136dc38b2fe4a47166fb792b1825ba9f8195c3ea4a18ed86909f"
+    },
+    {
+      "file": "apps/customer/app/(shop)/menu/browse/[id]/page.tsx",
+      "sha256": "0f014a274f0b8de9d60800f15ab217dcbbb08c29a37f805a0e8eed2cbaa5c079"
+    },
+    {
+      "file": "apps/customer/app/(shop)/orders/[id]/page.tsx",
+      "sha256": "817fc9c25f3b9dde619a8b8040b7744ea5f25408f341d4419f5af31f6310c1b4"
+    },
+    {
+      "file": "apps/customer/app/(shop)/profile/addresses/page.tsx",
+      "sha256": "147fecdb02a252b65ff73ed5261e2f2aa7a2c22e038889ea6f72ed9daad9b2cb"
+    },
+    {
+      "file": "apps/customer/app/(shop)/profile/edit/page.tsx",
+      "sha256": "2e99b3c09611fc8ce18774b304010f5dca46b2086f5431cfbf1555724197a183"
+    },
+    {
+      "file": "apps/customer/app/api/orders/create/pricing.ts",
+      "sha256": "0fc290542a2fbc84eafbdc98a8c49a23e142a0e386e9ff64a38b162682aef144"
+    },
+    {
+      "file": "apps/customer/app/api/orders/create/route.ts",
+      "sha256": "c7ffd3660d6ea6271eaee70357349bd388fa4335abc5360d62f71e2aa51f19e8"
+    },
+    {
+      "file": "apps/customer/app/api/vouchers/validate/route.ts",
+      "sha256": "126acaafe7b382d3b067bc33a0e8a8c30827e9953f1a835626d37c87c2789ee5"
+    },
+    {
+      "file": "apps/customer/components/DeliveryMapPicker.tsx",
+      "sha256": "2e019c7b89cd6ef0bbc8a5c63247514ab7c5ebb373d8c2aed4d0db3cc12bb186"
+    },
+    {
+      "file": "apps/customer/components/LegalReview.tsx",
+      "sha256": "d0ba37b52fd66cab70ec3a8c7bd3764675883daf78587f1f26024ccb798afc58"
+    },
+    {
+      "file": "apps/customer/lib/voucher-eligibility.ts",
+      "sha256": "702f904e890c4965a9f91431bea67aa15f63947b385b13887e91283805bd2260"
+    },
+    {
+      "file": "apps/customer/utils/readyOrderAlerts.ts",
+      "sha256": "7d3134d28f940543ff2ca065a60f0203ff76452ab5f3791dbe839a5de26c1341"
+    },
+    {
+      "file": "apps/pos/app/(auth)/forgot-password/page.tsx",
+      "sha256": "ac79ccabde9e614bc6cc0c1ed0b537bca06808733cc1ad4bac7a6f230a7f7b76"
+    },
+    {
+      "file": "apps/pos/app/(auth)/login/page.tsx",
+      "sha256": "d34093f10debd762f6fff1e33b366659b72e682f5a9f5fecc5177ed603c3eebe"
+    },
+    {
+      "file": "apps/pos/app/(auth)/register/page.tsx",
+      "sha256": "b1cf403d3b4a65678b7cf898e8fd266260dab23324f094c419539ef6e6cef8fb"
+    },
+    {
+      "file": "apps/pos/app/(pos)/void/page.tsx",
+      "sha256": "d52a7ad0bed0dca46a912638662c435831ccc52401aa93e0ee16e53b8a42309f"
+    },
+    {
+      "file": "apps/pos/components/CheckoutPanel.tsx",
+      "sha256": "2d03c0a467af8d579cd484d81ac7f02964546462ee560cbb23a97e1411ad64cf"
+    },
+    {
+      "file": "apps/pos/components/OrdersWorkspace.tsx",
+      "sha256": "6d9fb8d19eb0f409b9af3c35dfb345cf302b2ecbe6e83eb66028b4202f4a53f9"
+    },
+    {
+      "file": "apps/pos/components/ProductOptions.tsx",
+      "sha256": "bdd9e8d16b3b7a5af2c7277c47cb97cc9e95d7746dcb83cc8d5fb4131f0d1537"
+    },
+    {
+      "file": "apps/pos/components/Register.tsx",
+      "sha256": "df08477007879a39723df5ba70bc0abeab9ab76dbc3e410e318fbd441307f3b4"
+    },
+    {
+      "file": "apps/pos/lib/useStaffOrders.ts",
+      "sha256": "2ca969d5e2c6f7a1a515d6748f90240495a53545d14a222e8d86f8bd7c2e13f8"
+    },
+    {
+      "file": "eslint.config.ts",
+      "sha256": "3f1b812240a6b247dfa8c0865bd148baa93437973ce2559f7549a80e0d601d9f"
+    },
+    {
+      "file": "package-lock.json",
+      "sha256": "3d80e1bf08c491c46a060eb054d5bc1e3a5fc946b2ebaeb80d12b87f94f58a0e"
+    },
+    {
+      "file": "package.json",
+      "sha256": "03fa6dfae0a3a03d54ba0f740360d5447730d848783cd51db43e18ee6490266f"
+    },
+    {
+      "file": "packages/shared/package.json",
+      "sha256": "83d5461c05197f4a283e501e30d79f96b4c8f633ac124ee72d9efc4b020e1f96"
+    },
+    {
+      "file": "packages/shared/src/customer/phone.ts",
+      "sha256": "3df2d8be2e1a5c8e8b8149df7b4a8de09d00ece8dda4f0858fb541788b9255dd"
+    },
+    {
+      "file": "packages/shared/src/hooks/useAuth.tsx",
+      "sha256": "1cf833bdc0b20aa833728b7bab9e48784b19903f709529cd3a06adfb605b57eb"
+    },
+    {
+      "file": "packages/shared/src/hooks/useGeofence.ts",
+      "sha256": "772b444ddc543f5b80d2324b726ad02988a3e71c59dc191e0222e01860b2ebc4"
+    },
+    {
+      "file": "packages/shared/src/hooks/useNotifications.ts",
+      "sha256": "5bca24c55695243e6012d015514470b38877de21dc37da40e175830bd2c009ae"
+    },
+    {
+      "file": "packages/shared/src/ui/action-confirm.tsx",
+      "sha256": "4a3bafaf2ce4ab8c7372c3defb6681e0dd7f924da2a9ca78f5acb3ed05fdc02a"
+    },
+    {
+      "file": "packages/shared/src/ui/field-requirement.tsx",
+      "sha256": "47f7fb9ac3ac7ba9f78f5d54e6b6c45bd188b3507439c9011ebd74ab4935c218"
+    },
+    {
+      "file": "supabase/migrations/20261013000100_category_preservation_voucher_tiers.sql",
+      "sha256": "935519551baa0a93a9cc9dce369bc48fb9d762d2be769cb6107a3839346e5504"
+    },
+    {
+      "file": "supabase/migrations/20261013000200_push_worker_setup.sql",
+      "sha256": "c4ade622675f55e843e4113be45f02cae94144c86110b486c6d5eac7d145515c"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-13T02:03:41.6763571Z",
+  "sourceCommit": "c70b2157d157c75a1075fb9e5e78f27a30035af0",
+  "canonicalEntryPoints": [
+    "https://jaydscafe.vercel.app",
+    "https://jaydscafe.vercel.app/staff",
+    "https://jaydscafe.vercel.app/admin"
+  ],
+  "deployments": [
+    {
+      "id": "dpl_Eg79Ukf2CZx2fBbEC6B4pn4Kz2n3",
+      "app": "pos",
+      "readyState": "READY",
+      "productionUrl": "https://jaydscafe-pos.vercel.app"
+    },
+    {
+      "id": "dpl_H5fA8ovp1gpLqRpDQPnkAMWetCba",
+      "app": "admin",
+      "readyState": "READY",
+      "productionUrl": "https://jaydscafe-admin.vercel.app"
+    },
+    {
+      "id": "dpl_CRUTaNSArgYonL1abnYBqFRuc1H7",
+      "app": "customer",
+      "readyState": "READY",
+      "productionUrl": "https://jaydscafe.vercel.app"
+    }
+  ],
+  "reference": "deployment-release.log",
+  "databaseRollback": "Retain protective forward migrations; do not reset/replay legacy schema"
+}

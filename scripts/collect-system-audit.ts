@@ -54,8 +54,10 @@ const groups = [
 ].map(group => ({ ...group, checks: group.data.length, passed: group.data.filter((row: { status: string }) => row.status === "PASS").length, failed: group.data.filter((row: { status: string }) => row.status === "FAIL").length, blocked: group.data.filter((row: { status: string }) => row.status === "BLOCKED").length }));
 const summary = { generatedAt: new Date().toISOString(), dateTimezone: "Asia/Manila", hosted: "https://jaydscafe.vercel.app", sourceCommit: "b4d402f9c18b57b540f5245576c9b608460d3e4b", applicationChanges: false, liveBusinessWrites: true, liveWriteScope: "Temporary customer records cleaned up; unpaid guest test orders cancelled before preparation and retained in audit history; no charge or physical stock change", backend: { checks: units.length, passed: units.filter(row => row.status === "PASS").length, failed: units.filter(row => row.status === "FAIL").length, skipped: 0, executionNote: "Expanded run used normal process access and --no-wasm-code-gc; new category deletion regression fails against complete unchanged migrations" }, routes, groups, units, limits: ["Actual Maya success/decline/expiry/refund and café settlement/webhooks need human CAPTCHA and merchant workflow", "Sandbox courier quote/booking/cancel passed; rider transitions and provider webhook delivery remain unverified", "Real phone installation, physical camera scan and background push not completed; receipt printer is out of scope per user", "Inventory scheduling readiness and push configuration are incomplete", "Hosted paid preparation/collection, sustained load/soak, cron history and backup/restore are not certified", "No claim of every possible input combination or browser/platform coverage"] };
 if (postFix) {
-  summary.sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+  const releaseFile = path.join(output, "release-source.json");
+  summary.sourceCommit = existsSync(releaseFile) ? JSON.parse(readFileSync(releaseFile, "utf8")).sourceCommit : execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
   summary.applicationChanges = true;
+  summary.liveWriteScope = "Temporary customer owner writes cleaned up; two repair identities soft-retired with immutable legal acknowledgements retained; unpaid guest audit orders cancelled and retained in history, no charge or physical stock consumption";
   summary.backend.executionNote = "Complete backend regression run, including every forward migration and voucher-tier/category preservation controls; normal process access and --no-wasm-code-gc";
   summary.limits = [
     "Actual Maya success/decline/expiry/refund/settlement still requires human CAPTCHA and merchant workflow",
@@ -67,7 +69,7 @@ if (postFix) {
     "Dedicated tax/VAT, net profit after expenses/tax and business net worth are absent; user requested information only, no implementation",
   ];
   const files = [...new Set([
-    ...execFileSync("git", ["diff", "--name-only"], { encoding: "utf8" }).split(/\r?\n/),
+    ...execFileSync("git", ["diff", "--name-only", "b4d402f9c18b57b540f5245576c9b608460d3e4b"], { encoding: "utf8" }).split(/\r?\n/),
     ...execFileSync("git", ["ls-files", "--others", "--exclude-standard"], { encoding: "utf8" }).split(/\r?\n/),
   ])].filter(file => /^(apps\/|packages\/|supabase\/migrations\/|package(?:-lock)?\.json$|eslint\.config\.ts$)/.test(file) && existsSync(file));
   writeFileSync(path.join(output, "source-changes.json"), JSON.stringify({ baseCommit: "b4d402f9c18b57b540f5245576c9b608460d3e4b", recordedAt: new Date().toISOString(), files: files.map(file => ({ file, sha256: createHash("sha256").update(readFileSync(file)).digest("hex") })) }, null, 2));

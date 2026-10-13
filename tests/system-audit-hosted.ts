@@ -38,7 +38,7 @@ const probes: [string, string, unknown, number[]][] = [
   ["POST", "/api/lalamove/quotation", {}, [400, 403]],
   ["POST", "/api/lalamove/order", {}, [400, 403]],
   ["POST", "/api/lalamove/dispatch", {}, [400, 403]],
-  ["POST", "/api/vouchers/validate", {}, [400]],
+  ["POST", "/api/vouchers/validate", {}, [403]],
   ["POST", "/api/customer/favorites", {}, [401, 403]],
   ["DELETE", "/api/customer/favorites", {}, [401, 403]],
   ["POST", "/api/customer/legal", {}, [400, 403]],
@@ -66,6 +66,18 @@ for (const [method, route, body, statuses] of probes) {
       : { status: response.status, error: content.error ?? content.message ?? null, cache: response.headers.get("cache-control") };
   });
 }
+
+await check("Voucher validation rejects malformed same-origin input", async () => {
+  const response = await fetch(base + "/api/vouchers/validate", {
+    method: "POST", signal: AbortSignal.timeout(20000),
+    headers: { "Content-Type": "application/json", Origin: base },
+    body: JSON.stringify({}),
+  });
+  assert.equal(response.status, 400);
+  const body = await response.json();
+  assert.equal(body.error, "Enter a valid voucher code and cart.");
+  return { status: response.status, error: body.error };
+});
 
 const browser = await chromium.launch({ channel: "chrome", headless: true });
 try {
