@@ -19,10 +19,10 @@ Dedicated tax/VAT, profit after expenses/tax and business net worth are absent. 
 ## GitHub references
 
 - Audited application source: `c70b2157d157c75a1075fb9e5e78f27a30035af0`.
-- Latest audited source is published to `main` through [pull request #1](https://github.com/karaagexc/jayds-cafe/pull/1); repair branch `codex/defense-audit-2026-10-13` remains available.
-- Old `main` is also preserved as [branch `codex/pre-defense-main-2026-10-13`](https://github.com/karaagexc/jayds-cafe/tree/codex/pre-defense-main-2026-10-13).
-- Previous source: [tag `defense-pre-fixes-2026-10-13`](https://github.com/karaagexc/jayds-cafe/tree/defense-pre-fixes-2026-10-13), commit `b4d402f9c18b57b540f5245576c9b608460d3e4b`.
-- [Compare the previous version with the fixes](https://github.com/karaagexc/jayds-cafe/compare/defense-pre-fixes-2026-10-13...codex/defense-audit-2026-10-13).
+- Latest audited source is published to `main` through [pull request #1](https://github.com/ExelecAKL/jayds-cafe/pull/1); repair branch `codex/defense-audit-2026-10-13` remains available.
+- Old `main` is also preserved as [branch `codex/pre-defense-main-2026-10-13`](https://github.com/ExelecAKL/jayds-cafe/tree/codex/pre-defense-main-2026-10-13).
+- Previous source: [tag `defense-pre-fixes-2026-10-13`](https://github.com/ExelecAKL/jayds-cafe/tree/defense-pre-fixes-2026-10-13), commit `b4d402f9c18b57b540f5245576c9b608460d3e4b`.
+- [Compare the previous version with the fixes](https://github.com/ExelecAKL/jayds-cafe/compare/defense-pre-fixes-2026-10-13...codex/defense-audit-2026-10-13).
 
 Use the tag to browse or check out the old source in a separate directory; do not overwrite unsaved work. For an application rollback, build/deploy the selected source through the existing Customer, POS and Admin Vercel configurations, then verify all three mounted entry points together. Keep the saved release deployment identifiers for comparison.
 
