@@ -1,5 +1,9 @@
 .git/
 .codex-logs/
+/output/
+/tmp/
+/*.docx
+/*.pdf
 .tmp.*
 .vercel-*/
 **/.env*

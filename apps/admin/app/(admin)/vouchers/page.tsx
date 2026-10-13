@@ -2,6 +2,7 @@
 // Admin voucher management — create, deploy, view claims
 
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { Feedback } from "../../../components/Operations";
 
@@ -439,6 +440,7 @@ export default function VouchersPage() {
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
                 Code
+                <FieldRequirement required={true} />
               </label>
               <input
                 aria-label="Voucher code"
@@ -455,6 +457,7 @@ export default function VouchersPage() {
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
                 Description
+                <FieldRequirement required={true} />
               </label>
               <input
                 aria-label="Voucher description"
@@ -472,6 +475,7 @@ export default function VouchersPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">
                   Discount Type
+                  <FieldRequirement required={true} />
                 </label>
                 <select
                   aria-label="Discount type"
@@ -491,6 +495,7 @@ export default function VouchersPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">
                   Discount Value
+                  <FieldRequirement required={true} />
                 </label>
                 <input
                   aria-label="Discount value"
@@ -517,6 +522,7 @@ export default function VouchersPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">
                   Min Order (₱)
+                  <FieldRequirement required={false} />
                 </label>
                 <input
                   aria-label="Minimum order amount"
@@ -536,6 +542,7 @@ export default function VouchersPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">
                   Max Uses
+                  <FieldRequirement required={false} />
                 </label>
                 <input
                   aria-label="Maximum uses"
@@ -555,6 +562,7 @@ export default function VouchersPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">
                   Target Tier
+                  <FieldRequirement required={false} />
                 </label>
                 <select
                   aria-label="Target tier"
@@ -573,6 +581,7 @@ export default function VouchersPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">
                   Valid Until
+                  <FieldRequirement required={false} />
                 </label>
                 <input
                   aria-label="Valid until"
@@ -594,6 +603,7 @@ export default function VouchersPage() {
               <div className="mb-3">
                 <label className="block text-xs font-medium text-gray-500 mb-1">
                   Application Mode
+                  <FieldRequirement required={true} />
                 </label>
                 <select
                   aria-label="Application mode"
@@ -623,7 +633,8 @@ export default function VouchersPage() {
               {formData.discount_type === "percentage" && (
                 <div className="mb-3">
                   <label className="block text-xs font-medium text-gray-500 mb-1">
-                    Maximum Discount Cap (₱) (Optional)
+                    Maximum Discount Cap (₱)
+                    <FieldRequirement required={false} />
                   </label>
                   <input
                     type="number"
@@ -643,7 +654,8 @@ export default function VouchersPage() {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">
-                  Restricted Items (Optional)
+                  Restricted Items
+                  <FieldRequirement required={false} />
                 </label>
                 <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
                   {menuItems.map((item) => {

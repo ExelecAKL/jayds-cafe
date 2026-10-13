@@ -1,0 +1,22 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import nextEnv from "@next/env";
+import { createClient } from "@supabase/supabase-js";
+
+nextEnv.loadEnvConfig(path.resolve("apps/customer"), false, { info() {}, error() {} });
+const config = JSON.parse(readFileSync(".tmp.defense-push.json", "utf8")) as { jobSecret: string };
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL!, key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+if (new URL(url).hostname.split(".")[0] !== readFileSync("supabase/.temp/project-ref", "utf8").trim()) throw new Error("Linked database differs from the configured café backend");
+const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+const worker = "https://jaydscafe.vercel.app/api/jobs/customer-notifications";
+const subscriptions = await db.from("customer_push_subscriptions").select("id", { count: "exact", head: true });
+if (subscriptions.error || subscriptions.count !== 0) throw new Error("Review existing subscriptions before rotating push keys or probing delivery");
+const readiness = await fetch("https://jaydscafe.vercel.app/api/customer/push").then(response => response.json());
+if (!readiness.configured || !readiness.publicKey) throw new Error("Deploy the configured customer app before enabling its worker");
+const { error } = await db.rpc("customer_configure_push_worker", { p_url: worker, p_token: config.jobSecret });
+if (error) throw new Error("Vault worker configuration failed: " + error.code);
+const response = await fetch(worker, { method: "POST", headers: { Authorization: "Bearer " + config.jobSecret } });
+const result = { checkedAt: new Date().toISOString(), configured: true, workerHttpStatus: response.status, credentialsPrinted: false };
+writeFileSync(path.resolve(process.env.JAYDS_AUDIT_OUTPUT_DIR || "output/defense-fixes-2026-10-13", "push-setup.json"), JSON.stringify(result, null, 2));
+console.log(JSON.stringify(result));
+if (!response.ok) throw new Error("Configured worker returned HTTP " + response.status);

@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
@@ -551,16 +552,20 @@ export function OrdersWorkspace() {
                 Scan the customer QR or enter its pickup code. Payment and
                 readiness are checked before collection.
               </p>
-              <input
-                className="pos-field"
-                aria-label="Pickup QR code"
-                value={qr}
-                onChange={(e) => setQr(e.target.value)}
-                placeholder="pickup:order-id:token"
-                autoComplete="off"
-                spellCheck={false}
-                style={{ marginTop: 16 }}
-              />
+              <label>
+                Pickup QR code
+                <FieldRequirement required={true} />
+                <input
+                  className="pos-field"
+                  aria-label="Pickup QR code"
+                  value={qr}
+                  onChange={(e) => setQr(e.target.value)}
+                  placeholder="pickup:order-id:token"
+                  autoComplete="off"
+                  spellCheck={false}
+                  style={{ marginTop: 16 }}
+                />
+              </label>
               {notice && (
                 <p className="pos-error" role="alert">
                   {notice}

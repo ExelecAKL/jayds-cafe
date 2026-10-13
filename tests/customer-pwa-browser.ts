@@ -310,7 +310,7 @@ try {
     "Offline return and selection retain the same draft",
   );
   await page
-    .getByLabel("A little note", { exact: true })
+    .getByLabel(/^A little note(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .fill("Preserve this unsaved note");
   await page.evaluate(() => {
     (window as unknown as { qaDocumentToken: string }).qaDocumentToken =
@@ -330,7 +330,7 @@ try {
     "Reconnection preserves the document",
   );
   assert.equal(
-    await page.getByLabel("A little note", { exact: true }).inputValue(),
+    await page.getByLabel(/^A little note(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).inputValue(),
     "Preserve this unsaved note",
     "Reconnection preserves unsubmitted configuration",
   );

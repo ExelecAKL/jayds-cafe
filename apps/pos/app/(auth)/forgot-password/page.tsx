@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,10 @@ export default function PosForgotPasswordPage() {
             </p>
           )}
           <div>
-            <label htmlFor="reset-email">Staff email</label>
+            <label htmlFor="reset-email">
+              Staff email
+              <FieldRequirement required={true} />
+            </label>
             <input
               className="pos-field"
               id="reset-email"

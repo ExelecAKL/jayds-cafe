@@ -7,14 +7,17 @@ import {
   readJsonBody,
 } from "@cafeos/shared/server/request-body";
 import { createAdminSupabaseClient } from "@cafeos/shared/supabase/server";
+import { requireCustomer, assertSameOrigin, ApiAccessError, apiAccessErrorResponse } from "../../../../lib/server-access";
+import { assertVoucherTier, VoucherEligibilityError } from "../../../../lib/voucher-eligibility";
 
 export async function POST(req: NextRequest) {
   try {
+    assertSameOrigin(req);
     const { code, subtotal, itemIds = [] } = await readJsonBody(req);
 
-    if (!code) {
+    if (typeof code !== "string" || !code.trim() || code.length > 100 || typeof subtotal !== "number" || !Number.isFinite(subtotal) || subtotal < 0 || !Array.isArray(itemIds) || itemIds.length > 100 || itemIds.some(id => typeof id !== "string")) {
       return NextResponse.json(
-        { error: "Voucher code is required" },
+        { error: "Enter a valid voucher code and cart." },
         { status: 400 },
       );
     }
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest) {
     const { data: voucher, error: findError } = await supabaseAdmin
       .from("vouchers")
       .select("*")
-      .eq("code", code.toUpperCase())
+      .eq("code", code.trim().toUpperCase())
       .eq("is_active", true)
       .single();
 
@@ -34,6 +37,10 @@ export async function POST(req: NextRequest) {
         { error: "Invalid voucher code" },
         { status: 404 },
       );
+    }
+    if (voucher.target_tier?.trim()) {
+      const { userId } = await requireCustomer(req);
+      await assertVoucherTier(supabaseAdmin, voucher.target_tier, userId);
     }
 
     // Check validity period
@@ -95,6 +102,8 @@ export async function POST(req: NextRequest) {
       max_discount_amount: voucher.max_discount_amount,
     });
   } catch (error) {
+    if (error instanceof ApiAccessError) return apiAccessErrorResponse(error);
+    if (error instanceof VoucherEligibilityError) return NextResponse.json({ error: error.message }, { status: error.status });
     if (error instanceof JsonBodyError)
       return NextResponse.json(
         { error: error.message },

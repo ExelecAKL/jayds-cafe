@@ -7,15 +7,18 @@ import { chromium, expect } from "@playwright/test";
 import { LEGAL_VERSION } from "../apps/customer/lib/legal.ts";
 import { buildHomeRecommendations } from "../apps/customer/utils/recommendations.ts";
 import type { MenuItem } from "../packages/shared/src/types/index.ts";
+import { extraCustomerAudit } from "./system-audit-extra-customer.ts";
+import { scheduledCustomerAudit } from "./system-audit-customer-scheduling.ts";
+import { walletAudit } from "./system-audit-wallet.ts";
 const root = process.cwd(),
-  base =
-    process.env.JAYDS_DEMO_EXISTING_PORTS === "1"
+  base = process.env.JAYDS_AUDIT_CUSTOMER_URL ||
+    (process.env.JAYDS_DEMO_EXISTING_PORTS === "1"
       ? `http://${process.env.JAYDS_DEMO_HOST || "127.0.0.1"}:4000`
-      : "http://127.0.0.1:4320",
+      : "http://127.0.0.1:4320"),
   output = path.join(root, ".codex-logs/customer-screens");
 mkdirSync(output, { recursive: true });
 const server =
-  process.env.JAYDS_DEMO_EXISTING_PORTS === "1"
+  process.env.JAYDS_AUDIT_CUSTOMER_URL || process.env.JAYDS_DEMO_EXISTING_PORTS === "1"
     ? null
     : spawn(
         process.execPath,
@@ -133,6 +136,7 @@ let recommendationHistory = false,
   recommendationFailure = false,
   unavailableReorder = false;
 let recommendationReads = 0;
+let recoverRecommendationsOnNextRead = false;
 const fixtureProfile = {
   id: fixtureAccount.id,
   email: fixtureAccount.email,
@@ -307,6 +311,7 @@ await context.route(base + "/api/**", async (route) => {
     return;
   }
   if (pathname === "/api/customer/recommendations") {
+    if (recoverRecommendationsOnNextRead) { recommendationFailure = false; recoverRecommendationsOnNextRead = false; }
     recommendationReads++;
     assert.equal(req.method(), "GET");
     assert.ok(
@@ -468,7 +473,7 @@ await context.route(base + "/api/**", async (route) => {
   });
 });
 await context.route(
-  (url) => url.protocol === "https:" && !url.hostname.endsWith(".supabase.co"),
+  (url) => url.protocol === "https:" && url.origin !== new URL(base).origin && !url.hostname.endsWith(".supabase.co"),
   (route) => route.abort(),
 );
 try {
@@ -478,6 +483,17 @@ try {
     } catch {}
     await new Promise((r) => setTimeout(r, 200));
   }
+  if (process.env.JAYDS_CUSTOMER_COMPLETE_ONLY === "1") {
+    currentLegalAccepted = true;
+    await page.goto(base + "/login");
+    await page.getByLabel(/^Email(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill(fixtureAccount.email);
+    await page.getByLabel(/^Password(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill("FixturePassword123!");
+    await page.getByRole("button", { name: "Sign In", exact: true }).click();
+    await page.waitForURL(base + "/menu");
+    const wallet = await walletAudit(page, base, products[1].id, fixtureProfile);
+    const scheduled = await scheduledCustomerAudit(page, base);
+    if ([...wallet, ...scheduled].some(row => row.status === "FAIL")) process.exitCode = 1;
+  } else {
   await page.goto(base + "/menu/browse");
   await page.getByText("55 products", { exact: true }).waitFor();
   await page.locator(".startup-overlay").waitFor({ state: "detached" });
@@ -642,7 +658,7 @@ try {
   await page
     .getByRole("button", { name: "Increase quantity", exact: true })
     .click();
-  await page.getByLabel("A little note", { exact: true }).fill("Less ice");
+  await page.getByLabel(/^A little note(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill("Less ice");
   await page
     .locator(".detail-mobile-summary strong")
     .filter({ hasText: "₱340.00" })
@@ -683,7 +699,7 @@ try {
   await page.getByText("Note: Less ice", { exact: true }).waitFor();
   assert.equal(
     await page
-      .getByLabel("Spanish Latte quantity", { exact: true })
+      .getByLabel(/^Spanish Latte quantity(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
       .textContent(),
     "2",
   );
@@ -713,20 +729,20 @@ try {
     .click();
   await page.getByRole("button", { name: /Add to bag/ }).click();
   await page
-    .getByLabel("2 items in bag", { exact: true })
+    .getByLabel(/^2 items in bag(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .waitFor({ state: "attached" });
   await page.goto(base + "/cart");
-  await page.getByLabel("Spanish Latte quantity", { exact: true }).waitFor();
+  await page.getByLabel(/^Spanish Latte quantity(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).waitFor();
   assert.equal(
     await page
-      .getByLabel("Spanish Latte quantity", { exact: true })
+      .getByLabel(/^Spanish Latte quantity(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
       .textContent(),
     "2",
   );
   await page
     .getByRole("button", { name: "Add item note", exact: true })
     .click();
-  await page.getByLabel("Optional request for this item").fill("Less ice");
+  await page.getByLabel("Request for this item").fill("Less ice");
   await page.getByRole("button", { name: "Save note", exact: true }).click();
   await page.reload();
   await page.getByText("Note: Less ice", { exact: true }).waitFor();
@@ -796,12 +812,12 @@ try {
   await map.getByRole("button", { name: "Close map", exact: true }).click();
   await page.getByRole("button", { name: "Pickup", exact: true }).click();
   await page.getByText("Voucher and rewards", { exact: true }).click();
-  await page.getByLabel("Voucher code", { exact: true }).fill("EXPIRED");
+  await page.getByLabel(/^Voucher code(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill("EXPIRED");
   await page.getByRole("button", { name: "Apply", exact: true }).click();
   await page
     .getByText("This demo voucher has expired.", { exact: true })
     .waitFor();
-  await page.getByLabel("Voucher code", { exact: true }).fill("DEMO10");
+  await page.getByLabel(/^Voucher code(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill("DEMO10");
   await page.getByRole("button", { name: "Apply", exact: true }).click();
   await page.getByText("DEMO10 applied", { exact: false }).waitFor();
   await page
@@ -897,16 +913,16 @@ try {
   await page.getByRole("button", { name: "Add reviewed items" }).click();
   await page.getByText("Note: Less ice", { exact: true }).waitFor();
   await page.goto(base + "/help?order=30000000-0000-4000-8000-000000000001");
-  await page.getByLabel("Subject", { exact: true }).fill("Order question");
+  await page.getByLabel(/^Subject(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill("Order question");
   await page
-    .getByLabel("Message", { exact: true })
+    .getByLabel(/^Message(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .fill("Please check this isolated fixture.");
   await page.getByRole("button", { name: "Send request" }).click();
   await page
     .getByText("Simulated save failure. Your entries are retained.")
     .waitFor();
   assert.equal(
-    await page.getByLabel("Message", { exact: true }).inputValue(),
+    await page.getByLabel(/^Message(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).inputValue(),
     "Please check this isolated fixture.",
   );
   await page.getByRole("button", { name: "Send request" }).click();
@@ -952,7 +968,7 @@ try {
   // reading a frame. Verify the offline addition survives that recovery.
   await page.waitForLoadState("networkidle");
   await page
-    .getByLabel("3 items in bag", { exact: true })
+    .getByLabel(/^3 items in bag(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .waitFor({ state: "attached" });
   // Formal legal pages stay readable and provide exact archived text.
   for (const width of [360, 390, 430, 1024]) {
@@ -994,9 +1010,9 @@ try {
   // the order subscription that previously crashed on the LAN URL.
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(base + "/login");
-  await page.getByLabel("Email", { exact: true }).fill(fixtureAccount.email);
+  await page.getByLabel(/^Email(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill(fixtureAccount.email);
   await page
-    .getByLabel("Password", { exact: true })
+    .getByLabel(/^Password(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
     .fill("isolated-test-password");
   await page.getByRole("button", { name: "Sign In", exact: true }).click();
   await page.getByText("Hello, Fixture.", { exact: true }).waitFor();
@@ -1213,8 +1229,9 @@ try {
     .getByText("Personal picks are temporarily unavailable.", { exact: false })
     .waitFor();
   assert.equal(await page.locator(".home-personal-section").count(), 0);
-  recommendationFailure = false;
-  await page.getByRole("button", { name: "Retry", exact: true }).click();
+  recoverRecommendationsOnNextRead = true;
+  // Keep the outage active until the retry requests its recovery response.
+  await page.getByRole("button", { name: "Retry", exact: true }).evaluate(button => (button as HTMLButtonElement).click());
   await page.locator("#home-order-again-title").waitFor();
   await page.waitForLoadState("networkidle");
   await context.setOffline(true);
@@ -1293,7 +1310,7 @@ try {
     "Historical account must separately acknowledge the current version",
   );
   await page.getByText("Voucher and rewards", { exact: true }).click();
-  await page.getByLabel("Voucher code", { exact: true }).fill("DEMO10");
+  await page.getByLabel(/^Voucher code(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill("DEMO10");
   await page.getByRole("button", { name: "Apply", exact: true }).click();
   await page.getByText("DEMO10 applied", { exact: false }).waitFor();
   await page.getByLabel(/Use points · up to/).fill("10");
@@ -1305,6 +1322,14 @@ try {
     path: path.join(output, "voucher-and-points-390.png"),
     animations: "disabled",
   });
+  if (process.env.JAYDS_SYSTEM_AUDIT === "1") {
+    const extra = await extraCustomerAudit(page, base, fixtureProfile);
+    if (extra.some(result => result.status === "FAIL")) process.exitCode = 1;
+    const wallet = await walletAudit(page, base, products[1].id, fixtureProfile);
+    if (wallet.some(result => result.status === "FAIL")) process.exitCode = 1;
+    const scheduled = await scheduledCustomerAudit(page, base);
+    if (scheduled.some(result => result.status === "FAIL")) process.exitCode = 1;
+  }
   await page.goto(base + "/account");
   await page.getByRole("button", { name: /Sign out/ }).click();
   await page.waitForURL(base + "/menu");
@@ -1353,6 +1378,7 @@ try {
   );
   console.log(JSON.stringify(report));
   assert.deepEqual(errors, []);
+  }
 } catch (error) {
   await page.screenshot({
     path: path.join(output, "customer-error.png"),

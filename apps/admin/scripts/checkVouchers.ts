@@ -21,6 +21,7 @@ const sb = createClient(url, key);
 
 async function run() {
   const { data, error } = await sb.from('vouchers').select('*').limit(1);
+  if (error) throw error;
   if (data && data.length > 0) {
     console.log(Object.keys(data[0]));
   } else {

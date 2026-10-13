@@ -12,6 +12,8 @@ export default defineConfig([
   globalIgnores([
     '**/.next/**', '**/out/**', '**/build/**', '**/public/sw.js',
     '**/public/workbox-*.js', '**/public/swe-worker-*.js', '**/next-env.d.ts',
+    // Copied upstream MapLibre distribution; maintained map code remains linted.
+    'apps/customer/public/maplibre/**',
     '.codex-logs/**', '**/.vercel*/**', 'docs/**',
   ]),
 ]);

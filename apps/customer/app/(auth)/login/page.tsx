@@ -3,6 +3,7 @@
 
 "use client";
 
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -90,6 +91,7 @@ export default function LoginPage() {
           <div>
             <label htmlFor="login-email" className="section-label mb-1.5 block">
               Email
+              <FieldRequirement required={true} />
             </label>
             <div className="relative">
               <svg
@@ -122,6 +124,7 @@ export default function LoginPage() {
               className="section-label mb-1.5 block"
             >
               Password
+              <FieldRequirement required={true} />
             </label>
             <PasswordInput
               id="login-password"

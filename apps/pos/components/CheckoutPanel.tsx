@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { resolveCustomerPortalUrl } from "@cafeos/shared/customer-url";
 import { useRef, useState } from "react";
@@ -216,6 +217,7 @@ export function CheckoutPanel({
           </div>
           <label className="pos-muted" htmlFor="cash-received">
             Cash received
+            <FieldRequirement required={true} />
           </label>
           <input
             id="cash-received"
@@ -319,6 +321,7 @@ export function CheckoutPanel({
                   Check the money in hand before recording this as paid.
                   Changing the amount requires checking again.
                 </small>
+                <FieldRequirement required={true} />
               </span>
             </label>
           )}

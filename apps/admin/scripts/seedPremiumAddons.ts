@@ -106,7 +106,6 @@ async function run() {
 
   // Insert missing rows carefully to avoid polluting db
   for (let i = 0; i < toInsertVars.length; i += 100) {
-    const chunk = toInsertVars.slice(i, i + 100);
     // Let's do a simple loop and insert them 1 by 1 and ignore duplicate errors, since item_variants does not have a comprehensive unique constraint.
     // Wait, to safely insert, we should check if they already exist.
   }

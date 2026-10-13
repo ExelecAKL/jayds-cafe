@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { supabase } from "@cafeos/shared/supabase/client";
@@ -56,7 +57,12 @@ export default function Addresses() {
       return;
     }
     setBusy(true);
-    const data = { label: label.trim(), ...destination },
+    const data = {
+        label: label.trim(),
+        address: destination.address.trim(),
+        lat: destination.lat,
+        lng: destination.lng,
+      },
       result = editing
         ? await supabase
             .from("saved_addresses")
@@ -155,6 +161,7 @@ export default function Addresses() {
               </h2>
               <label className="block text-sm">
                 Label
+                <FieldRequirement required={true} />
                 <input
                   className="input-field w-full"
                   value={label}
@@ -174,6 +181,7 @@ export default function Addresses() {
               {destination && (
                 <label className="block text-sm">
                   Complete address
+                  <FieldRequirement required={true} />
                   <input
                     className="input-field w-full"
                     value={destination.address}

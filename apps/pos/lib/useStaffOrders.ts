@@ -22,12 +22,13 @@ export function useStaffOrders(queue: StaffQueue, page: number) {
   }, [queue, page]);
   useEffect(() => {
     let active = true;
+    const requests = revision;
     const refresh = () => { if (active && navigator.onLine) void refetch(); };
     void Promise.resolve().then(refresh);
     const channel = supabase.channel('staff-queue-' + createUuid()).on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, refresh).subscribe();
     const timer = setInterval(refresh, 15_000);
     window.addEventListener('online', refresh); window.addEventListener('focus', refresh);
-    return () => { active = false; revision.current++; clearInterval(timer); window.removeEventListener('online', refresh); window.removeEventListener('focus', refresh); void supabase.removeChannel(channel); };
+    return () => { active = false; requests.current++; clearInterval(timer); window.removeEventListener('online', refresh); window.removeEventListener('focus', refresh); void supabase.removeChannel(channel); };
   }, [refetch]);
   return { orders, loading, error, total, refetch };
 }

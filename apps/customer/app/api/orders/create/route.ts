@@ -10,6 +10,7 @@ import {
 // Also handles: point deduction (debit-first), voucher consumption.
 
 import { NextResponse } from "next/server";
+import { normalizeContactPhone, isValidContactPhone } from "@cafeos/shared/customer/phone";
 import {
   JsonBodyError,
   ORDER_BODY_LIMIT,
@@ -260,7 +261,7 @@ export async function POST(req: Request) {
         !body.delivery_name.trim() ||
         body.delivery_name.length > 120 ||
         typeof body.delivery_phone !== "string" ||
-        !/^\+?[0-9 ()-]{10,20}$/.test(body.delivery_phone))
+        !isValidContactPhone(normalizeContactPhone(body.delivery_phone)))
     )
       return NextResponse.json(
         { error: "Enter a delivery recipient and valid phone number." },
@@ -344,7 +345,7 @@ export async function POST(req: Request) {
     // Delivery fields
     if (body.order_type === "delivery") {
       orderData.delivery_name = body.delivery_name;
-      orderData.delivery_phone = body.delivery_phone;
+      orderData.delivery_phone = normalizeContactPhone(body.delivery_phone!);
       orderData.delivery_address = body.delivery_address;
       orderData.delivery_fee = priced.deliveryFee;
       orderData.lalamove_quotation_id = priced.quotationId;

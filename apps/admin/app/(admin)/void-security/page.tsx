@@ -1,5 +1,6 @@
 "use client";
 
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { ADMIN_PAGE_SIZE } from "../../../components/Pagination";
@@ -149,6 +150,7 @@ export default function VoidSecurityPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Update PIN
+                  <FieldRequirement required={true} />
                 </label>
                 <input
                   type="password"

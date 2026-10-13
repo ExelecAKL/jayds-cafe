@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
@@ -842,16 +843,20 @@ export function Register({ parkedId }: { parkedId?: string }) {
         <PosDialog title="Order notes" onClose={() => setPanel(null)}>
           <div className="pos-dialog-body">
             <p className="pos-muted">Instructions for the whole ticket.</p>
-            <textarea
-              className="pos-field"
-              rows={5}
-              maxLength={1000}
-              aria-label="Order notes"
-              value={draft.notes}
-              onChange={(e) =>
-                update((previous) => ({ ...previous, notes: e.target.value }))
-              }
-            />
+            <label>
+              Order notes
+              <FieldRequirement required={false} />
+              <textarea
+                className="pos-field"
+                rows={5}
+                maxLength={1000}
+                aria-label="Order notes"
+                value={draft.notes}
+                onChange={(e) =>
+                  update((previous) => ({ ...previous, notes: e.target.value }))
+                }
+              />
+            </label>
           </div>
           <footer className="pos-dialog-footer">
             <button
@@ -872,7 +877,10 @@ export function Register({ parkedId }: { parkedId?: string }) {
                 <p className="pos-muted">
                   {draft.customer.points} points available · 10 points = ₱1
                 </p>
-                <label htmlFor="loyalty-points">Redeem points</label>
+                <label htmlFor="loyalty-points">
+                  Redeem points
+                  <FieldRequirement required={false} />
+                </label>
                 <input
                   id="loyalty-points"
                   className="pos-field"
@@ -921,7 +929,10 @@ export function Register({ parkedId }: { parkedId?: string }) {
             )}
             {!draft.customer && (
               <div style={{ marginTop: 16 }}>
-                <label htmlFor="account-qr">Account QR code</label>
+                <label htmlFor="account-qr">
+                  Account QR code
+                  <FieldRequirement required={true} />
+                </label>
                 <input
                   id="account-qr"
                   className="pos-field"

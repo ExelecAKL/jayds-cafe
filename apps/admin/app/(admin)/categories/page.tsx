@@ -3,6 +3,7 @@
 
 "use client";
 
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import type { Category } from "@cafeos/shared/types";
@@ -10,6 +11,8 @@ type ManagedCategory = Category & { status?: "active" | "archived" };
 import { Pagination } from "../../../components/Pagination";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { Feedback } from "../../../components/Operations";
+import { AdminDialog } from "../../../components/AdminDialog";
+import { notifyAdmin } from "../../../components/AdminToasts";
 
 export default function CategoriesPage() {
   const confirmAction = useActionConfirm();
@@ -52,7 +55,10 @@ export default function CategoriesPage() {
   }, [fetchCategories]);
 
   const handleAdd = async () => {
-    if (!newName.trim()) return;
+    if (!newName.trim()) {
+      notifyAdmin("Enter a category name.", "error");
+      return;
+    }
 
     // Duplicate Check
     const { count } = await supabase
@@ -61,7 +67,10 @@ export default function CategoriesPage() {
       .ilike("name", newName.trim());
 
     if (count && count > 0) {
-      alert(`A category named "${newName.trim()}" already exists.`);
+      notifyAdmin(
+        `A category named "${newName.trim()}" already exists.`,
+        "error",
+      );
       return;
     }
 
@@ -72,16 +81,24 @@ export default function CategoriesPage() {
     });
 
     if (error) {
-      alert("Failed to add category");
+      notifyAdmin(
+        "Failed to add category. Your entries are retained.",
+        "error",
+      );
       return;
     }
 
     setNewName("");
     setNewDescription("");
+    notifyAdmin("Category added.", "success");
     fetchCategories();
   };
 
   const handleUpdate = async (id: string) => {
+    if (!editName.trim()) {
+      notifyAdmin("Enter a category name.", "error");
+      return;
+    }
     // Duplicate Check
     const { count } = await supabase
       .from("categories")
@@ -90,7 +107,10 @@ export default function CategoriesPage() {
       .neq("id", id);
 
     if (count && count > 0) {
-      alert(`A category named "${editName.trim()}" already exists.`);
+      notifyAdmin(
+        `A category named "${editName.trim()}" already exists.`,
+        "error",
+      );
       return;
     }
 
@@ -103,11 +123,15 @@ export default function CategoriesPage() {
       .eq("id", id);
 
     if (error) {
-      alert("Failed to update category");
+      notifyAdmin(
+        "Failed to update category. Your entries are retained.",
+        "error",
+      );
       return;
     }
 
     setEditingId(null);
+    notifyAdmin("Category updated.", "success");
     if (selectedCategory)
       setSelectedCategory({
         ...selectedCategory,
@@ -275,19 +299,27 @@ export default function CategoriesPage() {
       {/* Add Category */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
         <h2 className="font-semibold text-gray-900 mb-4">Add Category</h2>
-        <div className="flex gap-3">
-          <input
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="Category name"
-            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
-          />
-          <input
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-            placeholder="Description (optional)"
-            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
-          />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <label className="block min-w-0 flex-1 text-sm">
+            Category name
+            <FieldRequirement required={true} />
+            <input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Category name"
+              className="mt-1 block w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+            />
+          </label>
+          <label className="block min-w-0 flex-1 text-sm">
+            Description
+            <FieldRequirement required={false} />
+            <input
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              placeholder="Description (optional)"
+              className="mt-1 block w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+            />
+          </label>
           <button
             onClick={handleAdd}
             disabled={!newName.trim()}
@@ -366,146 +398,151 @@ export default function CategoriesPage() {
 
       {/* Details Modal */}
       {selectedCategory && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-              <h3 className="font-bold text-gray-900">Category Options</h3>
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto max-h-[70vh]">
-              {editingId === selectedCategory.id ? (
-                <div className="space-y-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Name
-                  </label>
-                  <input
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-amber-500"
-                  />
-                  <label className="block text-sm font-medium text-gray-700">
-                    Description
-                  </label>
-                  <textarea
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    rows={2}
-                    className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-amber-500"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleUpdate(selectedCategory.id)}
-                      className="flex-1 bg-amber-500 text-white font-medium py-2 rounded-lg text-sm"
-                    >
-                      Save Changes
-                    </button>
-                    <button
-                      onClick={() => setEditingId(null)}
-                      className="flex-1 bg-gray-200 text-gray-700 font-medium py-2 rounded-lg text-sm"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-1">
-                    {selectedCategory.name}
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-4">
-                    {selectedCategory.description || "No description provided."}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() =>
-                        handleToggleActive(
-                          selectedCategory.id,
-                          selectedCategory.is_active,
-                        )
-                      }
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium ${selectedCategory.is_active ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
-                    >
-                      {selectedCategory.is_active
-                        ? "✓ Active"
-                        : "Enable Category"}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingId(selectedCategory.id);
-                        setEditName(selectedCategory.name);
-                        setEditDescription(selectedCategory.description || "");
-                      }}
-                      className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-medium"
-                    >
-                      Edit Info
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleArchive(
-                          selectedCategory.id,
-                          selectedCategory.status,
-                        )
-                      }
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
-                        selectedCategory.status === "archived"
-                          ? "bg-green-50 text-green-600 hover:bg-green-100"
-                          : "bg-red-50 text-red-600 hover:bg-red-100"
-                      }`}
-                    >
-                      {selectedCategory.status === "archived"
-                        ? "Restore"
-                        : "Archive"}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(selectedCategory.id)}
-                      className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-medium ml-auto"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <hr className="border-gray-100 mb-4" />
-              <h4 className="font-semibold text-gray-900 mb-3">
-                Linked Menu Items
-              </h4>
-
-              {loadingItems ? (
-                <div className="py-8 flex justify-center">
-                  <div className="w-6 h-6 border-2 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
-                </div>
-              ) : connectedItems.length === 0 ? (
-                <p className="text-sm text-gray-500 text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                  No items connected to this category.
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {connectedItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-white shadow-sm"
-                    >
-                      <span className="text-sm font-medium text-gray-900">
-                        {item.name}
-                      </span>
-                      <span
-                        className={`w-2 h-2 rounded-full ${item.is_available ? "bg-green-500" : "bg-red-500"}`}
-                      ></span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+        <AdminDialog
+          title="Category Options"
+          onClose={() => setSelectedCategory(null)}
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
+        >
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+            <h3 className="font-bold text-gray-900">Category Options</h3>
+            <button
+              aria-label="Close dialog"
+              onClick={() => setSelectedCategory(null)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              ✕
+            </button>
           </div>
-        </div>
+
+          <div className="p-6 overflow-y-auto max-h-[70vh]">
+            {editingId === selectedCategory.id ? (
+              <div className="space-y-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <label className="block text-sm font-medium text-gray-700">
+                  Name
+                  <FieldRequirement required={true} />
+                </label>
+                <input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-amber-500"
+                />
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                  <FieldRequirement required={false} />
+                </label>
+                <textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  rows={2}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-amber-500"
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleUpdate(selectedCategory.id)}
+                    className="flex-1 bg-amber-500 text-white font-medium py-2 rounded-lg text-sm"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    onClick={() => setEditingId(null)}
+                    className="flex-1 bg-gray-200 text-gray-700 font-medium py-2 rounded-lg text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-1">
+                  {selectedCategory.name}
+                </h2>
+                <p className="text-sm text-gray-500 mb-4">
+                  {selectedCategory.description || "No description provided."}
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() =>
+                      handleToggleActive(
+                        selectedCategory.id,
+                        selectedCategory.is_active,
+                      )
+                    }
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium ${selectedCategory.is_active ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                  >
+                    {selectedCategory.is_active
+                      ? "✓ Active"
+                      : "Enable Category"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingId(selectedCategory.id);
+                      setEditName(selectedCategory.name);
+                      setEditDescription(selectedCategory.description || "");
+                    }}
+                    className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-medium"
+                  >
+                    Edit Info
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleArchive(
+                        selectedCategory.id,
+                        selectedCategory.status,
+                      )
+                    }
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
+                      selectedCategory.status === "archived"
+                        ? "bg-green-50 text-green-600 hover:bg-green-100"
+                        : "bg-red-50 text-red-600 hover:bg-red-100"
+                    }`}
+                  >
+                    {selectedCategory.status === "archived"
+                      ? "Restore"
+                      : "Archive"}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(selectedCategory.id)}
+                    className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-medium ml-auto"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <hr className="border-gray-100 mb-4" />
+            <h4 className="font-semibold text-gray-900 mb-3">
+              Linked Menu Items
+            </h4>
+
+            {loadingItems ? (
+              <div className="py-8 flex justify-center">
+                <div className="w-6 h-6 border-2 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
+              </div>
+            ) : connectedItems.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                No items connected to this category.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {connectedItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-white shadow-sm"
+                  >
+                    <span className="text-sm font-medium text-gray-900">
+                      {item.name}
+                    </span>
+                    <span
+                      className={`w-2 h-2 rounded-full ${item.is_available ? "bg-green-500" : "bg-red-500"}`}
+                    ></span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </AdminDialog>
       )}
     </div>
   );

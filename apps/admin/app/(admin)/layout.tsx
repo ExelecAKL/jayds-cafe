@@ -18,12 +18,8 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const { initialized, user, profile, signOut } = useAuth();
-  const resolvedRole =
-    profile?.role ??
-    (typeof user?.user_metadata?.role === "string"
-      ? user.user_metadata.role
-      : null);
-  const hasAccess = resolvedRole === "admin";
+  const resolvedRole = profile?.id === user?.id ? profile?.role : null;
+  const hasAccess = resolvedRole === "admin" && profile?.is_approved === true;
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -60,7 +56,26 @@ export default function AdminLayout({
   if (!initialized || !user || !resolvedRole || !hasAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-10 h-10 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
+        <div className="text-center space-y-4 p-6">
+          <p role="status">Verifying approved administrator access…</p>
+          {initialized && user && !profile && (
+            <>
+              <p>
+                Administrator access could not be verified yet. Retry or sign
+                out.
+              </p>
+              <button
+                className="ops-button"
+                onClick={() => window.location.reload()}
+              >
+                Retry verification
+              </button>
+              <button className="ops-button" onClick={handleSignOut}>
+                Sign out
+              </button>
+            </>
+          )}
+        </div>
       </div>
     );
   }

@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+.admin-toasts { position: fixed; z-index: 10000; bottom: 24px; right: 24px; width: min(400px, calc(100vw - 32px)); display: grid; gap: 10px; pointer-events: none; }
+.admin-toast { display: flex; align-items: center; gap: 12px; background: var(--ops-surface); color: var(--ops-ink); border: 1px solid var(--ops-border); border-left: 4px solid var(--ops-accent); border-radius: 12px; box-shadow: 0 8px 24px #30251e1a; padding: 10px 12px; pointer-events: auto; }
+.admin-toast.error { border-left-color: #b91c1c; }
+.admin-toast.success { border-left-color: #15803d; }
+.admin-toast p { flex: 1; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+.admin-toast-mark { font-weight: 700; }
+.admin-toast.error .admin-toast-mark { color: #b91c1c; }
+.admin-toast.success .admin-toast-mark { color: #15803d; }
+.admin-toast button { min-width: 44px; min-height: 44px; border-radius: 8px; font-size: 22px; }
+@media (max-width: 600px) { .admin-toasts { bottom: 16px; right: 16px; } }
+@media print { .admin-toasts { display: none; } }
+
 @layer base {
   html {
     font-family: var(--font-operations), "Inter", system-ui, sans-serif;

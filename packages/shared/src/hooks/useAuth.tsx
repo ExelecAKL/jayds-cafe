@@ -12,6 +12,7 @@ import React, {
   useRef,
 } from "react";
 import { supabase } from "../supabase/client";
+import { normalizeContactPhone, isValidContactPhone } from "../customer/phone";
 import { appPath } from "../utils/app-path";
 import type { Profile, UserRole } from "../types/index";
 import type { User, Session } from "@supabase/supabase-js";
@@ -219,6 +220,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       role: UserRole = "customer",
       legalVersion?: string,
     ) => {
+      const contactPhone =
+        role === "customer" ? normalizeContactPhone(phone ?? "") : phone;
+      if (role === "customer" && !isValidContactPhone(contactPhone ?? "")) {
+        return {
+          error: new Error(
+            "A valid phone number is required for customer registration.",
+          ),
+          needsEmailConfirmation: false,
+        };
+      }
       dispatch({ type: "SET_LOADING", payload: true });
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -226,7 +237,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         options: {
           data: {
             full_name: fullName,
-            phone: phone || null,
+            phone: contactPhone || null,
             role,
             ...(role === "customer" && legalVersion
               ? { jayds_legal_version: legalVersion }

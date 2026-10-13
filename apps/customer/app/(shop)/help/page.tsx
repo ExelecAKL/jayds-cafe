@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useState } from "react";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { customerHeaders } from "../../../context/CustomerFeatures";
@@ -129,6 +130,7 @@ export default function HelpPage() {
             <div className="text-sm">
               <label htmlFor="help-topic" className="block">
                 Topic
+                <FieldRequirement required={true} />
               </label>
               <select
                 id="help-topic"
@@ -144,7 +146,8 @@ export default function HelpPage() {
             </div>
             <div className="text-sm">
               <label htmlFor="help-order" className="block">
-                Order ID · optional for signed-in members
+                Order ID
+                <FieldRequirement required={!user} />
               </label>
               <input
                 id="help-order"
@@ -157,6 +160,7 @@ export default function HelpPage() {
             <div className="text-sm">
               <label htmlFor="help-subject" className="block">
                 Subject
+                <FieldRequirement required={true} />
               </label>
               <input
                 id="help-subject"
@@ -170,6 +174,7 @@ export default function HelpPage() {
             <div className="text-sm">
               <label htmlFor="help-message" className="block">
                 Message
+                <FieldRequirement required={true} />
               </label>
               <textarea
                 id="help-message"

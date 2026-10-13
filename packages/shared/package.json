@@ -5,6 +5,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
+    "./ui/field-requirement": "./src/ui/field-requirement.tsx",
     "./ui/action-confirm": "./src/ui/action-confirm.tsx",
     "./ui/action-confirm.css": "./src/ui/action-confirm.css",
     ".": "./src/index.ts",
@@ -31,6 +32,7 @@
     "./pos/draft": "./src/pos/draft.ts",
     "./pos/fulfillment": "./src/pos/fulfillment.ts",
     "./customer/types": "./src/customer/types.ts",
+    "./customer/phone": "./src/customer/phone.ts",
     "./customer/scheduling": "./src/customer/scheduling.ts",
     "./utils/uuid": "./src/utils/uuid.ts",
     "./utils/app-path": "./src/utils/app-path.ts",

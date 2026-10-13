@@ -2,6 +2,7 @@
 // Premium cream/brown registration page
 
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { BrandArtwork } from "@cafeos/shared/brand";
 
 import { useState } from "react";
@@ -11,6 +12,10 @@ import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import PasswordInput from "../../../components/PasswordInput";
 import { getCustomerAuthErrorMessage } from "../../../utils/authMessages";
 import { LEGAL_VERSION } from "../../../lib/legal";
+import {
+  normalizeContactPhone,
+  isValidContactPhone,
+} from "@cafeos/shared/customer/phone";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -35,6 +40,13 @@ export default function RegisterPage() {
     }
     if (!email.trim()) {
       setError("Email is required");
+      return;
+    }
+    const contactPhone = normalizeContactPhone(phone);
+    if (!isValidContactPhone(contactPhone)) {
+      setError(
+        "Enter a valid phone number so the delivery rider can contact you.",
+      );
       return;
     }
     if (!legalAccepted) {
@@ -66,7 +78,7 @@ export default function RegisterPage() {
       email.trim(),
       password,
       fullName.trim(),
-      phone.trim(),
+      contactPhone,
       "customer",
       LEGAL_VERSION,
     );
@@ -119,6 +131,7 @@ export default function RegisterPage() {
           <div>
             <label htmlFor="reg-name" className="section-label mb-1.5 block">
               Full Name
+              <FieldRequirement required={true} />
             </label>
             <div className="relative">
               <svg
@@ -147,6 +160,7 @@ export default function RegisterPage() {
           <div>
             <label htmlFor="reg-email" className="section-label mb-1.5 block">
               Email
+              <FieldRequirement required={true} />
             </label>
             <div className="relative">
               <svg
@@ -175,7 +189,7 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="reg-phone" className="section-label mb-1.5 block">
-              Phone Number · optional
+              Phone Number <FieldRequirement required={true} />
             </label>
             <div className="relative">
               <svg
@@ -192,6 +206,9 @@ export default function RegisterPage() {
               <input
                 id="reg-phone"
                 type="tel"
+                required
+                autoComplete="tel"
+                maxLength={25}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="09XX XXX XXXX"
@@ -206,6 +223,7 @@ export default function RegisterPage() {
               className="section-label mb-1.5 block"
             >
               Password
+              <FieldRequirement required={true} />
             </label>
             <PasswordInput
               id="reg-password"
@@ -253,6 +271,7 @@ export default function RegisterPage() {
           <div>
             <label htmlFor="reg-confirm" className="section-label mb-1.5 block">
               Confirm Password
+              <FieldRequirement required={true} />
             </label>
             <PasswordInput
               id="reg-confirm"
@@ -281,6 +300,7 @@ export default function RegisterPage() {
                 Privacy Notice
               </Link>
               . Optional notifications are a separate choice.
+              <FieldRequirement required={true} />
             </span>
           </label>
           <button

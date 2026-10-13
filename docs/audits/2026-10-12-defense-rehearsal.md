@@ -1,0 +1,16 @@
+# Defense acceptance rehearsal
+
+Status: **pending hands-on checks**. None of the unchecked steps below is an automated PASS. Use the exact laptop, network, phone(s) and deployed version for the defense. No physical receipt printer is required by the confirmed setup.
+
+1. Fix and retest the eleven findings in the [comprehensive audit](C:/Users/Exelec/Downloads/pwajaydsmobilesokpos/docs/audits/2026-10-12-comprehensive-audit.md), and recheck the observed reverse-geocoding outage. Preserve the regression evidence. Category deletion, tier-restricted vouchers and printed order identifiers need correction before claiming their current behavior is safe.
+2. Confirm actual stock counts, units and portions with the operator. Enter real hours, closure dates and capacities; record production verification through Admin and enable scheduled pickup. Do not copy fixture counts into café stock. Configure push/worker keys before background-delivery testing.
+3. On each intended phone, install/open the customer app, sign in as a designated customer, background and resume it, navigate back/forward, deny then grant location/notification permission, and verify logout removes private drafts. Repeat menu/cart offline editing and reconnection.
+4. Display a customer account QR on the phone. Scan it with the laptop webcam in Staff Register; confirm the correct customer/points appear. Scan a ready order's private pickup QR, test manual fallback, and confirm camera tracks stop after closing. Check realistic lighting, glare and camera placement.
+5. Complete guest and member pickup orders in the approved test/staging channel. Customer review must be explicit. POS prepares/readies/collects the same order; customer tracking, Admin history, stock and rewards must agree. Cash tender/change, duplicate retry and the accepted receipt must agree. Verify notification sound on the actual hardware.
+6. Complete the human Maya sandbox CAPTCHA using published sandbox payment data, never a real card. Exercise success, decline, cancellation and one-hour expiration. Verify the provider record, hosted verification/callback, POS/Admin payment state and duplicate/late-event handling. Test refund/void in the authorized merchant workflow and record its reference.
+7. Exercise supported Lalamove sandbox rider/status and webhook scenarios. Compare customer, Staff and Admin records for the same booking; test cancellation/recovery and prevent duplicate bookings. The automated quotation/booking/cancellation probes already passed, but do not certify these callbacks.
+8. Verify actual customer/staff email delivery and hosted verification/reset links with designated inboxes. Check failed/expired links, successful reset, old-password rejection and preserved role/approval boundaries.
+9. Verify configured scheduled jobs have actually executed. Reconnect customer/POS/Admin during an in-progress test order. Run staging load/soak and a staging backup/restore verification; record timings and outcomes.
+10. Save screenshots/references and a result for every step: PASS, FAIL or BLOCKED with its reason. A pending device/provider/configuration check remains pending even if its isolated simulation passed.
+
+Acceptance requires fixes and the needed direct gates to pass. This checklist is not a bug-free certificate.

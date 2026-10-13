@@ -1,8 +1,10 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@cafeos/shared/supabase/client";
 import ProviderReconciliation from "../../../components/ProviderReconciliation";
+import { notifyAdmin } from "../../../components/AdminToasts";
 interface Case {
   id: string;
   kind: string;
@@ -124,6 +126,7 @@ export default function CustomerCare() {
         p_response: response,
       });
       if (error) throw error;
+      notifyAdmin("Customer review saved.", "success");
       setSelected(null);
       void load();
     } catch {
@@ -329,6 +332,7 @@ export default function CustomerCare() {
           )}
           <label className="block">
             Status
+            <FieldRequirement required={true} />
             <select
               className="ops-input w-full"
               value={status}
@@ -341,6 +345,7 @@ export default function CustomerCare() {
           </label>
           <label className="block">
             Private reply
+            <FieldRequirement required={false} />
             <textarea
               className="ops-input w-full"
               rows={4}

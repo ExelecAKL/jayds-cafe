@@ -1,4 +1,5 @@
 "use client";
+import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useMemo, useState } from "react";
 import type { ItemVariant, MenuItem } from "@cafeos/shared/types";
 import type { RegisterLine, RegisterOption } from "@cafeos/shared/pos/types";
@@ -196,15 +197,19 @@ export function ProductOptions({
           {group === "notes" ? (
             <>
               <p className="pos-muted">Visible to the preparation team.</p>
-              <textarea
-                className="pos-field"
-                rows={4}
-                maxLength={500}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                aria-label="Item notes"
-                style={{ marginTop: 14 }}
-              />
+              <label>
+                Item notes
+                <FieldRequirement required={false} />
+                <textarea
+                  className="pos-field"
+                  rows={4}
+                  maxLength={500}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  aria-label="Item notes"
+                  style={{ marginTop: 14 }}
+                />
+              </label>
               <div className="quantity-control" style={{ marginTop: 16 }}>
                 <button
                   className="pos-icon-button"

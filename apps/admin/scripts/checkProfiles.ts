@@ -21,6 +21,7 @@ const sb = createClient(url, key);
 
 async function run() {
   const { data, error } = await sb.from('profiles').select('*');
+  if (error) throw error;
   console.log(data);
 }
 run();
