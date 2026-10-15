@@ -42,7 +42,7 @@ const groups: {
   },
   {
     label: "Reports",
-    items: [{ href: "/analytics", label: "Sales reports", icon: "reports" }],
+    items: [{ href: "/analytics", label: "Sales reports", icon: "reports" },{href:"/finance",label:"Finance & invoices",icon:"reports"}],
   },
   {
     label: "People",

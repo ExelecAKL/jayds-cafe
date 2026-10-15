@@ -6,8 +6,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@cafeos/shared/supabase/client";
+import {InvoiceDocument,type InvoiceRecord} from "@cafeos/shared/finance/invoice";
 
 interface ReceiptData {
+  invoice?: InvoiceRecord | null;
   order_number?: string;
   items?: {
     name: string;
@@ -91,6 +93,8 @@ export default function GuestReceiptPage() {
 
   const data = receipt.receipt_data;
   const date = data.date ? new Date(data.date) : new Date(receipt.created_at);
+
+  if(data.invoice) return <main className="min-h-screen bg-gray-100 p-4"><div className="print:hidden mx-auto mb-4 flex max-w-3xl justify-between"><button type="button" onClick={()=>router.push("/menu")}>Back to menu</button><button type="button" onClick={()=>window.print()}>Print / Save PDF</button></div><InvoiceDocument invoice={data.invoice}/>{data.cash_received!=null && <p className="mx-auto mt-4 max-w-3xl">Cash received: ₱{Number(data.cash_received).toFixed(2)} · Change: ₱{Number(data.change_due??0).toFixed(2)}</p>}</main>;
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col items-center py-10 px-4 font-mono text-gray-800">

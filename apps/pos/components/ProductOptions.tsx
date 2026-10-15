@@ -1,6 +1,7 @@
 "use client";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useMemo, useState } from "react";
+import { resolveMenuDefaults } from "@cafeos/shared/menu/options";
 import type { ItemVariant, MenuItem } from "@cafeos/shared/types";
 import type { RegisterLine, RegisterOption } from "@cafeos/shared/pos/types";
 import { pesos } from "@cafeos/shared/pos/draft";
@@ -30,30 +31,7 @@ function applicable(item: MenuItem) {
   );
 }
 export function productDefaults(item: MenuItem): RegisterOption[] {
-  const grouped = Object.groupBy(applicable(item), (v) => v.variant_group);
-  const chosen = Object.entries(grouped).flatMap(([group, choices]) =>
-    group === "add_on"
-      ? []
-      : [choices!.find((v) => v.is_default) ?? choices![0]],
-  );
-  const temp = chosen.find((v) => v.variant_group === "temperature")?.label;
-  const sizes = applicable(item).filter(
-    (v) =>
-      v.variant_group === "size" &&
-      (temp === "Hot"
-        ? v.label.includes("12oz")
-        : temp === "Iced"
-          ? !v.label.includes("12oz")
-          : true),
-  );
-  const size = chosen.find((v) => v.variant_group === "size");
-  if (size && sizes.length && !sizes.some((v) => v.id === size.id)) {
-    chosen.splice(
-      chosen.indexOf(size),
-      1,
-      sizes.find((v) => v.is_default) ?? sizes[0],
-    );
-  }
+  const chosen = resolveMenuDefaults(applicable(item));
   return chosen.map((v) => ({
     variant_group: v.variant_group,
     label: v.label,
@@ -83,8 +61,10 @@ export function ProductOptions({
     ),
     "notes",
   ];
-  const [selected, setSelected] = useState<RegisterOption[]>(
-    () => line?.variants ?? productDefaults(item),
+  const [selected, setSelected] = useState<RegisterOption[]>(() =>
+    line
+      ? resolveMenuDefaults(applicable(item), line.variants)
+      : productDefaults(item),
   );
   const [group, setGroup] = useState(groups[0]),
     [page, setPage] = useState(0),
@@ -133,36 +113,16 @@ export function ProductOptions({
               ),
               option,
             ];
-      if (variant.variant_group === "temperature") {
-        const sizes = (grouped.size ?? []).filter((v) =>
-          variant.label === "Hot"
-            ? v.label.includes("12oz")
-            : variant.label === "Iced"
-              ? !v.label.includes("12oz")
-              : true,
-        );
-        if (
-          sizes.length &&
-          !sizes.some((v) =>
-            next.some((s) => s.variant_group === "size" && s.label === v.label),
-          )
-        ) {
-          const size = sizes.find((v) => v.is_default) ?? sizes[0];
-          next = [
-            ...next.filter((v) => v.variant_group !== "size"),
-            {
-              variant_group: "size",
-              label: size.label,
-              price_modifier: size.price_modifier,
-            },
-          ];
-        }
-      }
+      if (variant.variant_group === "temperature")
+        next = resolveMenuDefaults(applicable(item), next);
       return next;
     });
   };
   const price = item.price + selected.reduce((n, v) => n + v.price_modifier, 0);
-  const canSave = !online || !!availability?.available;
+  const requiredComplete = Object.keys(grouped).every(
+    (key) => key === "add_on" || selected.some((v) => v.variant_group === key),
+  );
+  const canSave = requiredComplete && (!online || !!availability?.available);
   return (
     <PosDialog
       title={line ? "Edit " + item.name : item.name}
@@ -232,6 +192,30 @@ export function ProductOptions({
           ) : (
             <>
               <div className="option-choices">
+                {group === "add_on" &&
+                  choices.some((v) => v.label === "Extra Shot") && (
+                    <button
+                      className={`option-choice ${!selected.some((v) => v.variant_group === "add_on" && v.label === "Extra Shot") ? "is-selected" : ""}`}
+                      aria-pressed={
+                        !selected.some(
+                          (v) =>
+                            v.variant_group === "add_on" &&
+                            v.label === "Extra Shot",
+                        )
+                      }
+                      onClick={() =>
+                        setSelected((previous) =>
+                          previous.filter(
+                            (v) =>
+                              v.variant_group !== "add_on" ||
+                              v.label !== "Extra Shot",
+                          ),
+                        )
+                      }
+                    >
+                      Standard espresso<small>Included</small>
+                    </button>
+                  )}
                 {choices.slice(page * 6, page * 6 + 6).map((v) => {
                   const chosen = selected.some(
                     (s) =>
@@ -252,7 +236,7 @@ export function ProductOptions({
                       disabled={disabled}
                       onClick={() => change(v)}
                     >
-                      {v.label}
+                      {v.label === "Extra Shot" ? "+1 Extra Shot" : v.label}
                       <small>
                         {disabled
                           ? "Unavailable"

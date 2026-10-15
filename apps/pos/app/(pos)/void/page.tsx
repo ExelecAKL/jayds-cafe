@@ -1,4 +1,5 @@
 "use client";
+import { PasswordInput } from "@cafeos/shared/ui/password-input";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useRef, useState } from "react";
 import Link from "next/link";
@@ -168,9 +169,9 @@ export default function VoidOrderPage() {
                   <FieldRequirement required={true} />
                 </span>
               </label>
-              <input
+              <PasswordInput
                 id="manager-pin"
-                type="password"
+                secretName="PIN"
                 inputMode="numeric"
                 className="pos-field"
                 autoComplete="off"

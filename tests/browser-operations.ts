@@ -6,6 +6,8 @@ import path from "node:path";
 import { cashierJourneys } from "./pos-browser-journeys.ts";
 import { completeAdminJourneys } from "./system-audit-admin-complete.ts";
 import { scannerAudit } from "./system-audit-scanner.ts";
+import {financeJourneys} from "./finance-browser-journeys.ts";
+import {passwordJourneys} from "./password-browser-journeys.ts";
 import {
   submissionIdentity,
   priceCatalogItems,
@@ -832,6 +834,7 @@ try {
     "20261007000400_distinguish_delivery_pickup.sql",
     "20261007000500_guest_pickup_qr.sql",
     "20261007000600_cash_at_pickup.sql",
+    "20261013000400_finance_invoices.sql",
   ])
     await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
   await db.query("UPDATE inventory_settings SET enforcement_enabled=true");
@@ -860,7 +863,15 @@ try {
     start("pos", ports.pos),
     start("customer", ports.customer),
   ]);
-  if (process.env.JAYDS_ADMIN_COMPLETE_ONLY === "1") {
+  await passwordJourneys(browser,{customer:auditUrls.customer || `http://${demoHost}:${ports.customer}`,pos:auditUrls.pos || `http://${demoHost}:${ports.pos}`,admin:auditUrls.admin || `http://${demoHost}:${ports.admin}`});
+  if (process.env.JAYDS_PASSWORD_ONLY === "1") {
+    console.log("Password-only browser audit complete.");
+  } else if(process.env.JAYDS_FINANCE_ONLY === "1") {
+    const financeContext=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:"block"});
+    const financeBase=await attach(financeContext,"admin",ports.admin);
+    try {await financeJourneys({page:await financeContext.newPage(),base:financeBase,customerBase:auditUrls.customer || `http://${demoHost}:${ports.customer}`,db,actor:adminId,item:itemId});}
+    finally {await financeContext.close();}
+  } else if (process.env.JAYDS_ADMIN_COMPLETE_ONLY === "1") {
     const deepContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "block" });
     const deepBase = await attach(deepContext, "admin", ports.admin);
     try {
@@ -1406,6 +1417,12 @@ try {
     if (scanResults.some(row => row.status === "FAIL")) process.exitCode = 1;
   }
   await cameraContext.close();
+  const financeContext=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:"block"});
+  const financeBase=await attach(financeContext,"admin",ports.admin);
+  const financePage=await financeContext.newPage();
+  financePage.on("pageerror",error=>errors.push(error.message));
+  try {await financeJourneys({page:financePage,base:financeBase,customerBase:auditUrls.customer || `http://${demoHost}:${ports.customer}`,db,actor:adminId,item:itemId});}
+  finally {await financeContext.close();}
   if (process.env.JAYDS_SYSTEM_AUDIT === "1") {
     const deepContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "block" });
     const deepBase = await attach(deepContext, "admin", ports.admin);

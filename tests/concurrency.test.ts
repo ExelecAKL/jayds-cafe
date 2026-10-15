@@ -212,6 +212,12 @@ test(
       await control.query(
         "UPDATE inventory_settings SET enforcement_enabled=true",
       );
+      await control.query(
+        readFileSync(
+          "supabase/migrations/20261013000400_finance_invoices.sql",
+          "utf8",
+        ),
+      );
       for (const client of [pos, mobile]) {
         await client.query(
           "SELECT set_config('request.jwt.claim.role','service_role',false),set_config('request.jwt.claim.sub',$1,false)",
@@ -518,6 +524,158 @@ test(
       );
       t.diagnostic(
         "Simultaneous retries with one checkout key reused the accepted sale, recorded tender, and receipt without double redemption.",
+      );
+      await control.query("SELECT finance_save_settings($1)", [
+        JSON.stringify({
+          registered_name: "NATIVE INVOICE FIXTURE OWNER",
+          trade_name: "Native fixture cafe",
+          tin: "000-000-000",
+          branch_code: "00000",
+          registered_address: "Native fixture address only",
+          invoice_prefix: "JD",
+          invoices_enabled: true,
+          compliance_verified: false,
+        }),
+      ]);
+      const initialInvoices = (
+        await control.query("SELECT count(*)::int count FROM finance_invoices")
+      ).rows[0].count;
+      const ids = (
+        await control.query(
+          "INSERT INTO orders(subtotal,total,discount,order_source,payment_method) VALUES(100,100,0,'app','maya'),(100,100,0,'app','maya') RETURNING id",
+        )
+      ).rows.map((row) => row.id as string);
+      await control.query(
+        "INSERT INTO order_financials(order_id,breakdown) SELECT o.id,finance_standard_snapshot(o,$1) FROM orders o WHERE o.id=ANY($2::uuid[])",
+        [
+          JSON.stringify([
+            {
+              menu_item_id: item,
+              name: "Concurrent coffee",
+              price: 100,
+              quantity: 1,
+            },
+          ]),
+          ids,
+        ],
+      );
+      await pos.query("BEGIN");
+      await pos.query(
+        "UPDATE orders SET status='confirmed',payment_status='paid' WHERE id=$1",
+        [ids[0]],
+      );
+      const competingInvoice = mobile.query(
+        "UPDATE orders SET status='confirmed',payment_status='paid' WHERE id=$1",
+        [ids[1]],
+      );
+      await waitsForLock(control, mobilePid);
+      await pos.query("COMMIT");
+      await competingInvoice;
+      await mobile.query(
+        "UPDATE orders SET payment_status='paid' WHERE id=ANY($1::uuid[])",
+        [ids],
+      );
+      const issued = await control.query(
+        "SELECT number FROM finance_invoices WHERE order_id=ANY($1::uuid[]) ORDER BY number",
+        [ids],
+      );
+      assert.equal(issued.rows.length, 2);
+      assert.notEqual(issued.rows[0].number, issued.rows[1].number);
+      assert.equal(
+        (
+          await control.query(
+            "SELECT count(*)::int count FROM finance_invoices",
+          )
+        ).rows[0].count,
+        initialInvoices + 2,
+      );
+      assert.equal(
+        (
+          await control.query(
+            "SELECT count(*)::int count FROM financial_events WHERE order_id=ANY($1::uuid[])",
+            [ids],
+          )
+        ).rows[0].count,
+        2,
+      );
+      t.diagnostic(
+        "Independent concurrent settlements contended on the invoice counter and issued distinct numbers; duplicate callbacks added no invoice or sale.",
+      );
+      // Both cash checkouts reach their snapshots before either may post payment.
+      // A SHARE-to-UPDATE lock upgrade on finance_settings would deadlock here.
+      const stocks = (
+        await control.query(
+          "INSERT INTO ingredients(name,current_stock,cost_per_unit) VALUES('Concurrent invoice beans A',0,1),('Concurrent invoice beans B',0,1) RETURNING id",
+        )
+      ).rows.map((row) => row.id as string);
+      for (const stockId of stocks)
+        await control.query(
+          "SELECT inv_post_movement($1,100,'receipt','Concurrent invoice fixture stock')",
+          [stockId],
+        );
+      const menus = (
+        await control.query(
+          "INSERT INTO menu_items(name,price) VALUES('Concurrent invoice coffee A',100),('Concurrent invoice coffee B',100) RETURNING id",
+        )
+      ).rows.map((row) => row.id as string);
+      for (let i = 0; i < 2; i++)
+        await control.query(
+          "INSERT INTO menu_item_ingredients(menu_item_id,ingredient_id,quantity_used) VALUES($1,$2,2)",
+          [menus[i], stocks[i]],
+        );
+      await control.query(`CREATE FUNCTION native_pause_finance_snapshot() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_advisory_xact_lock(765432109); RETURN NEW; END $$;
+        CREATE TRIGGER native_pause_finance AFTER INSERT ON order_financials FOR EACH ROW EXECUTE FUNCTION native_pause_finance_snapshot(); SELECT pg_advisory_lock(765432109);`);
+      const cashWithItem = (client: pg.Client, index: number) =>
+        client.query(
+          "SELECT pos_cash_checkout($1,$2,$2,100,100,$3,$4,NULL) result",
+          [
+            admin,
+            "native-invoice-multiple-" + index,
+            JSON.stringify({
+              order_source: "pos",
+              order_type: "pickup",
+              payment_method: "cash",
+              subtotal: 100,
+              total: 100,
+              discount: 0,
+              points_redeemed: 0,
+            }),
+            JSON.stringify([
+              {
+                menu_item_id: menus[index],
+                price: 100,
+                subtotal: 100,
+                quantity: 1,
+                variants: [],
+              },
+            ]),
+          ],
+        );
+      const posPid = (await pos.query("SELECT pg_backend_pid() pid")).rows[0]
+        .pid as number;
+      const parallelA = cashWithItem(pos, 0),
+        parallelB = cashWithItem(mobile, 1);
+      await waitsForLock(control, posPid);
+      await waitsForLock(control, mobilePid);
+      await control.query("SELECT pg_advisory_unlock(765432109)");
+      const parallelResults = await Promise.all([parallelA, parallelB]);
+      assert.notEqual(
+        parallelResults[0].rows[0].result.id,
+        parallelResults[1].rows[0].result.id,
+      );
+      await control.query(
+        "DROP TRIGGER native_pause_finance ON order_financials; DROP FUNCTION native_pause_finance_snapshot()",
+      );
+      const concurrentIssued = (
+        await control.query(
+          "SELECT count(*)::int count,count(DISTINCT number)::int distinct_count FROM finance_invoices WHERE order_id=ANY($1::uuid[])",
+          [parallelResults.map((r) => r.rows[0].result.id)],
+        )
+      ).rows[0];
+      assert.equal(concurrentIssued.count, 2);
+      assert.equal(concurrentIssued.distinct_count, 2);
+      t.diagnostic(
+        "Cash checkouts for independent stock items crossed a synchronized snapshot barrier and both committed with distinct invoices, without a lock-upgrade deadlock.",
       );
     } finally {
       await Promise.allSettled(clients.map((client) => client.end()));

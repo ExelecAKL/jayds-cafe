@@ -1,4 +1,5 @@
 "use client";
+import { PasswordInput } from "@cafeos/shared/ui/password-input";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState } from "react";
 import Link from "next/link";
@@ -100,10 +101,9 @@ export default function PosRegisterPage() {
               Password · at least 8 characters
               <FieldRequirement required={true} />
             </label>
-            <input
+            <PasswordInput
               className="pos-field"
               id="staff-password"
-              type="password"
               autoComplete="new-password"
               minLength={8}
               required
@@ -116,10 +116,9 @@ export default function PosRegisterPage() {
               Confirm password
               <FieldRequirement required={true} />
             </label>
-            <input
+            <PasswordInput
               className="pos-field"
               id="staff-confirm"
-              type="password"
               autoComplete="new-password"
               required
               value={confirm}

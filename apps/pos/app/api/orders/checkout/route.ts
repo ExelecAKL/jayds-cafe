@@ -9,6 +9,7 @@ import {
   cashierRpc,
   requireCashier,
 } from "../../../../lib/server";
+import { calculateFinancials } from "@cafeos/shared/finance/calculations";
 export async function POST(req: Request) {
   try {
     const { db, actor } = await requireCashier(req);
@@ -105,6 +106,7 @@ export async function POST(req: Request) {
         points_redeemed: points,
         subtotal,
         discount: points / 10,
+        financial_breakdown: calculateFinancials({ items, points }),
         total: Math.round((subtotal - points / 10) * 100) / 100,
         notes: body.notes || null,
       };

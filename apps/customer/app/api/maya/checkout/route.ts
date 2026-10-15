@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { readJsonBody } from "@cafeos/shared/server/request-body";
 import { MayaService, MayaProviderError } from "@cafeos/shared/maya";
 import {
+  mayaAmountDetails,
+  type FinancialBreakdown,
+} from "@cafeos/shared/finance/calculations";
+import {
   ApiAccessError,
   PRIVATE_HEADERS,
   apiAccessErrorResponse,
@@ -98,6 +102,24 @@ export async function POST(req: NextRequest) {
         503,
       );
     const origin = resolveMayaReturnOrigin(req);
+    const { data: financial, error: financialError } = await db
+      .from("order_financials")
+      .select("breakdown")
+      .eq("order_id", order.id)
+      .maybeSingle();
+    if (financialError)
+      throw new ApiAccessError(
+        "The payment breakdown is temporarily unavailable. Please retry.",
+        503,
+      );
+    const financialDetails = financial
+      ? mayaAmountDetails(financial.breakdown as FinancialBreakdown)
+      : null;
+    if (
+      financial &&
+      Math.round(Number(order.total) * 100) !== financial.breakdown.total
+    )
+      throw new ApiAccessError("The payment total needs staff review.", 409);
     const { claimed, attempt } = await claimProviderAttempt(
       db,
       order.id,
@@ -127,7 +149,7 @@ export async function POST(req: NextRequest) {
         totalAmount: {
           value: total,
           currency: "PHP",
-          details: {
+          details: financialDetails ?? {
             subtotal,
             discount: Math.max(0, subtotal + shippingFee - total),
             serviceCharge: 0,

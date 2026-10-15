@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { BrandArtwork } from "@cafeos/shared/brand";
+import { PasswordInput } from "@cafeos/shared/ui/password-input";
 export default function PosLoginPage() {
   const { user, profile, initialized, signIn, signOut } = useAuth(),
     router = useRouter();
@@ -80,10 +81,9 @@ export default function PosLoginPage() {
                 Password
                 <FieldRequirement required={true} />
               </label>
-              <input
+              <PasswordInput
                 className="pos-field"
                 id="password"
-                type="password"
                 autoComplete="current-password"
                 required
                 value={password}

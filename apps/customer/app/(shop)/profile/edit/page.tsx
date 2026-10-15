@@ -216,8 +216,8 @@ function ProfileForm() {
           >
             <h2 className="section-title">Personal information</h2>
             <p className="mt-2 text-sm text-text-secondary">
-              Your phone is optional here. A recipient number is required for
-              delivery.
+              Your phone number is required so the café and delivery rider can
+              contact you about your order.
             </p>
             <div className="mt-6 space-y-4">
               <div>

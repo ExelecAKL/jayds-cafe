@@ -55,6 +55,72 @@ const body = {
   cash_received: 100,
   expected_total: 100,
 };
+test("new cash checkout forwards the shared VAT snapshot with the canonical accepted total", async () => {
+  let accepted = false;
+  const db = {
+    from: () => ({
+      select: () => ({
+        eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }),
+      }),
+    }),
+  };
+  const handler = module<{ POST: (request: Request) => Promise<Response> }>(
+    "apps/pos/app/api/orders/checkout/route.ts",
+    {
+      "@cafeos/shared/inventory/orders": {
+        ...pricing,
+        priceCatalogItems: async () => [
+          {
+            menu_item_id: "menu",
+            name: "Fixture Coffee",
+            price: 112,
+            subtotal: 112,
+            quantity: 1,
+            variants: [],
+            notes: null,
+          },
+        ],
+      },
+      "../../../../lib/server": {
+        requireCashier: async () => ({ db, actor: "staff" }),
+        cashierRpc: async (
+          _db: unknown,
+          name: string,
+          args: {
+            p_order: {
+              total: number;
+              financial_breakdown: {
+                total: number;
+                vat: number;
+                net_sales: number;
+              };
+            };
+          },
+        ) => {
+          assert.equal(name, "pos_cash_checkout");
+          assert.equal(args.p_order.total, 112);
+          assert.equal(args.p_order.financial_breakdown.total, 11200);
+          assert.equal(args.p_order.financial_breakdown.net_sales, 10000);
+          assert.equal(args.p_order.financial_breakdown.vat, 1200);
+          accepted = true;
+          return { id: "fixture", total: 112 };
+        },
+        cashierError: (error: Error) =>
+          Response.json({ error: error.message }, { status: 400 }),
+      },
+    },
+  );
+  const response = await handler.POST(
+    request({
+      ...body,
+      items: [{ ...body.items[0], price: 112 }],
+      cash_received: 200,
+      expected_total: 112,
+    }),
+  );
+  assert.equal(response.status, 200);
+  assert.equal(accepted, true);
+});
 test("mobile cash handover forwards its matching private QR and tender to the checked operation", async () => {
   let calls = 0;
   const orderId = "20000000-0000-4000-8000-000000000001";

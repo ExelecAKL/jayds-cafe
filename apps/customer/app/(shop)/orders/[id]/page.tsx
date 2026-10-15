@@ -806,6 +806,7 @@ export default function OrderTrackingPage() {
                 Cancel unpaid order
               </button>
             )}
+            {["paid","refunded"].includes(order.payment_status) && <Link href={`/orders/${order.id}/invoice`} className="text-link justify-center w-full">View invoice / Save PDF</Link>}
             {order.payment_status === "paid" &&
               ["pending", "confirmed"].includes(order.status) && (
                 <Link

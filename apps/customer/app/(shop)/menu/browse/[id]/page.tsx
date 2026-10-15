@@ -1,5 +1,6 @@
 "use client";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
+import { optionKey, resolveMenuDefaults } from "@cafeos/shared/menu/options";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "../../../../../components/OfflineMenuLink";
@@ -82,30 +83,11 @@ export default function BrowseMenuItemPage() {
       if (!active) return;
       setSelected((previous) => {
         const next: Record<string, ItemVariant> = {};
-        for (const [group, values] of Object.entries(groups)) {
-          const current = values.find(
-            (v) => v.id === previous[group]?.id && v.is_available !== false,
-          );
-          const chosen =
-            current ??
-            values.find((v) => v.is_default && v.is_available !== false);
-          if (chosen) next[group] = chosen;
-        }
-        const temperature = next.temperature?.label;
-        const sizes = (groups.size ?? []).filter(
-          (v) =>
-            v.is_available !== false &&
-            (temperature === "Hot"
-              ? v.label.includes("12oz")
-              : temperature === "Iced"
-                ? !v.label.includes("12oz")
-                : true),
-        );
-        if (groups.size && !sizes.some((v) => v.id === next.size?.id)) {
-          const size = sizes.find((v) => v.is_default) ?? sizes[0];
-          if (size) next.size = size;
-          else delete next.size;
-        }
+        for (const choice of resolveMenuDefaults(
+          Object.values(groups).flat(),
+          Object.values(previous),
+        ))
+          next[optionKey(choice)] = choice;
         return JSON.stringify(next) === JSON.stringify(previous)
           ? previous
           : next;
@@ -155,7 +137,10 @@ export default function BrowseMenuItemPage() {
   const changeOption = (group: string, variant: ItemVariant) => {
     setAdded(false);
     setSelected((previous) => {
-      const next = { ...previous, [group]: variant };
+      const next = { ...previous };
+      const key = optionKey(variant);
+      if (group === "add_on" && next[key]) delete next[key];
+      else next[key] = variant;
       if (group === "temperature" && groups.size) {
         const sizes = groups.size.filter(
           (v) =>
@@ -296,6 +281,12 @@ export default function BrowseMenuItemPage() {
           </div>
         </section>
         <div className="space-y-4">
+          {!groups.milk_sub && item.included_milk && (
+            <section className="detail-options">
+              <h3 className="font-display text-xl font-semibold">Milk</h3>
+              <p>{item.included_milk} — Included</p>
+            </section>
+          )}
           {displayedGroups.map(([group, values]) => (
             <fieldset className="detail-options" key={group}>
               <legend className="sr-only">
@@ -311,8 +302,26 @@ export default function BrowseMenuItemPage() {
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
+                {group === "add_on" &&
+                  values.some((v) => v.label === "Extra Shot") && (
+                    <button
+                      type="button"
+                      className={`chip ${!selected["add_on:Extra Shot"] ? "chip-active" : ""}`}
+                      aria-pressed={!selected["add_on:Extra Shot"]}
+                      onClick={() => {
+                        setAdded(false);
+                        setSelected((previous) => {
+                          const next = { ...previous };
+                          delete next["add_on:Extra Shot"];
+                          return next;
+                        });
+                      }}
+                    >
+                      Standard espresso
+                    </button>
+                  )}
                 {values.map((v) => {
-                  const chosen = selected[group]?.id === v.id;
+                  const chosen = selected[optionKey(v)]?.id === v.id;
                   const disabled =
                     v.is_available === false ||
                     (online &&
@@ -329,7 +338,11 @@ export default function BrowseMenuItemPage() {
                       {chosen && (
                         <Icon name="check" size={14} className="mr-2" />
                       )}
-                      {v.label}
+                      {v.label === "Extra Shot" ? "+1 Extra Shot" : v.label}
+                      {group === "milk_sub" &&
+                        Number(v.price_modifier) === 0 && (
+                          <span className="ml-2">Included</span>
+                        )}
                       {Number(v.price_modifier) > 0 && (
                         <span className="ml-2">
                           +₱{Number(v.price_modifier).toFixed(2)}
@@ -339,22 +352,27 @@ export default function BrowseMenuItemPage() {
                     </button>
                   );
                 })}
-                {group === "add_on" && selected[group] && (
-                  <button
-                    type="button"
-                    className="chip"
-                    onClick={() => {
-                      setAdded(false);
-                      setSelected((previous) => {
-                        const next = { ...previous };
-                        delete next[group];
-                        return next;
-                      });
-                    }}
-                  >
-                    No add-on
-                  </button>
-                )}
+                {group === "add_on" &&
+                  Object.values(selected).some(
+                    (v) => v.variant_group === "add_on",
+                  ) && (
+                    <button
+                      type="button"
+                      className="chip"
+                      onClick={() => {
+                        setAdded(false);
+                        setSelected((previous) => {
+                          const next = { ...previous };
+                          for (const key of Object.keys(next))
+                            if (next[key].variant_group === "add_on")
+                              delete next[key];
+                          return next;
+                        });
+                      }}
+                    >
+                      No add-on
+                    </button>
+                  )}
               </div>
             </fieldset>
           ))}

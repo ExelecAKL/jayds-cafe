@@ -2,6 +2,7 @@
 // Admin login page
 
 "use client";
+import { PasswordInput } from "@cafeos/shared/ui/password-input";
 
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useEffect, useState } from "react";
@@ -112,9 +113,9 @@ export default function AdminLoginPage() {
               Password
               <FieldRequirement required={true} />
             </label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

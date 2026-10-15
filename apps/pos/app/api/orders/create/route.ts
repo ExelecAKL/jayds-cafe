@@ -9,6 +9,7 @@ import {
   type SubmittedItem,
 } from "@cafeos/shared/inventory/orders";
 import { cashierRpc } from "../../../../lib/server";
+import { calculateFinancials } from "@cafeos/shared/finance/calculations";
 let admin: SupabaseClient | null = null;
 function database() {
   if (!admin) {
@@ -107,6 +108,7 @@ export async function POST(req: NextRequest) {
       subtotal,
       total: Math.round((subtotal - discount) * 100) / 100,
       discount,
+      financial_breakdown: calculateFinancials({ items, points }),
       points_redeemed: points,
       notes: parked ? "[PARKED] " + (body.notes ?? "") : body.notes || null,
       is_parked: parked,

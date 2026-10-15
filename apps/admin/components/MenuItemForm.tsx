@@ -1,6 +1,7 @@
 "use client";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { notifyAdmin } from "./AdminToasts";
+import { validateMenuDefaults } from "@cafeos/shared/menu/options";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
@@ -130,6 +131,8 @@ export function MenuItemForm({
     setBusy(true);
     setError("");
     try {
+      const defaultsError = validateMenuDefaults(options);
+      if (defaultsError) throw new Error(defaultsError);
       if (
         !form.name.trim() ||
         !form.category_id ||
@@ -336,6 +339,17 @@ export function MenuItemForm({
                 />
               </label>
               <h3 className="ops-section-title">Customizations</h3>
+              <p className="ops-description" aria-live="polite">
+                Customer defaults:{" "}
+                {options
+                  .filter((v) => v.is_default)
+                  .map(
+                    (v) =>
+                      `${v.label}${v.price_modifier ? ` (+₱${v.price_modifier.toFixed(2)})` : " — Included"}`,
+                  )
+                  .join(" · ") || "Choose a default in each required group"}
+                . Standard espresso; extra shots are optional.
+              </p>
               <p className="ops-description">
                 Size and substitution groups allow one choice. Add-ons allow
                 multiple choices.

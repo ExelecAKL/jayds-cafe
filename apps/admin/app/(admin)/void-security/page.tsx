@@ -1,4 +1,5 @@
 "use client";
+import { PasswordInput } from "@cafeos/shared/ui/password-input";
 
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState, useCallback, useEffect, useRef } from "react";
@@ -152,8 +153,12 @@ export default function VoidSecurityPage() {
                   Update PIN
                   <FieldRequirement required={true} />
                 </label>
-                <input
-                  type="password"
+                <PasswordInput
+                  id="new-manager-pin"
+                  aria-label="Update PIN"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  secretName="PIN"
                   maxLength={6}
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}

@@ -85,6 +85,7 @@ async function run() {
     
     // Lattes get Milk Substitutions
     if (itemName.includes('latte') && !item.name.includes('Matcha')) {
+      toInsertVars.push({ menu_item_id: item.id, variant_group: 'milk_sub', label: 'Whole Milk', price_modifier: 0, is_default: true, sort_order: 0 });
       toInsertVars.push({ menu_item_id: item.id, variant_group: 'milk_sub', label: 'Oat Milk Sub', price_modifier: 30, is_default: false, sort_order: 1 });
       toInsertVars.push({ menu_item_id: item.id, variant_group: 'milk_sub', label: 'Almond Milk Sub', price_modifier: 30, is_default: false, sort_order: 2 });
     }

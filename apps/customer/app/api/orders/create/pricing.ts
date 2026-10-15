@@ -3,10 +3,14 @@ import {
   CatalogValidationError,
 } from "@cafeos/shared/inventory/orders";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { calculateFinancials } from "@cafeos/shared/finance/calculations";
 import { readQuoteToken } from "../../lalamove/quote-token";
 import { readCustomerBranch } from "../../branch/lib";
 import { withinCoverage } from "../../../../lib/location";
-import { assertVoucherTier, VoucherEligibilityError } from "../../../../lib/voucher-eligibility";
+import {
+  assertVoucherTier,
+  VoucherEligibilityError,
+} from "../../../../lib/voucher-eligibility";
 
 export class OrderValidationError extends Error {
   constructor(
@@ -106,9 +110,11 @@ export async function priceOrder(
       throw new OrderValidationError("Failed to validate voucher", 500);
     if (!voucherData) throw new OrderValidationError("Invalid voucher code");
     voucher = voucherData as Voucher;
-    try { await assertVoucherTier(db, voucher.target_tier, userId); }
-    catch (error) {
-      if (error instanceof VoucherEligibilityError) throw new OrderValidationError(error.message, error.status);
+    try {
+      await assertVoucherTier(db, voucher.target_tier, userId);
+    } catch (error) {
+      if (error instanceof VoucherEligibilityError)
+        throw new OrderValidationError(error.message, error.status);
       throw error;
     }
     const now = Date.now();
@@ -212,6 +218,25 @@ export async function priceOrder(
   }
   const discount = money(voucherDiscount + pointsToRedeem / 10);
   const total = money(Math.max(0, subtotal - discount) + deliveryFee);
+  const financialBreakdown = calculateFinancials({
+    items,
+    points: pointsToRedeem,
+    deliveryFee,
+    promotion: voucher
+      ? {
+          kind: voucher.discount_type,
+          value: Number(voucher.discount_value),
+          cap:
+            voucher.discount_type === "percentage"
+              ? voucher.max_discount_amount
+              : null,
+          itemIds:
+            voucher.application_mode === "selected_items"
+              ? (voucher.applicable_item_ids ?? [])
+              : [],
+        }
+      : undefined,
+  });
   if (
     !matchesAmount(body.subtotal, subtotal) ||
     !matchesAmount(body.discount, discount) ||
@@ -232,5 +257,6 @@ export async function priceOrder(
     pointsToRedeem,
     pointsEarned: userId ? Math.floor(total / 10) : 0,
     voucher,
+    financialBreakdown,
   };
 }

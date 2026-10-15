@@ -1,0 +1,209 @@
+{
+  "captured_at": "2026-10-15T23:51:23.075Z",
+  "timezone": "Asia/Manila",
+  "branch": "codex/discrepancy-finance-2026-10-13",
+  "base_commit": "457f2c701b02cd589f3b6df640f899716b0e0d5c",
+  "source_count": 40,
+  "sources": [
+    {
+      "path": "apps/admin/app/(admin)/finance/page.tsx",
+      "bytes": 136,
+      "sha256": "7f415ce7c0fc3c2176c491665d2f7e9f30bac2c10119300a959eb0a8ea9c4ec4"
+    },
+    {
+      "path": "apps/admin/app/(admin)/void-security/page.tsx",
+      "bytes": 9731,
+      "sha256": "25e862fcf3f7459558784a1e31417d6613ff48c23cd1078d8b0c091b57e14434"
+    },
+    {
+      "path": "apps/admin/app/(auth)/login/page.tsx",
+      "bytes": 4711,
+      "sha256": "f278460927774ccec56454c0e1dfea3177b78c13f95d82c2f373b17b5ef167fb"
+    },
+    {
+      "path": "apps/admin/components/FinanceWorkspace.tsx",
+      "bytes": 25965,
+      "sha256": "c41673b8e1858fe970a4c5303765b58f691f7f754f1af30b5c37a768a314212e"
+    },
+    {
+      "path": "apps/admin/components/MenuItemForm.tsx",
+      "bytes": 24776,
+      "sha256": "1e9b3e81d5cc4efcffdb318589a41ead071eefbfa837dba727406c55da76d92a"
+    },
+    {
+      "path": "apps/admin/components/Sidebar.tsx",
+      "bytes": 5170,
+      "sha256": "8015393414d963e46b5a5245051e7669ba98af6b17e8a3ed32898e8bc28e8249"
+    },
+    {
+      "path": "apps/admin/scripts/seedPremiumAddons.ts",
+      "bytes": 6132,
+      "sha256": "94bb2a20b5a19e5811a99ac5cfadbff8f019d27b35a60da820f0c939d391b1f3"
+    },
+    {
+      "path": "apps/customer/app/(shop)/menu/browse/[id]/page.tsx",
+      "bytes": 17560,
+      "sha256": "958cea9db3a7e59366a4c2f767cda016072ab569ee8709f563cc626c7515fa90"
+    },
+    {
+      "path": "apps/customer/app/(shop)/orders/[id]/invoice/page.tsx",
+      "bytes": 2750,
+      "sha256": "3461d151fb906ff90418ba25a4af5e65cfb8ace4713abfbe1c88112634515a71"
+    },
+    {
+      "path": "apps/customer/app/(shop)/orders/[id]/page.tsx",
+      "bytes": 33035,
+      "sha256": "d45187cbd16958533a385162be621ed077c2e4cdd86a9b149234cc3e36f383ca"
+    },
+    {
+      "path": "apps/customer/app/(shop)/profile/edit/page.tsx",
+      "bytes": 14146,
+      "sha256": "63b818354d082e02aca2f2357e1b8d64a55ec357e3e609c3867ede91f954ba33"
+    },
+    {
+      "path": "apps/customer/app/api/maya/checkout/route.ts",
+      "bytes": 7599,
+      "sha256": "bdb6d705874a72eb7459940116b04cffadae938be9a42ea0564bd29633726e0e"
+    },
+    {
+      "path": "apps/customer/app/api/orders/[id]/invoice/route.ts",
+      "bytes": 1219,
+      "sha256": "cb1de6e94ffb594f4eb2911115555b079b31dcb714b398e3292f527e2a2870ff"
+    },
+    {
+      "path": "apps/customer/app/api/orders/create/pricing.ts",
+      "bytes": 8350,
+      "sha256": "80b8e9ccfc46aa9fad47675074c97f0579fb9de54c05ebd9fb211d71c9fcfe5e"
+    },
+    {
+      "path": "apps/customer/app/api/orders/create/route.ts",
+      "bytes": 12213,
+      "sha256": "cc12de70c48798a35d82d2c3bc580621dff48490dcf1b219a6722e02ee512bcf"
+    },
+    {
+      "path": "apps/customer/app/receipt/[token]/page.tsx",
+      "bytes": 9735,
+      "sha256": "341e7892e8d59df3fb394125368306591ec7939f179351fa6deb6d5f0bff2950"
+    },
+    {
+      "path": "apps/customer/components/PasswordInput.tsx",
+      "bytes": 490,
+      "sha256": "9911627f74ebae34e2ae66f35a69bbdc7498702345651e7291a329614c6d9336"
+    },
+    {
+      "path": "apps/pos/app/(auth)/login/page.tsx",
+      "bytes": 3764,
+      "sha256": "36b8a23bf70226ed2a93b64d9d103eff8da9c865b2bf5f3513b0bcba87e368b5"
+    },
+    {
+      "path": "apps/pos/app/(auth)/register/page.tsx",
+      "bytes": 4312,
+      "sha256": "acbca0cd85172b5f7d03c0cfae3c96130bbb0b68eb5a790bc8ee0fa104505b60"
+    },
+    {
+      "path": "apps/pos/app/(pos)/void/page.tsx",
+      "bytes": 8786,
+      "sha256": "718789850df889fcd0cb65e7b48bdc7873df7dd1995230fe5ef4fa1107b0ea69"
+    },
+    {
+      "path": "apps/pos/app/api/orders/checkout/route.ts",
+      "bytes": 4655,
+      "sha256": "25ad82f5430707a82ff50f41e7d0c4a0a143dd75485746c3fa593c631dc2e1a6"
+    },
+    {
+      "path": "apps/pos/app/api/orders/create/route.ts",
+      "bytes": 4712,
+      "sha256": "a3019395c0f980da2d6ba46ee0a0caa388aeeb1325662fa77e6e52248ea3fb6f"
+    },
+    {
+      "path": "apps/pos/components/ProductOptions.tsx",
+      "bytes": 10631,
+      "sha256": "86ef9e781463cb6015fb93e5d12110220256242c423ad9ca2d50f3c19bb5d15f"
+    },
+    {
+      "path": "packages/shared/package.json",
+      "bytes": 2323,
+      "sha256": "6f0c12ab4b7b578c820c6e77e21a520880935ad99daa38550103c08710b9610d"
+    },
+    {
+      "path": "packages/shared/src/finance/calculations.ts",
+      "bytes": 9907,
+      "sha256": "15b40d9a37ce065a3e73ee3dcdca69f9a835d2221d039f4a5d2c87cf34392401"
+    },
+    {
+      "path": "packages/shared/src/finance/invoice.tsx",
+      "bytes": 7206,
+      "sha256": "b8b43aa8273d1ba9d5c6a86da5939b416e45adb22e42a6d55a2290cf698af1a7"
+    },
+    {
+      "path": "packages/shared/src/menu/options.ts",
+      "bytes": 2983,
+      "sha256": "e13b3aab92bfd0b55b5cf0a0e426fc8934fc7f32412d9dd6d8ba85bce427d972"
+    },
+    {
+      "path": "packages/shared/src/types/index.ts",
+      "bytes": 12640,
+      "sha256": "3afb3fa932536e6ee5370081e3be6c7ea1b55b495d1b3d3cbba4148d2ccb0f4d"
+    },
+    {
+      "path": "packages/shared/src/ui/password-input.tsx",
+      "bytes": 2746,
+      "sha256": "0e75f0de46180161f6ce65922e086fc20858a9f387f69a5484edb967bfb60e71"
+    },
+    {
+      "path": "scripts/collect-discrepancy-sources.ts",
+      "bytes": 1591,
+      "sha256": "e6eff29d63e75e7b3f80da6001b9e3740b100d37264ac2392a133a56c845ebf5"
+    },
+    {
+      "path": "supabase/migrations/20261013000300_menu_defaults_recipes.sql",
+      "bytes": 4663,
+      "sha256": "98537509fe0be739e9d44a380ecf0fbb0093b98ffed43cee67633c79a8bbd0bb"
+    },
+    {
+      "path": "supabase/migrations/20261013000400_finance_invoices.sql",
+      "bytes": 32553,
+      "sha256": "5eeff1cbed60773fe6f65b788d94a4ddc9b49488652a1cb8d3e06650eec66db5"
+    },
+    {
+      "path": "tests/browser-operations.ts",
+      "bytes": 52200,
+      "sha256": "cf55cc5593c2162cc9574957fd971b067e3c210d4e51a663872ca28c0dd16c0e"
+    },
+    {
+      "path": "tests/concurrency.test.ts",
+      "bytes": 23787,
+      "sha256": "367c7e50db60be93b5d83fab9e128670469edfd70232a2d58fd00c62ad91789c"
+    },
+    {
+      "path": "tests/finance-browser-journeys.ts",
+      "bytes": 8849,
+      "sha256": "3e8b2d108e367c3236618ef7a4419208a5a478a13ca2bd9ac979fd8d098efa52"
+    },
+    {
+      "path": "tests/finance-calculations.test.ts",
+      "bytes": 4398,
+      "sha256": "38aa96237ebd37a1aecc76a85d697fe828401f8f27f62b1f3c50285e279b6d82"
+    },
+    {
+      "path": "tests/finance-invoices.test.ts",
+      "bytes": 17370,
+      "sha256": "864e0d0c52ed11b55fe91fac27e08fcf4e990e87af3e904a40177b11d21f4338"
+    },
+    {
+      "path": "tests/menu-defaults.test.ts",
+      "bytes": 5897,
+      "sha256": "2230bf2d4abd108853eb7425d4428ca857f0b753daf59d528d17e5dc406c819a"
+    },
+    {
+      "path": "tests/password-browser-journeys.ts",
+      "bytes": 6906,
+      "sha256": "654f63ca3daa972093253678cabeee3c0390f64b25c8b063bef68d02dee46f59"
+    },
+    {
+      "path": "tests/pos-routes.test.ts",
+      "bytes": 12725,
+      "sha256": "7040b20b52e77ee2e9b3d84ec431cad7203bee8664db14d65c04f25af45506f4"
+    }
+  ]
+}

@@ -323,6 +323,7 @@ export async function POST(req: Request) {
       subtotal,
       total,
       discount,
+      financial_breakdown: priced.financialBreakdown,
       points_earned: priced.pointsEarned,
       points_redeemed: pointsToRedeem,
       notes: body.notes,
