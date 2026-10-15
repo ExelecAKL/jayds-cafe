@@ -1,0 +1,32 @@
+{
+  "source_commit": "0b197cd0d2aaa25c1dd2648db582ae5af8c587a6",
+  "checked_date": "2026-10-16",
+  "timezone": "Asia/Manila",
+  "backend": {
+    "fail": 0,
+    "skipped": 0,
+    "pass": 138,
+    "tests": 138,
+    "runtime_workaround": "--no-wasm-code-gc; serial execution"
+  },
+  "builds": {
+    "pos": "PASS",
+    "customer": "PASS",
+    "admin": "PASS"
+  },
+  "typecheck": "PASS",
+  "lint": "PASS",
+  "combined_browser": "PASS",
+  "customer_browser": "PASS",
+  "pwa": "PASS",
+  "motion": "PASS",
+  "invoice_pdf": {
+    "format": "A4",
+    "pages": 1,
+    "visually_verified": true,
+    "fixture_only": true
+  },
+  "hosted_changes": false,
+  "complete_plan": false,
+  "defense_signoff": false
+}

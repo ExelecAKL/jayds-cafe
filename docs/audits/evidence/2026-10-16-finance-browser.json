@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "fixtureOnly": true,
+  "setupRequiredFeedback": true,
+  "setupSuccessToast": true,
+  "invoiceFromPosCash": true,
+  "customerInvoiceView": true,
+  "expensePostingAndReversal": true,
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "counts": {
+    "invoices": 1,
+    "events": 1,
+    "expenses": 1,
+    "reversals": 1
+  }
+}
