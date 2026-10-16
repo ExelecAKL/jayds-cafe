@@ -1095,13 +1095,13 @@ try {
     await page
       .getByRole("heading", { name: "Spanish Latte", exact: true })
       .waitFor();
-    await page.waitForLoadState("networkidle");
-    await context.setOffline(true);
+    await page.getByRole("button", { name: /Add to bag/ }).waitFor();
+    await page.locator(".startup-overlay").waitFor({ state: "detached" });
+    // This fixture harness blocks service workers. Exercise cross-page offline
+    // navigation in customer-pwa-browser.ts, which installs the real worker;
+    // an incidental warm Next router cache is not evidence of offline support.
     await page.getByRole("button", { name: /Add to bag/ }).click();
     await page.waitForURL(base + "/menu/browse");
-    await context.setOffline(false);
-    // Let reconnect requests and any Next navigation recovery settle before
-    // reading a frame. Verify the offline addition survives that recovery.
     await page.waitForLoadState("networkidle");
     await page
       .getByLabel(/^3 items in bag(?:\s*(?:\*|\(optional\)))?$/, {
@@ -1532,6 +1532,7 @@ try {
       includedWholeMilkDefault: true,
       paidMilkOptional: true,
       compactAccountQr: true,
+      crossPageOfflineScope: "Separate real-service-worker PWA suite",
       homePersonalRecommendations: true,
       recommendationReads,
       controlledLocalMetrics: metrics,
