@@ -1,0 +1,36 @@
+{
+  "base": "https://jaydscafe-kgajn03l1-aaron-martinezs-projects-ea1c41f7.vercel.app",
+  "isolated": true,
+  "products": 55,
+  "widths": [
+    360,
+    390,
+    430,
+    768,
+    834,
+    844,
+    1024,
+    1180,
+    1280
+  ],
+  "continuousCategorySections": 7,
+  "categoryJumpAndScrollTracking": true,
+  "tabletAndLandscapeMenuAligned": true,
+  "soldOutPricesVisibleAndGrey": true,
+  "favoritesOnProductDetailsOnly": true,
+  "automaticReturnToMenuAfterAdd": true,
+  "gpsOnlyAfterTap": 1,
+  "checkoutRequests": 3,
+  "canonicalSales": 1,
+  "voucherValidations": 3,
+  "voucherAndPointsReview": true,
+  "homePersonalRecommendations": true,
+  "recommendationReads": 25,
+  "controlledLocalMetrics": {
+    "lcp": 196,
+    "cls": 0,
+    "interaction": 0
+  },
+  "metricScope": "Local fixture browser timings, not production measurements or field INP.",
+  "errors": []
+}
