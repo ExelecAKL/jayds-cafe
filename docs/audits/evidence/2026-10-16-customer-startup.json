@@ -241,6 +241,21 @@
       "paidMilkOptIn": true,
       "zeroWrites": true,
       "errors": []
+    },
+    "publicPostDeployment": {
+      "status": "PASS",
+      "hostedStagedDeployment": "https://jaydscafe.vercel.app",
+      "actualPublicCatalog": true,
+      "products": 52,
+      "configuredLogoDurationMs": 2500,
+      "observedLogoMs": 2915,
+      "cupRemoved": true,
+      "oldSentenceRemoved": true,
+      "bannerWaitsBeyondFixedFallback": true,
+      "includedMilkSelected": true,
+      "paidMilkOptIn": true,
+      "zeroWrites": true,
+      "errors": []
     }
   },
   "sha256": {
@@ -257,7 +272,8 @@
     "customerFinalLocal": "f390e795ca9c42a6083e5e4bf3ef5cc4dcd371f011bc06a4f563824d0ab122c8",
     "customerHostedFixture": "ead391e8bbdbe027da80f4b4974593e12eadbc2b76abfd939fb49f89d047ef72",
     "hostedReadOnly": "be70312898edcc8162c5c2c09b11ad756211a78dbf3ea78a7a9ae7e220946d6e",
-    "stagedBuild": "519d789033c4bcc47ab1740d5eba758c9611b0db7678f7055045ab99ec04bb6a"
+    "stagedBuild": "519d789033c4bcc47ab1740d5eba758c9611b0db7678f7055045ab99ec04bb6a",
+    "publicPostDeployment": "2a77d4a61bcdeb793c362e4ed1a26501485ed707c9ae5b3c999233af10431cb8"
   },
   "sourceSha256": {
     "apps/customer/components/BrandLoader.tsx": "be245bf2b8af454be8dc2ecf7e5a202be407474752c323c99a0857f30c5c2a16",
@@ -277,5 +293,15 @@
   },
   "deploymentSourceCommit": "d7772c6ab68a2f9b901feba101e47c1e197a330f",
   "applicationSourceUnchangedAfterBuild": true,
-  "offlineScope": "Real-service-worker PWA suite; general fixture harness blocks workers and does not establish cross-page offline support"
+  "offlineScope": "Real-service-worker PWA suite; general fixture harness blocks workers and does not establish cross-page offline support",
+  "publication": {
+    "status": "PASS",
+    "deployment": "dpl_DnWYAGQBdREdi6j7X4aDEzVD87eC",
+    "publicAlias": "https://jaydscafe.vercel.app",
+    "rollbackTag": "pre-customer-startup-2026-10-16",
+    "rollbackCommit": "bf101ebef96a8fcac2583bfc5bef9fc64a63d13b",
+    "previousDeployment": "dpl_S36hPizqYGg97PwzPFTspxka6xk2",
+    "updatedLalamoveSandboxEnvironmentActive": true,
+    "completeCourierOutcomeVerified": false
+  }
 }

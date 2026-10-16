@@ -35,3 +35,9 @@ The initial probe was corrected to use normal hosted time, the menu browsing rou
 Cross-page offline navigation is verified by `customer-pwa-browser.ts` with the real service worker installed. The general Customer fixture harness disables service workers to isolate remote writes; its former cross-page offline check depended on an incidental warm router cache and failed on the hosted run. That unsuitable check was moved out of its scope; its ordinary Add to Bag/return/cart assertion remains. The separate real-worker offline test passed and is the evidence for offline navigation/draft recovery.
 
 **Final hosted fixture regression: PASS.** The complete 55-product/nine-width matrix passed against the staged Vercel build, followed by a passing local repeat with the same corrected harness. Three fixture checkout requests yielded one canonical fixture sale; Account/QR, milk defaults, return-to-menu, promotions, recommendations and recovery passed with zero browser runtime errors. Remote writes were intercepted into the fixture, not sent to the hosted business database.
+
+## Publication
+
+Published to `https://jaydscafe.vercel.app` as deployment `dpl_DnWYAGQBdREdi6j7X4aDEzVD87eC` after the passing audit. Promotion and explicit alias assignment succeeded. **Public post-deployment read-only check: PASS**, including the actual 52-product catalogue, loading sequence and milk defaults, zero writes/runtime errors. The deployment uses the updated Production Lalamove sandbox environment; a completed courier transaction remains untested by this release.
+
+`main` contains the current Customer release and its audit. Previous main is preserved by `pre-customer-startup-2026-10-16` (`bf101ebef96a8fcac2583bfc5bef9fc64a63d13b`); the prior Customer deployment `dpl_S36hPizqYGg97PwzPFTspxka6xk2` remains the deployment rollback reference. Wider Admin/finance work is preserved on `codex/discrepancy-finance-2026-10-13` and is not included in this Customer publication.
