@@ -35,6 +35,10 @@ The linked Court announcement concerns non-stacking of discounts, not abolition 
 
 ## Still required before the complete plan can be called implemented
 
+Customer checkpoint, 16 October: free Whole Milk was applied to the hosted catalogue and verified on all nine milk groups without changing historical orders or stock. The isolated Customer release also implements compact Account/QR, historical reorder defaults, touch carousel interruption and the requested 2.5-second logo followed by a banner tied to actual catalogue/session readiness; the cup and old loading sentence are removed. Customer/browser/PWA/motion and 14 focused backend checks pass at `fe5985952546fe6f1c04850aea2693eceb4c8dc2`. See `docs/audits/2026-10-16-customer-startup-audit.md`. These changes cover the carousel portion of the remaining Customer work below.
+
+The operator's final sample-data choice is the current hosted database. An explicitly approved private backup was saved outside Git; the coherent 20-month dataset has not been loaded at this checkpoint. New Lalamove sandbox credentials were validated read-only and saved in Vercel Production/Preview; their activation requires a new Customer deployment.
+
 - Shared read-only server quote endpoint for ordinary Customer/POS checkout totals. The SC/PWD workflow is cancelled, not a remaining implementation gate.
 - Supporting document uploads for expenses; input VAT for stock purchases and full reconciliation review. The current expense form records a document reference and reviewed operating-expense input VAT only.
 - Customer carousel swipe/interruption and return-state improvements, keyboard-safe fixed actions, consistent 120/180/220 ms motion and reduced-motion behavior across affected flows.
