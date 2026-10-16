@@ -397,6 +397,20 @@ test("incomplete snapshots roll back checkout and exhausted configured numbering
       /integer centavos/,
     );
     assert.equal((await db.query("SELECT * FROM orders")).rows.length, 0);
+    for (const [index, removedBenefit] of [
+      { ...q, mode: "statutory" },
+      { ...q, vat_relief: 1200 },
+      { ...q, exempt_sales: 10000 },
+      { ...q, lines: [{ ...q.lines[0], eligible_quantity: 1 }] },
+    ].entries()) {
+      await assert.rejects(
+        create(db, `finance-removed-benefit-${index}`, {
+          financial_breakdown: removedBenefit,
+        }),
+        /Personal-benefit quotes are unavailable/,
+      );
+    }
+    assert.equal((await db.query("SELECT * FROM orders")).rows.length, 0);
     const setup = {
       ...identity,
       compliance_verified: true,

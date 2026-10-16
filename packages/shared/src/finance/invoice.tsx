@@ -106,14 +106,7 @@ export function InvoiceDocument({ invoice }: { invoice: InvoiceRecord }) {
           <tbody>
             {f.lines.map((line) => (
               <tr key={line.index}>
-                <td style={{ padding: "10px 0" }}>
-                  {line.name}
-                  {line.eligible_quantity > 0 && (
-                    <small style={{ display: "block" }}>
-                      Personal portion: {line.eligible_quantity}
-                    </small>
-                  )}
-                </td>
+                <td style={{ padding: "10px 0" }}>{line.name}</td>
                 <td style={{ textAlign: "center" }}>{line.quantity}</td>
                 <td style={{ textAlign: "right" }}>
                   {php(line.gross / line.quantity)}

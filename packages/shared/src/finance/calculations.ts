@@ -42,7 +42,7 @@ export interface FinancialBreakdown {
   delivery_tax: number | null;
   delivery_tax_treatment?: "pending" | "pass_through" | "vat_inclusive";
   total: number;
-  mode: "standard" | "promotion" | "statutory";
+  mode: "standard" | "promotion";
   points_used: number;
 }
 export function centavos(value: number): number {
@@ -109,7 +109,6 @@ function promotionalAmount(promotion: Promotion | undefined, base: number) {
 }
 export function calculateFinancials(input: {
   items: FinancialItem[];
-  eligibleQuantities?: number[];
   promotion?: Promotion;
   points?: number;
   deliveryFee?: number;
@@ -117,41 +116,26 @@ export function calculateFinancials(input: {
 }): FinancialBreakdown {
   if (!input.items.length || input.items.length > 200)
     throw new Error("Add items before requesting a quote.");
-  if (
-    input.eligibleQuantities &&
-    input.eligibleQuantities.length !== input.items.length
-  )
-    throw new Error("The personal portions changed. Review your bag.");
+  // Reject stale callers instead of silently granting or ignoring removed benefits.
+  if ("eligibleQuantities" in input)
+    throw new Error("Personal-benefit quotes are unavailable in this release.");
   const bases = input.items.map((item, index) => {
     if (!Number.isSafeInteger(item.quantity) || item.quantity < 1)
       throw new Error("Invalid item quantity.");
-    const eligible = input.eligibleQuantities?.[index] ?? 0;
-    if (
-      !Number.isSafeInteger(eligible) ||
-      eligible < 0 ||
-      eligible > item.quantity
-    )
-      throw new Error("Select valid personal portions.");
     const unit = centavos(item.price),
-      gross = unit * item.quantity,
-      exemptGross = unit * eligible;
+      gross = unit * item.quantity;
     if (!Number.isSafeInteger(gross))
       throw new Error("Order amount is too large.");
-    const exemptBase = netOfVat(exemptGross);
     return {
       item,
       index,
-      eligible,
       gross,
-      exemptBase,
-      taxableGross: gross - exemptGross,
-      relief: exemptGross - exemptBase,
     };
   });
   const points = input.points ?? 0;
   if (!Number.isSafeInteger(points) || points < 0)
     throw new Error("Invalid points amount.");
-  const discountedBases = bases.map((b) => b.taxableGross + b.exemptBase);
+  const discountedBases = bases.map((b) => b.gross);
   const promoWeights = bases.map((b, i) =>
     !input.promotion?.itemIds?.length ||
     input.promotion.itemIds.includes(b.item.menu_item_id)
@@ -173,35 +157,23 @@ export function calculateFinancials(input: {
     pointsCents,
     discountedBases.map((b, i) => b - promoParts[i]),
   );
-  const ordinaryParts = promoParts.map((v, i) => v + pointParts[i]);
-  const statutoryParts = bases.map((b) =>
-    Math.round((b.exemptBase * 20) / 100),
-  );
-  const useStatutory =
-    bases.some((b) => b.eligible > 0) &&
-    statutoryParts.reduce((a, b) => a + b, 0) >=
-      ordinaryParts.reduce((a, b) => a + b, 0);
-  const discounts = useStatutory ? statutoryParts : ordinaryParts;
+  const discounts = promoParts.map((v, i) => v + pointParts[i]);
   const lines = bases.map((b, i): FinancialLine => {
-    const split = useStatutory
-      ? [0, discounts[i]]
-      : allocateCentavos(discounts[i], [b.taxableGross, b.exemptBase]);
-    const taxableAfter = b.taxableGross - split[0],
+    const taxableAfter = b.gross - discounts[i],
       taxableSales = netOfVat(taxableAfter);
-    const exemptSales = b.exemptBase - split[1];
     return {
       index: i,
       menu_item_id: b.item.menu_item_id,
       name: b.item.name,
       quantity: b.item.quantity,
-      eligible_quantity: b.eligible,
+      eligible_quantity: 0,
       gross: b.gross,
-      vat_relief: b.relief,
+      vat_relief: 0,
       discount: discounts[i],
       taxable_sales: taxableSales,
-      exempt_sales: exemptSales,
+      exempt_sales: 0,
       vat: taxableAfter - taxableSales,
-      total: taxableAfter + exemptSales,
+      total: taxableAfter,
     };
   });
   const sum = (
@@ -238,12 +210,8 @@ export function calculateFinancials(input: {
     exempt_sales: sum("exempt_sales"),
     vat: sum("vat"),
     net_sales: sum("taxable_sales") + sum("exempt_sales"),
-    // SC/PWD discounts are itemized deductions; an OSD taxpayer cannot deduct them again.
     osd_gross_sales:
-      lines.reduce(
-        (n, line, i) => n + line.taxable_sales + bases[i].exemptBase,
-        0,
-      ) +
+      sum("taxable_sales") +
       (input.deliveryTaxTreatment === "vat_inclusive"
         ? delivery - (deliveryTax ?? 0)
         : 0),
@@ -251,12 +219,8 @@ export function calculateFinancials(input: {
     delivery_tax: deliveryTax,
     delivery_tax_treatment: input.deliveryTaxTreatment ?? "pending",
     total: sum("total") + delivery,
-    mode: useStatutory
-      ? "statutory"
-      : promotion || pointsCents
-        ? "promotion"
-        : "standard",
-    points_used: useStatutory ? 0 : points,
+    mode: promotion || pointsCents ? "promotion" : "standard",
+    points_used: points,
   };
 }
 export function mayaAmountDetails(snapshot: FinancialBreakdown) {

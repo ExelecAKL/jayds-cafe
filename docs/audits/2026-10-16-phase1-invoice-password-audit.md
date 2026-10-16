@@ -2,6 +2,8 @@
 
 **PASS for menu corrections, password visibility and the implemented finance/invoice foundation. The complete approved plan remains INCOMPLETE. This is not a clean defense sign-off or a new hosted release.**
 
+**Subsequent scope change:** the operator cancelled the SC/PWD app feature on 16 October 2026. Its arithmetic examples below describe the audited checkpoint only; its unshipped upload/review workflow and automatic calculations have since been removed. They are no longer release requirements. See the [current checklist](../discrepancy-implementation-progress.md). The remaining audit results still refer to the exact checkpoint commit below.
+
 Audited application commit: `0b197cd0d2aaa25c1dd2648db582ae5af8c587a6`, branch `codex/discrepancy-finance-2026-10-13`. The [source manifest](evidence/2026-10-16-discrepancy-sources.json) records SHA-256 hashes for 40 changed application, migration, script and test files against previous main `457f2c701b02cd589f3b6df640f899716b0e0d5c`. Private registration details, test credentials and the user's documents are excluded.
 
 ## Verification results

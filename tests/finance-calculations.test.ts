@@ -29,24 +29,19 @@ test("VAT-inclusive prices reconcile without changing customer prices or chargin
   assert.equal(small.net_sales, 7589);
   assert.equal(small.vat, 911);
 });
-test("verified personal portions receive one statutory benefit and exclude courier fees", () => {
+test("ordinary quantity-two sales keep VAT and courier charges separate", () => {
   const q = calculateFinancials({
     items: [{ ...item, quantity: 2 }],
-    eligibleQuantities: [1],
     deliveryFee: 50,
   });
-  assert.equal(q.vat_relief, 1200);
-  assert.equal(q.discount, 2000);
-  assert.equal(q.exempt_sales, 8000);
-  assert.equal(q.taxable_sales, 10000);
-  assert.equal(q.vat, 1200);
-  assert.equal(q.total, 24200);
+  assert.equal(q.vat_relief, 0);
+  assert.equal(q.discount, 0);
+  assert.equal(q.exempt_sales, 0);
+  assert.equal(q.taxable_sales, 20000);
+  assert.equal(q.vat, 2400);
+  assert.equal(q.total, 27400);
   assert.equal(q.delivery_tax, null);
   assert.equal(q.osd_gross_sales, 20000);
-  assert.equal(
-    calculateFinancials({ items: [item], eligibleQuantities: [1] }).total,
-    8000,
-  );
 });
 test("configured delivery VAT is included once in Maya totals and OSD gross income", () => {
   const q = calculateFinancials({
@@ -73,26 +68,31 @@ test("configured delivery VAT is included once in Maya totals and OSD gross inco
   assert.equal(pass.delivery_tax, 0);
   assert.equal(mayaAmountDetails(pass).shippingFee, 112);
 });
-test("a more favorable promotion replaces the statutory discount, retains VAT relief and never stacks it", () => {
+test("promotions and redeemed points retain ordinary VAT and never introduce personal benefits", () => {
   const q = calculateFinancials({
     items: [item],
-    eligibleQuantities: [1],
-    promotion: { kind: "percentage", value: 30 },
+    promotion: { kind: "percentage", value: 10 },
+    points: 8,
   });
   assert.equal(q.mode, "promotion");
-  assert.equal(q.total, 7000);
-  assert.equal(q.discount, 3000);
-  assert.equal(q.vat, 0);
-  const statutory = calculateFinancials({
-    items: [item],
-    eligibleQuantities: [1],
-    promotion: { kind: "percentage", value: 10 },
-    points: 1,
-  });
-  assert.equal(statutory.total, 8000);
-  assert.equal(statutory.points_used, 0);
+  assert.equal(q.total, 10000);
+  assert.equal(q.discount, 1200);
+  assert.equal(q.vat, 1071);
+  assert.equal(q.points_used, 8);
+  assert.equal(q.vat_relief, 0);
+  assert.equal(q.exempt_sales, 0);
+  assert.equal(q.lines[0].eligible_quantity, 0);
+  // Stale JavaScript callers cannot activate the removed calculation path.
+  assert.throws(
+    () =>
+      calculateFinancials({
+        items: [item],
+        ...JSON.parse('{"eligibleQuantities":[1]}'),
+      }),
+    /unavailable/,
+  );
 });
-test("centavo allocation preserves totals, scopes selected-item vouchers and validates personal quantities", () => {
+test("centavo allocation preserves totals, scopes selected-item vouchers and validates quantities", () => {
   assert.deepEqual(allocateCentavos(1, [1, 1, 1]), [1, 0, 0]);
   for (let amount = 0; amount <= 600; amount++)
     assert.equal(
@@ -105,9 +105,6 @@ test("centavo allocation preserves totals, scopes selected-item vouchers and val
   });
   assert.equal(q.lines[0].discount, 0);
   assert.equal(q.lines[1].discount, 500);
-  assert.throws(() =>
-    calculateFinancials({ items: [item], eligibleQuantities: [2] }),
-  );
   assert.throws(() => calculateFinancials({ items: [item], points: 2000 }));
   assert.throws(() =>
     calculateFinancials({ items: [{ ...item, quantity: 1.5 }] }),

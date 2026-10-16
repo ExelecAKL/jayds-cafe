@@ -2,6 +2,12 @@
 
 Updated 16 October 2026, Philippine time. This is an implementation checklist, not a defense sign-off. Publication remains after the combined audit.
 
+## Scope change, 16 October 2026
+
+The operator explicitly cancelled the SC/PWD app feature. Private ID collection, eligibility review, automatic personal-portion discounts and their retention workflow are removed from this release. The unshipped upload API, image helper, migration and tests were removed before any hosted migration or ID collection. The shared quote calculator and database validation no longer accept personal-benefit calculations. VAT-inclusive pricing, ordinary vouchers/points, invoicing and 40% OSD estimates remain in scope.
+
+The linked Court announcement concerns non-stacking of discounts, not abolition of statutory entitlements. Removing the software feature is an operator scope decision; it is not a legal exemption or a certification of compliance. [Supreme Court press briefer, 14 October 2026](https://sc.judiciary.gov.ph/press-briefer-october-14-2026/).
+
 ## Implemented in the current working branch
 
 - Whole Milk defaults and menu/recipe corrections; shared Customer/POS selection rules; optional Standard/+1 Extra Shot; Admin default validation and preview; required-phone copy.
@@ -13,8 +19,7 @@ Updated 16 October 2026, Philippine time. This is an implementation checklist, n
 
 ## Still required before the complete plan can be called implemented
 
-- Profile SC/PWD front/back private uploads, verification/review/revocation/expiry workflow, safe retention and cleanup, authenticated private viewing, material-name-change handling.
-- Shared server quote endpoint, verified personal-portion selection in Customer/POS and checkout integration, no invalid statutory/promotion stacking, revalidation and reconciliation for concurrent or revoked claims. Calculation tests alone do not implement these workflows.
+- Shared read-only server quote endpoint for ordinary Customer/POS checkout totals. The SC/PWD workflow is cancelled, not a remaining implementation gate.
 - Supporting document uploads for expenses; input VAT for stock purchases and full reconciliation review. The current expense form records a document reference and reviewed operating-expense input VAT only.
 - Clearer forecast table and detail drawer, separate refresh and reviewed purchase-draft creation, server aggregation for the existing Analytics page, removal of its 200-order best-seller limit and Philippine dates/hour corrections.
 - Customer carousel swipe/interruption and return-state improvements, keyboard-safe fixed actions, consistent 120/180/220 ms motion and reduced-motion behavior across affected flows.

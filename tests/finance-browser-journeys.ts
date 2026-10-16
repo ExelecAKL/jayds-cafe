@@ -17,6 +17,14 @@ export async function financeJourneys({
   actor: string;
   item: string;
 }) {
+  // The cancelled ID-collection feature must expose no active upload/read API.
+  for (const method of ["GET", "POST"]) {
+    const response = await page.request.fetch(
+      customerBase + "/api/customer/benefits",
+      { method },
+    );
+    assert.equal(response.status(), 404);
+  }
   await page.goto(base + "/finance");
   await expect(
     page.getByRole("heading", { name: "Sales, costs & invoices" }),
@@ -230,6 +238,7 @@ export async function financeJourneys({
         invoiceFromPosCash: true,
         customerInvoiceView: true,
         expensePostingAndReversal: true,
+        removedBenefitApiUnavailable: true,
         viewports: [1440, 768, 390],
         counts,
       },

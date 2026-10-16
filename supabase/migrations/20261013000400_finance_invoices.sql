@@ -130,6 +130,9 @@ BEGIN
  END LOOP;
  IF p_snapshot->>'version'<>'1' OR p_snapshot->>'currency'<>'PHP' OR jsonb_typeof(p_snapshot->'lines')<>'array'
  OR jsonb_array_length(p_snapshot->'lines')<>jsonb_array_length(p_items) THEN RAISE EXCEPTION 'Invalid financial snapshot'; END IF;
+ IF p_snapshot->>'mode' IS NULL OR p_snapshot->>'mode' NOT IN('standard','promotion')
+ OR (p_snapshot->>'vat_relief')::bigint<>0 OR (p_snapshot->>'exempt_sales')::bigint<>0
+ THEN RAISE EXCEPTION 'Personal-benefit quotes are unavailable in this release'; END IF;
  FOR line IN SELECT value FROM jsonb_array_elements(p_snapshot->'lines') LOOP
   item:=p_items->((line->>'index')::integer);
   IF item IS NULL OR line->>'quantity' IS NULL OR (line->>'eligible_quantity')::integer>(line->>'quantity')::integer OR line->>'menu_item_id' IS DISTINCT FROM item->>'menu_item_id' OR line->>'name' IS DISTINCT FROM item->>'name'
@@ -139,6 +142,9 @@ BEGIN
   FOREACH k IN ARRAY ARRAY['gross','vat_relief','discount','taxable_sales','exempt_sales','vat','total','eligible_quantity'] LOOP
    IF line->>k IS NULL OR (line->>k)::numeric<0 OR (line->>k)::numeric<>trunc((line->>k)::numeric) THEN RAISE EXCEPTION 'Financial amounts must be nonnegative centavos'; END IF;
   END LOOP;
+  IF (line->>'eligible_quantity')::integer<>0 OR (line->>'vat_relief')::bigint<>0 OR (line->>'exempt_sales')::bigint<>0 THEN
+   RAISE EXCEPTION 'Personal-benefit quotes are unavailable in this release';
+  END IF;
   IF round(((line->>'taxable_sales')::bigint+(line->>'vat')::bigint)::numeric*100/112)<>(line->>'taxable_sales')::bigint THEN RAISE EXCEPTION 'VAT does not reconcile to inclusive sales'; END IF;
  END LOOP;
  IF (SELECT count(DISTINCT x->>'index') FROM jsonb_array_elements(p_snapshot->'lines') x)<>jsonb_array_length(p_items) THEN RAISE EXCEPTION 'Duplicate financial line'; END IF;
@@ -173,7 +179,7 @@ BEGIN
   SELECT delivery_tax_treatment INTO treatment FROM finance_settings WHERE id;
   delivery_tax:=CASE WHEN COALESCE(saved.delivery_fee,0)=0 OR treatment='pass_through' THEN 0 WHEN treatment='vat_inclusive' THEN round(saved.delivery_fee*100)-round(saved.delivery_fee*10000/112) ELSE NULL END;
   delivery_income:=CASE WHEN treatment='vat_inclusive' THEN round(COALESCE(saved.delivery_fee,0)*100)-delivery_tax ELSE 0 END;
-  SELECT sum((x->>'taxable_sales')::bigint+round((x->>'gross')::numeric/(x->>'quantity')::integer*(x->>'eligible_quantity')::integer*100/112)) INTO osd_sales FROM jsonb_array_elements(snapshot->'lines') x;
+  SELECT sum((x->>'taxable_sales')::bigint) INTO osd_sales FROM jsonb_array_elements(snapshot->'lines') x;
   snapshot:=snapshot||jsonb_build_object('delivery_tax_treatment',treatment,'delivery_tax',delivery_tax,'osd_gross_sales',osd_sales+delivery_income);
   PERFORM finance_validate_snapshot(saved,accepted_items,snapshot);
   INSERT INTO order_financials(order_id,breakdown) VALUES(saved.id,snapshot);
