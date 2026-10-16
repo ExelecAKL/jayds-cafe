@@ -938,6 +938,14 @@ textarea {
   font-weight: 600;
   color: #402817;
 }
+.product-price.price-unavailable,
+.detail-introduction .price-unavailable,
+.detail-mobile-summary .price-unavailable {
+  color: #737373;
+}
+.home-carousel-price.price-unavailable {
+  color: #c4c4c4;
+}
 .product-add {
   width: 48px;
   height: 48px;

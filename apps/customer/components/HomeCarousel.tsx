@@ -79,7 +79,9 @@ export default function HomeCarousel({ products }: { products: MenuItem[] }) {
               : "Fresh favorites and little treats, made with care at Jayds."}
           </p>
           {item && (
-            <p className="home-carousel-price">
+            <p
+              className={`home-carousel-price${item.is_available ? "" : " price-unavailable"}`}
+            >
               {(item.variants ?? []).some((v) => Number(v.price_modifier) !== 0)
                 ? (item.variants ?? []).some(
                     (v) => Number(v.price_modifier) < 0,

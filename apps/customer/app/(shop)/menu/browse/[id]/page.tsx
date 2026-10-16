@@ -1,8 +1,8 @@
 "use client";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { optionKey, resolveMenuDefaults } from "@cafeos/shared/menu/options";
-import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "../../../../../components/OfflineMenuLink";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
 import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
@@ -33,8 +33,10 @@ const ordering: Record<string, number> = {
 };
 export default function BrowseMenuItemPage() {
   const params = useParams();
+  const router = useRouter();
+  const adding = useRef(false);
   const { menuItems, loading, error, refetch } = useMenu();
-  const { addItem } = useCart();
+  const { addItem, hydrated } = useCart();
   const item = menuItems.find((product) => product.id === params.id);
   const imageUrl = menuProductImageUrl(item?.id, item?.image_url);
   const [selected, setSelected] = useState<Record<string, ItemVariant>>({});
@@ -54,6 +56,16 @@ export default function BrowseMenuItemPage() {
     return result;
   }, [item]);
   useEffect(() => {
+    if (!added) return;
+    // Let the cart provider persist this commit before an offline document navigation.
+    const timer = setTimeout(() => {
+      if (!navigator.onLine && navigator.serviceWorker?.controller)
+        window.location.replace("/menu/browse");
+      else router.replace("/menu/browse", { scroll: false });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [added, router]);
+  useEffect(() => {
     const update = () => setOnline(navigator.onLine);
     update();
     window.addEventListener("online", update);
@@ -67,6 +79,7 @@ export default function BrowseMenuItemPage() {
     let active = true;
     queueMicrotask(() => {
       if (active) {
+        adding.current = false;
         setSelected({});
         setQuantity(1);
         setNotes("");
@@ -161,12 +174,14 @@ export default function BrowseMenuItemPage() {
     });
   };
   const canAdd =
+    hydrated &&
     !!item?.is_available &&
     !missing.length &&
     !added &&
     (!online || !!availability?.available);
   const add = () => {
-    if (!item || !canAdd) return;
+    if (!item || !canAdd || adding.current) return;
+    adding.current = true;
     addItem({
       id: item.id,
       menu_item_id: item.id,
@@ -266,7 +281,9 @@ export default function BrowseMenuItemPage() {
                 {item.description}
               </p>
             )}
-            <p className="mt-4 text-2xl font-semibold">
+            <p
+              className={`mt-4 text-2xl font-semibold${item.is_available ? "" : " price-unavailable"}`}
+            >
               ₱{unitPrice.toFixed(2)}
               <span className="ml-2 text-xs font-normal text-text-secondary">
                 per item
@@ -412,20 +429,6 @@ export default function BrowseMenuItemPage() {
               before adding.
             </InlineNotice>
           )}
-          {added && (
-            <InlineNotice tone="success">
-              Added to your bag.
-              <div className="flex flex-wrap gap-x-5">
-                <Link href="/menu/browse" className="text-link">
-                  Keep browsing
-                  <Icon name="arrowRight" size={16} />
-                </Link>
-                <Link href="/cart" className="text-link">
-                  View bag
-                </Link>
-              </div>
-            </InlineNotice>
-          )}
         </div>
       </div>
       <div className="detail-addbar">
@@ -435,7 +438,11 @@ export default function BrowseMenuItemPage() {
               ? variants.map((v) => v.label).join(" · ")
               : "Made with care at Jayds"}
           </p>
-          <strong>₱{(unitPrice * quantity).toFixed(2)}</strong>
+          <strong
+            className={item.is_available ? undefined : "price-unavailable"}
+          >
+            ₱{(unitPrice * quantity).toFixed(2)}
+          </strong>
         </div>
         <div className="detail-addbar-inner">
           <div className="quantity-control">
@@ -463,34 +470,28 @@ export default function BrowseMenuItemPage() {
               <Icon name="plus" size={18} />
             </button>
           </div>
-          {added ? (
-            <Link className="btn-primary flex-1" href="/cart">
-              View bag <Icon name="arrowRight" size={18} />
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className="btn-primary flex-1"
-              disabled={!canAdd}
-              onClick={add}
-            >
-              {added ? (
-                "Added to bag"
-              ) : checking && online && !availability ? (
-                "Checking stock…"
-              ) : !item.is_available ? (
-                "Sold out"
-              ) : (
-                <>
-                  Add to bag
-                  <span className="wide-screen-title">
-                    {" "}
-                    · ₱{(unitPrice * quantity).toFixed(2)}
-                  </span>
-                </>
-              )}
-            </button>
-          )}
+          <button
+            type="button"
+            className="btn-primary flex-1"
+            disabled={!canAdd}
+            onClick={add}
+          >
+            {added ? (
+              "Adding…"
+            ) : checking && online && !availability ? (
+              "Checking stock…"
+            ) : !item.is_available ? (
+              "Sold out"
+            ) : (
+              <>
+                Add to bag
+                <span className="wide-screen-title">
+                  {" "}
+                  · ₱{(unitPrice * quantity).toFixed(2)}
+                </span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </AppShell>

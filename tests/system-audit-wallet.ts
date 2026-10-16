@@ -48,6 +48,7 @@ export async function walletAudit(page: Page, base: string, productId: string, p
     await check("Voucher wallet: failed validation retains bag; retry applies and Review bag displays discount", async () => {
       await page.goto(base + "/menu/browse/" + productId);
       await page.getByRole("button", { name: /^Add to bag/ }).click();
+      await page.waitForURL(base + "/menu/browse");
       await page.goto(base + "/vouchers"); await page.getByRole("button", { name: "Use voucher", exact: true }).click();
       await expect(page.getByText("Audit voucher unavailable, retry allowed", { exact: true })).toBeVisible();
       failValidate = false; await page.getByRole("button", { name: "Use voucher", exact: true }).click();

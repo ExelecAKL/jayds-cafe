@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
 import AppShell, {
   EmptyState,
@@ -8,7 +7,6 @@ import AppShell, {
 } from "../../../../components/AppShell";
 import MenuCard from "../../../../components/MenuCard";
 import Icon from "../../../../components/Icon";
-import { useCustomerFavorites } from "../../../../context/CustomerFeatures";
 import FulfillmentContext from "../../../../components/FulfillmentContext";
 import { categoryIcon } from "../../../../utils/menuArtwork";
 export default function BrowseMenuPage() {
@@ -190,7 +188,6 @@ export default function BrowseMenuPage() {
     });
     remember(category, query);
   }
-  const favorites = useCustomerFavorites();
   return (
     <AppShell
       title="Find your next favorite."
@@ -198,15 +195,6 @@ export default function BrowseMenuPage() {
       eyebrow="The Jayds menu"
       className="menu-browser"
       cart
-      actions={
-        <Link
-          href="/favorites"
-          className="icon-button"
-          aria-label="Your favorites"
-        >
-          <Icon name="heart" />
-        </Link>
-      }
     >
       <FulfillmentContext />
       <div className="menu-search mb-6">
@@ -273,9 +261,6 @@ export default function BrowseMenuPage() {
                 Retry
               </button>
             </InlineNotice>
-          )}
-          {favorites.error && (
-            <InlineNotice tone="error">{favorites.error}</InlineNotice>
           )}
           <div className="menu-results-summary">
             {query.trim() && <h2 className="section-title">Search results</h2>}
