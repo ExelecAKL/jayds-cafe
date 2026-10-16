@@ -12,6 +12,8 @@ import {
   Feedback,
   Icon,
   peso,
+  LoadingRows,
+  Empty,
 } from "../../../components/Operations";
 import { PaginatedTable } from "../../../components/PaginatedTable";
 export default function CatalogPage() {
@@ -107,9 +109,7 @@ export default function CatalogPage() {
           </select>
         </div>
         {loading ? (
-          <p role="status" className="ops-loading">
-            Loading catalog…
-          </p>
+          <LoadingRows label="Loading catalog…" />
         ) : (
           <div className="ops-table-wrap">
             <PaginatedTable
@@ -194,7 +194,11 @@ export default function CatalogPage() {
               </tbody>
             </PaginatedTable>
             {!rows.length && (
-              <p className="ops-loading">No products match these filters.</p>
+              <Empty
+                title="No products found"
+                description="Try another search or filter."
+                icon="search"
+              />
             )}
           </div>
         )}

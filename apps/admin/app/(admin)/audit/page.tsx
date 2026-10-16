@@ -8,6 +8,7 @@ import {
   businessDate,
   Drawer,
   Feedback,
+  LoadingRows,
 } from "../../../components/Operations";
 import { PaginatedTable } from "../../../components/PaginatedTable";
 import { stockAction, stockReason } from "../../../lib/stock-copy";
@@ -87,9 +88,7 @@ export default function AuditPage() {
           />
         </div>
         {loading ? (
-          <p className="ops-loading" role="status">
-            Loading audit trail…
-          </p>
+          <LoadingRows label="Loading audit trail…" />
         ) : (
           <div className="ops-table-wrap">
             <PaginatedTable

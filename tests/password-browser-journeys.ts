@@ -180,9 +180,32 @@ async function exercise(input: Locator) {
     toggle = wrapper.getByRole("button");
   await expect(input).toHaveAttribute("type", "password");
   await input.fill("FixturePass1");
-  await expect(wrapper.getByRole('button')).toHaveCount(1);
-  if(process.env.JAYDS_BROWSER_CHANNEL==='msedge')
-    assert.equal(await input.evaluate(el=>getComputedStyle(el,'::-ms-reveal').display),'none','Edge native reveal is suppressed alongside the single app control');
+  await expect(wrapper.getByRole("button")).toHaveCount(1);
+  if (process.env.JAYDS_BROWSER_CHANNEL === "msedge") {
+    // Edge's getComputedStyle(input, '::-ms-reveal') returns the host style.
+    // Inspect the actual loaded author rule and retain a focused visual capture.
+    assert.equal(
+      await input.evaluate(() =>
+        Array.from(document.styleSheets).some((sheet) => {
+          try {
+            return Array.from(sheet.cssRules).some(
+              (rule) =>
+                rule instanceof CSSStyleRule &&
+                rule.selectorText.includes("::-ms-reveal") &&
+                rule.style.display === "none",
+            );
+          } catch {
+            return false;
+          }
+        }),
+      ),
+      true,
+    );
+    mkdirSync(".codex-logs/password-audit", { recursive: true });
+    await wrapper.screenshot({
+      path: ".codex-logs/password-audit/edge-single-reveal.png",
+    });
+  }
   await toggle.click();
   await expect(input).toHaveAttribute("type", "text");
   await expect(input).toHaveValue("FixturePass1");

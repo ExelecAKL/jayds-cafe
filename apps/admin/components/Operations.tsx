@@ -197,6 +197,7 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
             .from("stock_movements")
             .select("*")
             .order("created_at", { ascending: false })
+            .order("id", { ascending: false })
             .limit(150)
             .abortSignal(signal),
           supabase
@@ -204,17 +205,7 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
             .select("*")
             .order("name")
             .abortSignal(signal),
-          allOperationRows((from, to) =>
-            supabase
-              .from("purchase_orders")
-              .select(
-                "*,supplier:suppliers(*),lines:purchase_order_lines(*,ingredient:ingredients(*))",
-              )
-              .order("created_at", { ascending: false })
-              .order("id")
-              .range(from, to)
-              .abortSignal(signal),
-          ),
+          supabase.rpc("admin_purchase_orders").abortSignal(signal),
           supabase
             .from("goods_receipts")
             .select("*")
@@ -250,7 +241,15 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
         batches: results[1].data as StockBatch[],
         movements: results[2].data as StockMovement[],
         suppliers: results[3].data as Supplier[],
-        purchases: results[4].data as unknown as PurchaseOrder[],
+        purchases: (results[4].data as PurchaseOrder[]).map((p) => ({
+          ...p,
+          lines: p.lines.map((line) => ({
+            ...line,
+            ingredient: (results[0].data as OperationalStock[]).find(
+              (stock) => stock.id === line.ingredient_id,
+            ),
+          })),
+        })),
         receipts: results[5].data as GoodsReceipt[],
         counts: results[6].data as Stocktake[],
         forecasts: results[7].data as DemandForecast[],
@@ -367,17 +366,39 @@ export function Empty({
   title,
   description,
   children,
+  icon = "stock",
 }: {
   title: string;
   description: string;
   children?: ReactNode;
+  icon?: IconName;
 }) {
   return (
     <div className="ops-empty">
-      <Icon name="stock" size={30} />
+      <Icon name={icon} size={30} />
       <h3>{title}</h3>
       <p>{description}</p>
       {children}
+    </div>
+  );
+}
+export function LoadingRows({
+  label,
+  rows = 5,
+}: {
+  label: string;
+  rows?: number;
+}) {
+  return (
+    <div role="status" aria-label={label} className="ops-loading-rows">
+      <span className="sr-only">{label}</span>
+      {Array.from({ length: rows }, (_, index) => (
+        <div className="ops-loading-row" key={index} aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      ))}
     </div>
   );
 }

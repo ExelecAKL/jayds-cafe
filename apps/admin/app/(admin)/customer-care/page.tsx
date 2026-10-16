@@ -4,7 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@cafeos/shared/supabase/client";
 import ProviderReconciliation from "../../../components/ProviderReconciliation";
-import { Drawer, PageHeader, Badge } from "../../../components/Operations";
+import {
+  Drawer,
+  PageHeader,
+  Badge,
+  Empty,
+  LoadingRows,
+} from "../../../components/Operations";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { OrderDetailsModal } from "../../../components/OrderDetailsModal";
 import { notifyAdmin } from "../../../components/AdminToasts";
@@ -219,15 +225,27 @@ export default function CustomerCare() {
             </select>
           </div>
           {visibleCases.length === 0 ? (
-            <p role={requestsLoaded ? undefined : "status"}>
-              {requestsLoaded
-                ? cases.length
-                  ? "No requests match this filter."
-                  : "No requests to review."
-                : error
-                  ? "Private requests are unavailable. Retry operations to load them."
-                  : "Loading private requests…"}
-            </p>
+            !requestsLoaded && !error ? (
+              <LoadingRows label="Loading private requests…" rows={3} />
+            ) : (
+              <Empty
+                icon="support"
+                title={
+                  error && !requestsLoaded
+                    ? "Requests couldn't load"
+                    : cases.length
+                      ? "No matching requests"
+                      : "All caught up"
+                }
+                description={
+                  error && !requestsLoaded
+                    ? "Retry to load customer requests."
+                    : cases.length
+                      ? "Try another status filter."
+                      : "Customer requests will appear here."
+                }
+              />
+            )
           ) : (
             visibleCases.map((c) => (
               <button

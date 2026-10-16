@@ -18,6 +18,7 @@ import {
   peso,
   quantity,
   useOperations,
+  LoadingRows,
 } from "./Operations";
 import { PaginatedTable } from "./PaginatedTable";
 function SupplierForm({
@@ -697,7 +698,11 @@ export function PurchasingWorkspace() {
             <span className="ops-step-number">{index + 1}</span>
             <span>
               {step.label}
-              <strong>{ops.loading ? "—" : step.count}</strong>
+              <strong>
+                {ops.loading || (!ops.lastUpdated && !!ops.error)
+                  ? "—"
+                  : step.count}
+              </strong>
             </span>
             <Icon name="arrow" size={15} />
           </button>
@@ -756,9 +761,17 @@ export function PurchasingWorkspace() {
           )}
         </div>
         {ops.loading ? (
-          <p className="ops-loading" role="status">
-            Loading purchasing…
-          </p>
+          <LoadingRows label="Loading purchasing…" />
+        ) : ops.error && !ops.lastUpdated ? (
+          <Empty
+            title="Purchasing couldn't load"
+            description="Try loading your data again."
+            icon="refresh"
+          >
+            <button className="ops-button" onClick={() => void ops.refresh()}>
+              Retry purchasing
+            </button>
+          </Empty>
         ) : tab === "orders" ? (
           <>
             <div className="ops-table-wrap">

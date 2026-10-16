@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+.ops-loading-rows {padding:20px;display:grid;gap:12px;}
+.ops-loading-row {display:grid;grid-template-columns:minmax(100px,2fr) 1fr 1fr;gap:24px;padding:15px 0;border-bottom:1px solid #eee7df;}
+.ops-loading-row span {height:18px;background:#eee7df;border-radius:7px;animation:ops-loading-pulse 1.2s ease-in-out infinite alternate;}
+.ops-loading-row span:nth-child(2) {width:75%;}
+.ops-loading-row span:nth-child(3) {width:60%;}
+@keyframes ops-loading-pulse {from{opacity:.45}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.ops-loading-row span{animation:none}}
+
 .admin-toasts { position: fixed; z-index: 10000; bottom: 24px; right: 24px; width: min(400px, calc(100vw - 32px)); display: grid; gap: 10px; pointer-events: none; }
 .admin-toast { display: flex; align-items: center; gap: 12px; background: var(--ops-surface); color: var(--ops-ink); border: 1px solid var(--ops-border); border-left: 4px solid var(--ops-accent); border-radius: 12px; box-shadow: 0 8px 24px #30251e1a; padding: 10px 12px; pointer-events: auto; }
 .admin-toast.error { border-left-color: #b91c1c; }
