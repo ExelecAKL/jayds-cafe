@@ -3,6 +3,8 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import type { PGlite } from "@electric-sql/pglite";
+import sharp from "sharp";
+import { prepareMenuImage } from "../apps/admin/lib/menu-image.ts";
 export async function financeJourneys({
   page,
   base,
@@ -17,6 +19,57 @@ export async function financeJourneys({
   actor: string;
   item: string;
 }) {
+  const photo = await sharp({
+    create: { width: 64, height: 80, channels: 3, background: "#f5eadc" },
+  })
+    .png()
+    .toBuffer();
+  const privatePhotos = new Map<string, Buffer>();
+  let failUpload = true;
+  await page
+    .context()
+    .route(base + "/api/finance/documents**", async (route) => {
+      if (route.request().method() === "POST") {
+        if (failUpload) {
+          failUpload = false;
+          await route.fulfill({
+            status: 503,
+            json: {
+              error: "Fixture upload unavailable. Your form is retained.",
+            },
+          });
+          return;
+        }
+        const bytes = await prepareMenuImage(route.request().postDataBuffer()!);
+        const id = (
+          await db.query<{ id: string }>(
+            "INSERT INTO finance_documents(actor_id,storage_path,byte_size) VALUES($1,gen_random_uuid()::text||'.webp',$2) RETURNING id",
+            [actor, bytes.length],
+          )
+        ).rows[0].id;
+        privatePhotos.set(id, bytes);
+        await route.fulfill({ json: { id } });
+        return;
+      }
+      const bytes = privatePhotos.get(
+        new URL(route.request().url()).searchParams.get("id") ?? "",
+      );
+      if (!bytes) {
+        await route.fulfill({
+          status: 404,
+          json: { error: "Document not found" },
+        });
+        return;
+      }
+      await route.fulfill({
+        contentType: "image/webp",
+        headers: {
+          "Cache-Control": "private, no-store",
+          "Content-Disposition": 'attachment; filename="invoice-photo.webp"',
+        },
+        body: bytes,
+      });
+    });
   // The cancelled ID-collection feature must expose no active upload/read API.
   for (const method of ["GET", "POST"]) {
     const response = await page.request.fetch(
@@ -155,11 +208,33 @@ export async function financeJourneys({
     .getByLabel("Supporting invoice/document reference")
     .fill("FIXTURE-001");
   await expense.getByLabel("I reviewed the supporting invoice").check();
+  await expense
+    .getByLabel("Invoice photo", { exact: false })
+    .setInputFiles({
+      name: "invoice.png",
+      mimeType: "image/png",
+      buffer: photo,
+    });
+  await expense.getByRole("button", { name: "Post expense" }).click();
+  await expect(expense).toContainText("Fixture upload unavailable");
+  assert.equal(
+    await expense.getByLabel("Description").inputValue(),
+    "Browser fixture utility bill",
+  );
   await expense.getByRole("button", { name: "Post expense" }).click();
   await expect(expense).toBeHidden();
   await expect(
     page.getByRole("row").filter({ hasText: "Browser fixture utility bill" }),
   ).toBeVisible();
+  const documentDownload = page.waitForEvent("download");
+  await page
+    .getByRole("row")
+    .filter({ hasText: "Browser fixture utility bill" })
+    .getByRole("button", { name: "Download invoice photo" })
+    .click();
+  await (
+    await documentDownload
+  ).saveAs(".codex-logs/invoice-audit/private-expense-photo.webp");
   await page
     .getByRole("row")
     .filter({ hasText: "Browser fixture utility bill" })
@@ -172,6 +247,87 @@ export async function financeJourneys({
   await expect(
     page.getByRole("row").filter({ hasText: "Browser fixture utility bill" }),
   ).toContainText("Reversed");
+  const supplier = (
+    await db.query<{ id: string }>(
+      "INSERT INTO suppliers(name) VALUES('Invoice fixture supplier') RETURNING id",
+    )
+  ).rows[0].id;
+  const purchasedStock = (
+    await db.query<{ id: string }>(
+      "INSERT INTO ingredients(name,current_stock,cost_per_unit) VALUES('Invoice fixture milk',0,1.12) RETURNING id",
+    )
+  ).rows[0].id;
+  const po = (
+    await db.query<{ id: string }>(
+      "SELECT inv_save_po(NULL,$1,(now() AT TIME ZONE 'Asia/Manila')::date,'Supplier delivery',$2) id",
+      [
+        supplier,
+        JSON.stringify([
+          { ingredient_id: purchasedStock, quantity: 100, unit_cost: 1.12 },
+        ]),
+      ],
+    )
+  ).rows[0].id;
+  await db.query("SELECT inv_po_transition($1,'approved')", [po]);
+  await db.query("SELECT inv_po_transition($1,'ordered')", [po]);
+  await db.query(
+    "SELECT inv_receive_po($1,'SUPPLIER-112',$2,gen_random_uuid())",
+    [
+      po,
+      JSON.stringify([
+        {
+          ingredient_id: purchasedStock,
+          quantity: 100,
+          unit_cost: 1.12,
+          batch_code: "MILK-112",
+        },
+      ]),
+    ],
+  );
+  await page.getByRole("button", { name: "Refresh", exact: true }).click();
+  await page.getByRole("button", { name: "Purchase VAT", exact: true }).click();
+  const purchaseRow = page.getByRole("row").filter({ hasText: "SUPPLIER-112" });
+  await purchaseRow
+    .getByRole("button", { name: "Review VAT", exact: true })
+    .click();
+  const vatForm = page.getByRole("dialog", { name: "Review supplier invoice" });
+  await vatForm.getByLabel("Creditable input VAT (PHP)").fill("12");
+  await vatForm.getByLabel("Supplier invoice reference").fill("SUPPLIER-112");
+  await vatForm
+    .getByLabel("Invoice photo")
+    .setInputFiles({
+      name: "supplier.png",
+      mimeType: "image/png",
+      buffer: photo,
+    });
+  await vatForm.getByLabel("I reviewed this supplier invoice").check();
+  await vatForm.getByRole("button", { name: "Post VAT review" }).click();
+  await expect(vatForm).toBeHidden();
+  await expect(purchaseRow).toContainText("₱12.00");
+  await purchaseRow.getByRole("button", { name: "Reverse VAT review" }).click();
+  const reverseVat = page.getByRole("dialog", { name: "Reverse VAT review" });
+  await reverseVat
+    .getByLabel("Reason")
+    .fill("Supplier document needs correction");
+  await reverseVat.getByRole("button", { name: "Confirm reversal" }).click();
+  await expect(reverseVat).toBeHidden();
+  await expect(purchaseRow).toContainText("Reversed");
+  assert.equal(
+    (
+      await db.query<{ count: number }>(
+        "SELECT count(*) FROM finance_purchase_vat",
+      )
+    ).rows[0].count,
+    1,
+  );
+  assert.equal(
+    (
+      await db.query<{ count: number }>(
+        "SELECT count(*) FROM finance_purchase_vat_reversals",
+      )
+    ).rows[0].count,
+    1,
+  );
   for (const width of [1440, 768, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await page.getByRole("button", { name: "Overview", exact: true }).click();

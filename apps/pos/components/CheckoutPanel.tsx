@@ -2,7 +2,8 @@
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { resolveCustomerPortalUrl } from "@cafeos/shared/customer-url";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { PaymentQuote } from "@cafeos/shared/finance/quote";
 import type { CheckoutResult, RegisterDraft } from "@cafeos/shared/pos/types";
 import { pesos } from "@cafeos/shared/pos/draft";
 import { cashierRequest, CashierRequestError, useOnline } from "../lib/client";
@@ -45,6 +46,37 @@ export function CheckoutPanel({
     );
   const busyRef = useRef(false),
     online = useOnline();
+  const [quote, setQuote] = useState<PaymentQuote | null>(null);
+  const [quoteError, setQuoteError] = useState("");
+  const [quoteAttempt, setQuoteAttempt] = useState(0);
+  const quoteBody = JSON.stringify(base);
+  useEffect(() => {
+    if (pending || initialResult) return;
+    let active = true;
+    const timer = setTimeout(() => {
+      setQuote(null);
+      setQuoteError("");
+      void cashierRequest<PaymentQuote>(
+        "/api/orders/quote",
+        JSON.parse(quoteBody),
+      )
+        .then((value) => {
+          if (active) setQuote(value);
+        })
+        .catch((cause) => {
+          if (active)
+            setQuoteError(
+              cause instanceof Error
+                ? cause.message
+                : "Could not check this total.",
+            );
+        });
+    }, 0);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [quoteBody, quoteAttempt, pending, initialResult]);
   const [acknowledgedAmount, setAcknowledgedAmount] = useState<string | null>(
     null,
   );
@@ -74,7 +106,11 @@ export function CheckoutPanel({
     if (
       busyRef.current ||
       !online ||
-      (!pending && (!valid || !cashAcknowledged))
+      (!pending &&
+        (!valid ||
+          !cashAcknowledged ||
+          !quote ||
+          quote.total !== Math.round(total * 100)))
     )
       return;
     busyRef.current = true;
@@ -204,6 +240,37 @@ export function CheckoutPanel({
             <span>Total due</span>
             <strong className="pos-number">{pesos(due)}</strong>
           </div>
+          {!pending && !quote && !quoteError && (
+            <p role="status">Checking current total…</p>
+          )}
+          {quoteError && (
+            <p className="pos-error" role="alert">
+              {quoteError}{" "}
+              <button
+                className="pos-button"
+                onClick={() => setQuoteAttempt((n) => n + 1)}
+              >
+                Try again
+              </button>
+            </p>
+          )}
+          {quote && quote.total !== Math.round(total * 100) && (
+            <p className="pos-error" role="alert">
+              This ticket changed. Close checkout and review its total.
+            </p>
+          )}
+          {quote?.breakdown && (
+            <dl className="pos-muted" style={{ marginTop: 12 }}>
+              <div>
+                Sales excluding VAT{" "}
+                <strong>{pesos(quote.breakdown.net_sales / 100)}</strong>
+              </div>
+              <div>
+                VAT (included){" "}
+                <strong>{pesos(quote.breakdown.vat / 100)}</strong>
+              </div>
+            </dl>
+          )}
           <p className="pos-muted" style={{ marginTop: 12 }}>
             {pickup
               ? "QR verified. Receive cash and hand over this ready order. Payment and collection are recorded together."
@@ -344,7 +411,13 @@ export function CheckoutPanel({
         <button
           className="pos-button pos-success"
           disabled={
-            !online || busy || (!pending && (!valid || !cashAcknowledged))
+            !online ||
+            busy ||
+            (!pending &&
+              (!valid ||
+                !cashAcknowledged ||
+                !quote ||
+                quote.total !== Math.round(total * 100)))
           }
           onClick={() => void accept()}
         >

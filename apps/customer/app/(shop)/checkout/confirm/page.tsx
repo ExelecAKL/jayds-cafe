@@ -15,6 +15,7 @@ import {
 import { LEGAL_VERSION } from "../../../../lib/legal";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { safeMayaCheckoutUrl } from "@cafeos/shared/maya-urls";
+import type { PaymentQuote } from "@cafeos/shared/finance/quote";
 interface Review {
   owner: string;
   paymentMethod: string;
@@ -28,6 +29,7 @@ interface Review {
   recipientPhone: string;
   pickupSlotStart: string | null;
   legalVersion: string;
+  financialQuote?: PaymentQuote;
 }
 export default function ConfirmOrderPage() {
   const { user, initialized } = useAuth(),
@@ -77,6 +79,10 @@ export default function ConfirmOrderPage() {
         100,
     ) / 100;
   const total = Number(attempt?.payload.total ?? currentTotal);
+  const breakdown =
+    review?.financialQuote?.total === Math.round(total * 100)
+      ? review.financialQuote.breakdown
+      : null;
   async function place() {
     if (lock.current || !initialized || (!review && !attempt)) return;
     if (!navigator.onLine) {
@@ -296,6 +302,24 @@ export default function ConfirmOrderPage() {
             <p className="text-4xl font-semibold">
               ₱{Math.max(0, total).toFixed(2)}
             </p>
+            {breakdown && (
+              <dl className="mt-4 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <dt>Product sales excluding VAT</dt>
+                  <dd>₱{(breakdown.net_sales / 100).toFixed(2)}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Product VAT (included)</dt>
+                  <dd>₱{(breakdown.vat / 100).toFixed(2)}</dd>
+                </div>
+                {breakdown.delivery > 0 && (
+                  <div className="flex justify-between">
+                    <dt>Delivery</dt>
+                    <dd>₱{(breakdown.delivery / 100).toFixed(2)}</dd>
+                  </div>
+                )}
+              </dl>
+            )}
           </section>
           {review?.paymentMethod === "cash" && (
             <p className="text-sm text-text-secondary">

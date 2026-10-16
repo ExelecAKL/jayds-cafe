@@ -1,6 +1,9 @@
 "use client";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
-import { normalizeContactPhone, isValidContactPhone } from "@cafeos/shared/customer/phone";
+import {
+  normalizeContactPhone,
+  isValidContactPhone,
+} from "@cafeos/shared/customer/phone";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -18,6 +21,7 @@ import AppShell, { InlineNotice } from "../../../components/AppShell";
 import DeliveryMapPickerLazy from "../../../components/DeliveryMapPickerLazy";
 import LegalReview from "../../../components/LegalReview";
 import { LEGAL_VERSION } from "../../../lib/legal";
+import type { PaymentQuote } from "@cafeos/shared/finance/quote";
 interface Destination {
   lat: number;
   lng: number;
@@ -59,6 +63,8 @@ export default function CheckoutPage() {
     });
   const [date, setDate] = useState(manilaDate()),
     quoteVersion = useRef(0);
+  const reviewRequest = useRef<AbortController | null>(null);
+  useEffect(() => () => reviewRequest.current?.abort(), []);
   const owner = user?.id ?? "guest";
   const [formOwner, setFormOwner] = useState<string | null>(null);
   const delivery = cart.orderType === "delivery",
@@ -258,7 +264,7 @@ export default function CheckoutPage() {
       setBusy(false);
     }
   }
-  function review() {
+  async function review() {
     setError("");
     if (!navigator.onLine) {
       setError("Reconnect to confirm your order. Your draft is saved.");
@@ -285,7 +291,51 @@ export default function CheckoutPage() {
       setError("Review the Terms and Privacy Notice.");
       return;
     }
+    setBusy(true);
+    const controller = new AbortController();
+    reviewRequest.current?.abort();
+    reviewRequest.current = controller;
     try {
+      const response = await fetch("/api/orders/quote", {
+        method: "POST",
+        headers: await customerHeaders(user?.id ?? null),
+        signal:
+          typeof AbortSignal.any === "function"
+            ? AbortSignal.any([controller.signal, AbortSignal.timeout(15000)])
+            : AbortSignal.timeout(15000),
+        body: JSON.stringify({
+          order_type: cart.orderType,
+          payment_method: delivery || schedule ? "maya" : paymentMethod,
+          points_redeemed: redeemed,
+          voucher_code: cart.voucher?.code ?? null,
+          delivery_lat: destination?.lat,
+          delivery_lng: destination?.lng,
+          delivery_address: destination?.address,
+          delivery_fee: quote?.deliveryFee ?? 0,
+          delivery_quote_token: quote?.quoteToken,
+          items: cart.items.map((i) => ({
+            menu_item_id: i.menu_item_id,
+            quantity: i.quantity,
+            price: i.price,
+            subtotal: Math.round(i.price * i.quantity * 100) / 100,
+            variants: i.variants,
+          })),
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(
+          result.error || "Your total could not be verified. Try again.",
+        );
+      const financialQuote = result as PaymentQuote;
+      if (
+        financialQuote.version !== 1 ||
+        financialQuote.total !== Math.round(total * 100)
+      )
+        throw new Error(
+          "Your prices or rewards changed. Refresh your bag before reviewing again.",
+        );
+      if (controller.signal.aborted) return;
       sessionStorage.setItem(
         "checkout_confirm",
         JSON.stringify({
@@ -304,11 +354,19 @@ export default function CheckoutPage() {
           recipientPhone: normalizeContactPhone(phone),
           pickupSlotStart: !delivery && schedule ? slot : null,
           legalVersion: LEGAL_VERSION,
+          financialQuote,
         }),
       );
       router.push("/checkout/confirm");
-    } catch {
-      setError("Enable browser storage to preserve this checkout safely.");
+    } catch (cause) {
+      if (!controller.signal.aborted)
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : "Your total could not be verified. Please try again.",
+        );
+    } finally {
+      if (!controller.signal.aborted) setBusy(false);
     }
   }
   return (

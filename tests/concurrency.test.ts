@@ -693,12 +693,26 @@ test(
         cleanupTarget.startsWith(logs + path.sep),
         "Refusing to remove files outside the fixture directory",
       );
-      rmSync(cleanupTarget, {
-        recursive: true,
-        force: true,
-        maxRetries: 8,
-        retryDelay: 250,
-      });
+      try {
+        rmSync(cleanupTarget, {
+          recursive: true,
+          force: true,
+          maxRetries: 8,
+          retryDelay: 250,
+        });
+      } catch (error) {
+        // Windows scanners can hold a stopped fixture's files briefly. Retain
+        // the ignored logs; never mask a business assertion with cleanup failure.
+        if (
+          !["EPERM", "EBUSY"].includes(
+            (error as NodeJS.ErrnoException).code ?? "",
+          )
+        )
+          throw error;
+        t.diagnostic(
+          "Stopped local PostgreSQL fixture retained in ignored logs because Windows still holds a file.",
+        );
+      }
     }
   },
 );

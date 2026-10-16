@@ -6,6 +6,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { chromium, expect } from "@playwright/test";
 import { LEGAL_VERSION } from "../apps/customer/lib/legal.ts";
+import { calculateFinancials } from "../packages/shared/src/finance/calculations.ts";
 import { buildHomeRecommendations } from "../apps/customer/utils/recommendations.ts";
 import type { MenuItem } from "../packages/shared/src/types/index.ts";
 import { extraCustomerAudit } from "./system-audit-extra-customer.ts";
@@ -109,7 +110,18 @@ const products = Array.from({ length: 55 }, (_, i) => {
         : [],
   };
 });
-products[0].variants.push(...["Whole Milk", "Oat Milk Sub", "Almond Milk Sub"].map((label,index)=>({id:"milk-"+index,menu_item_id:products[0].id,variant_group:"milk_sub",label,is_default:index===0,price_modifier:index===0?0:30,sort_order:10+index,is_available:true})));
+products[0].variants.push(
+  ...["Whole Milk", "Oat Milk Sub", "Almond Milk Sub"].map((label, index) => ({
+    id: "milk-" + index,
+    menu_item_id: products[0].id,
+    variant_group: "milk_sub",
+    label,
+    is_default: index === 0,
+    price_modifier: index === 0 ? 0 : 30,
+    sort_order: 10 + index,
+    is_available: true,
+  })),
+);
 const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     serviceWorkers: "block",
@@ -218,9 +230,14 @@ await context.addInitScript(() => {
 if (process.env.JAYDS_AUDIT_PROTECTION_BYPASS) {
   const bypass = process.env.JAYDS_AUDIT_PROTECTION_BYPASS;
   // Scope the credential to the audited deployment; never send it to providers.
-  await context.route(base + "/**", (route) => route.fallback({
-    headers: { ...route.request().headers(), "x-vercel-protection-bypass": bypass },
-  }));
+  await context.route(base + "/**", (route) =>
+    route.fallback({
+      headers: {
+        ...route.request().headers(),
+        "x-vercel-protection-bypass": bypass,
+      },
+    }),
+  );
 }
 await context.routeWebSocket(/supabase\.co\/realtime/, (socket) => {
   socket.onMessage((m) => {
@@ -437,6 +454,24 @@ await context.route(base + "/api/**", async (route) => {
     });
     return;
   }
+  if (pathname === "/api/orders/quote") {
+    const body = req.postDataJSON();
+    const breakdown = calculateFinancials({
+      items: body.items,
+      points: body.points_redeemed,
+      promotion: body.voucher_code ? { kind: "fixed", value: 10 } : undefined,
+    });
+    await route.fulfill({
+      json: {
+        version: 1,
+        currency: "PHP",
+        total: breakdown.total,
+        breakdown,
+        quotedAt: new Date().toISOString(),
+      },
+    });
+    return;
+  }
   if (pathname === "/api/orders/create") {
     createRequests++;
     const body = req.postDataJSON();
@@ -495,19 +530,33 @@ await context.route(
     !url.hostname.endsWith(".supabase.co"),
   (route) => route.abort(),
 );
-async function checkAccountLayout(){
-  await page.locator(".startup-overlay").waitFor({state:"detached"});
-    const foldedQr=page.locator('details.account-qr');
-    await foldedQr.getByText('Your account QR',{exact:true}).waitFor();
-    assert.equal(await foldedQr.getAttribute('open'),null);
-    assert.ok((await foldedQr.boundingBox())!.height<=68,'Folded account QR stays one compact touch row');
-    assert.equal(await page.getByText('One account for app orders and your café visits.',{exact:true}).count(),0);
-    await foldedQr.getByText('Your account QR',{exact:true}).click();
-    await page.getByAltText('Jayds account QR for the cashier').waitFor();
-    await foldedQr.getByText('Your account QR',{exact:true}).click();
-    await expect(page.getByRole('button',{name:/Sign out/})).toContainText('Sign out of your account on this device');
-    await page.screenshot({path:path.join(output,'account-compact-390.png'),fullPage:true});
-
+async function checkAccountLayout() {
+  await page.locator(".startup-overlay").waitFor({ state: "detached" });
+  const foldedQr = page.locator("details.account-qr");
+  await foldedQr.getByText("Your account QR", { exact: true }).waitFor();
+  assert.equal(await foldedQr.getAttribute("open"), null);
+  assert.ok(
+    (await foldedQr.boundingBox())!.height <= 68,
+    "Folded account QR stays one compact touch row",
+  );
+  assert.equal(
+    await page
+      .getByText("One account for app orders and your café visits.", {
+        exact: true,
+      })
+      .count(),
+    0,
+  );
+  await foldedQr.getByText("Your account QR", { exact: true }).click();
+  await page.getByAltText("Jayds account QR for the cashier").waitFor();
+  await foldedQr.getByText("Your account QR", { exact: true }).click();
+  await expect(page.getByRole("button", { name: /Sign out/ })).toContainText(
+    "Sign out of your account on this device",
+  );
+  await page.screenshot({
+    path: path.join(output, "account-compact-390.png"),
+    fullPage: true,
+  });
 }
 
 try {
@@ -517,17 +566,29 @@ try {
     } catch {}
     await new Promise((r) => setTimeout(r, 200));
   }
-  if(process.env.JAYDS_ACCOUNT_ONLY === "1"){
-    currentLegalAccepted=true;
-    await page.goto(base+"/login");
-    await page.getByLabel(/^Email(?:\s*(?:\*|\(optional\)))?$/,{exact:true}).fill(fixtureAccount.email);
-    await page.getByLabel(/^Password(?:\s*(?:\*|\(optional\)))?$/,{exact:true}).fill("FixturePassword123!");
-    await page.getByRole("button",{name:"Sign In",exact:true}).click();
-    await page.waitForURL(base+"/menu");
-    await page.goto(base+"/account");
+  if (process.env.JAYDS_ACCOUNT_ONLY === "1") {
+    currentLegalAccepted = true;
+    await page.goto(base + "/login");
+    await page
+      .getByLabel(/^Email(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
+      .fill(fixtureAccount.email);
+    await page
+      .getByLabel(/^Password(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
+      .fill("FixturePassword123!");
+    await page.getByRole("button", { name: "Sign In", exact: true }).click();
+    await page.waitForURL(base + "/menu");
+    await page.goto(base + "/account");
     await checkAccountLayout();
-    console.log(JSON.stringify({status:"PASS",compactAccountQr:true,qrOpensAndFolds:true,footerRemoved:true,errors}));
-    assert.deepEqual(errors,[]);
+    console.log(
+      JSON.stringify({
+        status: "PASS",
+        compactAccountQr: true,
+        qrOpensAndFolds: true,
+        footerRemoved: true,
+        errors,
+      }),
+    );
+    assert.deepEqual(errors, []);
   } else if (process.env.JAYDS_CUSTOMER_COMPLETE_ONLY === "1") {
     currentLegalAccepted = true;
     await page.goto(base + "/login");
@@ -719,11 +780,17 @@ try {
     await page
       .getByRole("button", { name: "Increase quantity", exact: true })
       .click();
-    await expect(page.getByRole('button',{name:/Whole Milk.*Included/})).toHaveAttribute('aria-pressed','true');
-    await page.getByRole('button',{name:/Oat Milk Sub/}).click();
-    await expect(page.getByRole('button',{name:/Oat Milk Sub/})).toHaveAttribute('aria-pressed','true');
-    await page.getByRole('button',{name:/Whole Milk.*Included/}).click();
-    await expect(page.getByRole('button',{name:/Whole Milk.*Included/})).toHaveAttribute('aria-pressed','true');
+    await expect(
+      page.getByRole("button", { name: /Whole Milk.*Included/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: /Oat Milk Sub/ }).click();
+    await expect(
+      page.getByRole("button", { name: /Oat Milk Sub/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: /Whole Milk.*Included/ }).click();
+    await expect(
+      page.getByRole("button", { name: /Whole Milk.*Included/ }),
+    ).toHaveAttribute("aria-pressed", "true");
     await page
       .getByLabel(/^A little note(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
       .fill("Less ice");
@@ -784,14 +851,12 @@ try {
       await page.getByRole("button", { name: /Add Sold-out Matcha/ }).count(),
       0,
     );
-    const soldOutCard = page
-      .locator(".product-card")
-      .filter({
-        has: page.getByRole("heading", {
-          name: "Sold-out Matcha",
-          exact: true,
-        }),
-      });
+    const soldOutCard = page.locator(".product-card").filter({
+      has: page.getByRole("heading", {
+        name: "Sold-out Matcha",
+        exact: true,
+      }),
+    });
     await expect(soldOutCard.locator(".product-price")).toHaveText("₱145.00");
     await expect(soldOutCard.locator(".product-price")).toHaveCSS(
       "color",

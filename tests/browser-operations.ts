@@ -262,7 +262,7 @@ async function attach(
   await context.route(
     (url) =>
       url.hostname === host &&
-      /^\/api\/(orders\/(checkout|create|action|pickup)|account\/lookup)$/.test(
+      /^\/api\/(orders\/(checkout|create|action|pickup|quote)|account\/lookup)$/.test(
         apiPath(url),
       ),
     async (route) => {
@@ -359,7 +359,16 @@ async function attach(
                   is_parked: body.parked ?? false,
                 }
               : null;
-            result =
+            if (name === "quote") {
+              if (items) {
+                await db.query("SELECT finance_check_quote($1)", [JSON.stringify(items)]);
+                const breakdown = (await db.query<{ value: Record<string,unknown> }>("SELECT finance_standard_snapshot(jsonb_populate_record(NULL::orders,$1),$2) value",[JSON.stringify(order),JSON.stringify(items)])).rows[0].value;
+                result={version:1,currency:"PHP",total:breakdown.total,breakdown,quotedAt:new Date().toISOString()};
+              } else {
+                const quoted=(await db.query<{ value: { total:number; breakdown:unknown } }>("SELECT finance_unpaid_quote($1) value",[body.order_id])).rows[0].value;
+                result={version:1,currency:"PHP",total:Math.round(Number(quoted.total)*100),breakdown:quoted.breakdown,quotedAt:new Date().toISOString()};
+              }
+            } else result =
               name === "checkout"
                 ? (
                     await db.query<{ result: unknown }>(
@@ -843,8 +852,15 @@ try {
     "20261016000100_stock_planning_details.sql",
     "20261016000300_admin_exports.sql",
     "20261016000400_admin_sales_reports.sql",
+    "20261016000500_finance_quotes.sql",
+    "20261016000600_finance_documents.sql",
+    "20261016000700_purchase_vat.sql",
+    "20261016000800_export_file_privacy.sql",
   ])
-    await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
+    {
+      if (file === "20261016000600_finance_documents.sql") await db.exec("CREATE SCHEMA IF NOT EXISTS storage; CREATE TABLE IF NOT EXISTS storage.buckets(id text PRIMARY KEY,name text,public boolean,file_size_limit bigint,allowed_mime_types text[])");
+      await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
+    }
   await db.query("UPDATE inventory_settings SET enforcement_enabled=true");
   await db.exec(
     "ALTER TABLE orders ADD COLUMN pickup_window_start timestamptz, ADD COLUMN preparation_due_at timestamptz, ADD COLUMN lalamove_order_id text, ADD COLUMN lalamove_status text, ADD COLUMN lalamove_share_link text",

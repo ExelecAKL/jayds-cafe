@@ -3,7 +3,7 @@ import {
   CatalogValidationError,
 } from "@cafeos/shared/inventory/orders";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { calculateFinancials } from "@cafeos/shared/finance/calculations";
+import { quoteFinancials } from "@cafeos/shared/finance/quote";
 import { readQuoteToken } from "../../lalamove/quote-token";
 import { readCustomerBranch } from "../../branch/lib";
 import { withinCoverage } from "../../../../lib/location";
@@ -36,7 +36,7 @@ interface Voucher {
   max_discount_amount: number | null;
 }
 
-interface PricingInput {
+export interface PricingInput {
   order_type: string;
   payment_method: string;
   subtotal: number;
@@ -76,6 +76,7 @@ export async function priceOrder(
   db: SupabaseClient,
   body: PricingInput,
   userId: string | null,
+  validateTotals = true,
 ) {
   if (
     !["pickup", "delivery"].includes(body.order_type) ||
@@ -218,29 +219,34 @@ export async function priceOrder(
   }
   const discount = money(voucherDiscount + pointsToRedeem / 10);
   const total = money(Math.max(0, subtotal - discount) + deliveryFee);
-  const financialBreakdown = calculateFinancials({
-    items,
-    points: pointsToRedeem,
-    deliveryFee,
-    promotion: voucher
-      ? {
-          kind: voucher.discount_type,
-          value: Number(voucher.discount_value),
-          cap:
-            voucher.discount_type === "percentage"
-              ? voucher.max_discount_amount
-              : null,
-          itemIds:
-            voucher.application_mode === "selected_items"
-              ? (voucher.applicable_item_ids ?? [])
-              : [],
-        }
-      : undefined,
-  });
+  const financialBreakdown = await quoteFinancials(
+    db,
+    {
+      items,
+      points: pointsToRedeem,
+      deliveryFee,
+      promotion: voucher
+        ? {
+            kind: voucher.discount_type,
+            value: Number(voucher.discount_value),
+            cap:
+              voucher.discount_type === "percentage"
+                ? voucher.max_discount_amount
+                : null,
+            itemIds:
+              voucher.application_mode === "selected_items"
+                ? (voucher.applicable_item_ids ?? [])
+                : [],
+          }
+        : undefined,
+    },
+    !validateTotals,
+  );
   if (
-    !matchesAmount(body.subtotal, subtotal) ||
-    !matchesAmount(body.discount, discount) ||
-    !matchesAmount(body.total, total)
+    validateTotals &&
+    (!matchesAmount(body.subtotal, subtotal) ||
+      !matchesAmount(body.discount, discount) ||
+      !matchesAmount(body.total, total))
   ) {
     throw new OrderValidationError(
       "Your order total has changed. Please refresh your cart and checkout again.",

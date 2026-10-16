@@ -10,6 +10,7 @@ import {
 } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
+import type { PostgrestError } from "@supabase/supabase-js";
 import type {
   StockItem,
   StockBatch,
@@ -138,6 +139,21 @@ interface State {
   run: (name: string, args?: Record<string, unknown>) => Promise<unknown>;
 }
 const Context = createContext<State | null>(null);
+// Use explicit pages so a growing lot/purchasing history cannot hit the API's row cap.
+async function allOperationRows<T>(
+  read: (
+    from: number,
+    to: number,
+  ) => PromiseLike<{ data: T[] | null; error: PostgrestError | null }>,
+) {
+  const data: T[] = [];
+  for (let from = 0; ; from += 500) {
+    const result = await read(from, from + 499);
+    if (result.error) return { data: null, error: result.error };
+    data.push(...(result.data ?? []));
+    if ((result.data?.length ?? 0) < 500) return { data, error: null };
+  }
+}
 export function OperationsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<Omit<State, "refresh" | "run">>({
     stock: [],
@@ -167,11 +183,16 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
             .select("*")
             .order("name")
             .abortSignal(signal),
-          supabase
-            .from("stock_batches")
-            .select("*")
-            .order("expires_on", { nullsFirst: false })
-            .abortSignal(signal),
+          allOperationRows((from, to) =>
+            supabase
+              .from("stock_batches")
+              .select("*")
+              .gt("quantity", 0)
+              .order("expires_on", { nullsFirst: false })
+              .order("id")
+              .range(from, to)
+              .abortSignal(signal),
+          ),
           supabase
             .from("stock_movements")
             .select("*")
@@ -183,13 +204,17 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
             .select("*")
             .order("name")
             .abortSignal(signal),
-          supabase
-            .from("purchase_orders")
-            .select(
-              "*,supplier:suppliers(*),lines:purchase_order_lines(*,ingredient:ingredients(*))",
-            )
-            .order("created_at", { ascending: false })
-            .abortSignal(signal),
+          allOperationRows((from, to) =>
+            supabase
+              .from("purchase_orders")
+              .select(
+                "*,supplier:suppliers(*),lines:purchase_order_lines(*,ingredient:ingredients(*))",
+              )
+              .order("created_at", { ascending: false })
+              .order("id")
+              .range(from, to)
+              .abortSignal(signal),
+          ),
           supabase
             .from("goods_receipts")
             .select("*")
