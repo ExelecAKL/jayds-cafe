@@ -36,7 +36,8 @@
     "./customer/scheduling": "./src/customer/scheduling.ts",
     "./utils/uuid": "./src/utils/uuid.ts",
     "./utils/app-path": "./src/utils/app-path.ts",
-    "./utils/product-images": "./src/utils/product-images.ts"
+    "./utils/product-images": "./src/utils/product-images.ts",
+    "./menu/options": "./src/menu/options.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

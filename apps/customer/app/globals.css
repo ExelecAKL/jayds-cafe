@@ -1759,6 +1759,7 @@ details[open] > :not(summary) {
 
 /* Original welcome artwork and real published products, with accessible controls. */
 .home-carousel {
+  touch-action: pan-y pinch-zoom;
   border-radius: 28px;
   background: #402817;
   color: #fff7ed;
@@ -2050,9 +2051,9 @@ details[open] > :not(summary) {
 .icon-button,
 .carousel-control {
   transition:
-    background-color 140ms ease,
-    border-color 140ms ease,
-    box-shadow 140ms ease,
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
     transform 120ms ease;
 }
 .btn-primary:active:not(:disabled),

@@ -48,6 +48,7 @@ export interface Category {
 // ── Menu Item ───────────────────────────────────────────────
 
 export interface MenuItem {
+  included_milk?: string | null;
   manually_available?: boolean;
   availability_reason?: string | null;
   id: string;

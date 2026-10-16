@@ -135,8 +135,8 @@ export default function AccountPage() {
                 />
               )}
               {user && qr && (
-                <details className="rounded-3xl border border-border bg-bg-card p-5">
-                  <summary className="min-h-12 cursor-pointer font-semibold">
+                <details className="account-qr rounded-3xl border border-border bg-bg-card px-5 py-2">
+                  <summary className="min-h-12 cursor-pointer content-center font-semibold">
                     Your account QR
                   </summary>
                   <div className="mt-3 text-center">
@@ -154,11 +154,6 @@ export default function AccountPage() {
                   </div>
                 </details>
               )}
-              <p className="px-2 text-xs leading-relaxed text-text-secondary">
-                Jayds Café · A little cup of happy.
-                <br />
-                One account for app orders and your café visits.
-              </p>
             </div>
             <div className="space-y-5">
               <section>
@@ -240,7 +235,7 @@ export default function AccountPage() {
                           {signingOut ? "Signing out…" : "Sign out"}
                         </strong>
                         <small>
-                          Private drafts are removed from this device
+                          Sign out of your account on this device
                         </small>
                       </span>
                     </button>

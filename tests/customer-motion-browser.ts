@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 // Branded startup, real published fixtures, and interaction/motion checks only.
 // Service workers and all remote network/DNS are isolated; no live writes occur.
 import assert from "node:assert/strict";
@@ -12,7 +13,7 @@ mkdirSync(output, { recursive: true });
 const server = spawn(
   process.execPath,
   [
-    path.join(root, "node_modules/next/dist/bin/next"),
+    createRequire(import.meta.url).resolve("next/dist/bin/next"),
     "start",
     "-p",
     "4334",
@@ -35,6 +36,7 @@ const browser = await chromium.launch({
 });
 const context = await browser.newContext({
   viewport: { width: 390, height: 844 },
+  hasTouch: true,
   serviceWorkers: "block",
 });
 const products = [
@@ -293,6 +295,84 @@ try {
     1,
     "Autoplay pauses while an action has focus",
   );
+  // Actual Chromium touch input, including a hold across an autoplay interval.
+  await page.clock.resume();
+  await page.getByRole("link", { name: "Notifications", exact: true }).focus();
+  await carousel.scrollIntoViewIfNeeded();
+  const touch = await context.newCDPSession(page);
+  const box = (await carousel.locator(".home-carousel-slide").boundingBox())!;
+  const x = box.x + box.width * 0.75,
+    y = box.y + box.height * 0.45;
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x, y }],
+  });
+  await carousel
+    .getByRole("button", { name: "Play featured slides", exact: true })
+    .waitFor();
+  await page.clock.runFor(6500);
+  await carousel
+    .getByRole("heading", { name: products[0].name, exact: true })
+    .waitFor();
+  await page.clock.resume();
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [{ x: x - 65, y: y + 2 }],
+  });
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [{ x: x - 120, y: y + 3 }],
+  });
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await carousel.getByText("Currently sold out", { exact: true }).waitFor();
+  assert.equal(
+    new URL(page.url()).pathname,
+    "/menu",
+    "A swipe must not activate the slide link",
+  );
+  await carousel
+    .getByRole("button", { name: "Play featured slides", exact: true })
+    .waitFor();
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x: x - 120, y }],
+  });
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [{ x: x - 50, y: y + 2 }],
+  });
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [{ x, y: y + 3 }],
+  });
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await carousel
+    .getByRole("heading", { name: products[0].name, exact: true })
+    .waitFor();
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x, y }],
+  });
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [{ x: x - 2, y: y + 80 }],
+  });
+  await touch.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await carousel
+    .getByRole("heading", { name: products[0].name, exact: true })
+    .waitFor();
+  await carousel
+    .getByRole("button", { name: "Play featured slides", exact: true })
+    .click();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.getByRole("link", { name: "Notifications", exact: true }).focus();
   await page.clock.runFor(7000);
@@ -330,6 +410,10 @@ try {
     stableSlideGeometry: true,
     keyboardFocusPreserved: true,
     autoplayPausesForFocus: true,
+    touchSwipeBothDirections: true,
+    touchPausesAutoplay: true,
+    verticalGesturePreserved: true,
+    swipeDoesNotFollowLink: true,
     reducedMotion: true,
     controlledLocalCls: cls,
     productionMetricsNotMeasured: true,

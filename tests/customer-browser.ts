@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 // UI fixtures only: no hosted database, provider, email or push mutations.
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
@@ -25,7 +26,7 @@ const server =
     : spawn(
         process.execPath,
         [
-          path.join(root, "node_modules/next/dist/bin/next"),
+          createRequire(import.meta.url).resolve("next/dist/bin/next"),
           "start",
           "-p",
           "4320",
@@ -70,6 +71,7 @@ const products = Array.from({ length: 55 }, (_, i) => {
               ? "Benguet Espresso with Oat Milk and Caramel, a very long café product name"
               : `Jayds café favorite ${i + 1}`,
     description: "A little cup of happy, made your way.",
+    included_milk: i === 1 ? "Whole Milk" : null,
     price: 145,
     image_url: "/startup/jayds-logo.png",
     category_id: categories[i % 7].id,
@@ -107,6 +109,7 @@ const products = Array.from({ length: 55 }, (_, i) => {
         : [],
   };
 });
+products[0].variants.push(...["Whole Milk", "Oat Milk Sub", "Almond Milk Sub"].map((label,index)=>({id:"milk-"+index,menu_item_id:products[0].id,variant_group:"milk_sub",label,is_default:index===0,price_modifier:index===0?0:30,sort_order:10+index,is_available:true})));
 const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     serviceWorkers: "block",
@@ -143,6 +146,7 @@ const fixtureProfile = {
   id: fixtureAccount.id,
   email: fixtureAccount.email,
   full_name: "Fixture Member",
+  account_qr_hash: "b".repeat(64),
   phone: "",
   role: "customer",
   is_approved: false,
@@ -491,6 +495,21 @@ await context.route(
     !url.hostname.endsWith(".supabase.co"),
   (route) => route.abort(),
 );
+async function checkAccountLayout(){
+  await page.locator(".startup-overlay").waitFor({state:"detached"});
+    const foldedQr=page.locator('details.account-qr');
+    await foldedQr.getByText('Your account QR',{exact:true}).waitFor();
+    assert.equal(await foldedQr.getAttribute('open'),null);
+    assert.ok((await foldedQr.boundingBox())!.height<=68,'Folded account QR stays one compact touch row');
+    assert.equal(await page.getByText('One account for app orders and your café visits.',{exact:true}).count(),0);
+    await foldedQr.getByText('Your account QR',{exact:true}).click();
+    await page.getByAltText('Jayds account QR for the cashier').waitFor();
+    await foldedQr.getByText('Your account QR',{exact:true}).click();
+    await expect(page.getByRole('button',{name:/Sign out/})).toContainText('Sign out of your account on this device');
+    await page.screenshot({path:path.join(output,'account-compact-390.png'),fullPage:true});
+
+}
+
 try {
   for (let i = 0; i < 100; i++) {
     try {
@@ -498,7 +517,18 @@ try {
     } catch {}
     await new Promise((r) => setTimeout(r, 200));
   }
-  if (process.env.JAYDS_CUSTOMER_COMPLETE_ONLY === "1") {
+  if(process.env.JAYDS_ACCOUNT_ONLY === "1"){
+    currentLegalAccepted=true;
+    await page.goto(base+"/login");
+    await page.getByLabel(/^Email(?:\s*(?:\*|\(optional\)))?$/,{exact:true}).fill(fixtureAccount.email);
+    await page.getByLabel(/^Password(?:\s*(?:\*|\(optional\)))?$/,{exact:true}).fill("FixturePassword123!");
+    await page.getByRole("button",{name:"Sign In",exact:true}).click();
+    await page.waitForURL(base+"/menu");
+    await page.goto(base+"/account");
+    await checkAccountLayout();
+    console.log(JSON.stringify({status:"PASS",compactAccountQr:true,qrOpensAndFolds:true,footerRemoved:true,errors}));
+    assert.deepEqual(errors,[]);
+  } else if (process.env.JAYDS_CUSTOMER_COMPLETE_ONLY === "1") {
     currentLegalAccepted = true;
     await page.goto(base + "/login");
     await page
@@ -689,6 +719,11 @@ try {
     await page
       .getByRole("button", { name: "Increase quantity", exact: true })
       .click();
+    await expect(page.getByRole('button',{name:/Whole Milk.*Included/})).toHaveAttribute('aria-pressed','true');
+    await page.getByRole('button',{name:/Oat Milk Sub/}).click();
+    await expect(page.getByRole('button',{name:/Oat Milk Sub/})).toHaveAttribute('aria-pressed','true');
+    await page.getByRole('button',{name:/Whole Milk.*Included/}).click();
+    await expect(page.getByRole('button',{name:/Whole Milk.*Included/})).toHaveAttribute('aria-pressed','true');
     await page
       .getByLabel(/^A little note(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
       .fill("Less ice");
@@ -1308,10 +1343,10 @@ try {
     unavailableReorder = false;
     // A new required group must lead to customization rather than silently defaulting it.
     products[0].variants.push({
-      id: "milk-dairy",
+      id: "flavor-original",
       menu_item_id: products[0].id,
-      variant_group: "milk_sub",
-      label: "Dairy",
+      variant_group: "flavor",
+      label: "Original",
       is_default: true,
       price_modifier: 0,
       sort_order: 2,
@@ -1456,6 +1491,7 @@ try {
         process.exitCode = 1;
     }
     await page.goto(base + "/account");
+    await checkAccountLayout();
     await page.getByRole("button", { name: /Sign out/ }).click();
     await page.waitForURL(base + "/menu");
     await page.goto(base + "/account");
@@ -1493,6 +1529,9 @@ try {
       canonicalSales: orders.size,
       voucherValidations,
       voucherAndPointsReview: true,
+      includedWholeMilkDefault: true,
+      paidMilkOptional: true,
+      compactAccountQr: true,
       homePersonalRecommendations: true,
       recommendationReads,
       controlledLocalMetrics: metrics,

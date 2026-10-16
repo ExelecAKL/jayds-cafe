@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 // Real service worker, isolated public fixture; no customer/provider writes.
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
@@ -9,7 +10,7 @@ const root = process.cwd(),
 const server = spawn(
   process.execPath,
   [
-    path.join(root, "node_modules/next/dist/bin/next"),
+    createRequire(import.meta.url).resolve("next/dist/bin/next"),
     "start",
     "-p",
     "4323",

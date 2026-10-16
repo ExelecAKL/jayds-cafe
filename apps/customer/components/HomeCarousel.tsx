@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "./OfflineMenuLink";
 import type { MenuItem } from "@cafeos/shared/types";
@@ -12,6 +12,9 @@ export default function HomeCarousel({ products }: { products: MenuItem[] }) {
     [hovered, setHovered] = useState(false),
     [focused, setFocused] = useState(false),
     [reducedMotion, setReducedMotion] = useState(false);
+  const gesture = useRef<{ id: number; x: number; y: number } | null>(null);
+  const suppressClick = useRef(false);
+  const pointerHeld = useRef(false);
   const slides = [
     { id: "welcome", item: null },
     ...products.slice(0, 2).map((item) => ({ id: item.id, item })),
@@ -30,7 +33,8 @@ export default function HomeCarousel({ products }: { products: MenuItem[] }) {
     if (paused || hovered || focused || reducedMotion || slides.length < 2)
       return;
     const timer = setInterval(() => {
-      if (!document.hidden) setIndex((value) => (value + 1) % slides.length);
+      if (!document.hidden && !pointerHeld.current)
+        setIndex((value) => (value + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
   }, [paused, hovered, focused, reducedMotion, slides.length]);
@@ -45,6 +49,67 @@ export default function HomeCarousel({ products }: { products: MenuItem[] }) {
       aria-roledescription="carousel"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onPointerDown={(event) => {
+        pointerHeld.current = true;
+        suppressClick.current = false;
+        if (!(event.target as Element).closest(".carousel-playback"))
+          setPaused(true);
+        if (
+          event.isPrimary &&
+          event.pointerType !== "mouse" &&
+          !(event.target as Element).closest("button")
+        ) {
+          gesture.current = {
+            id: event.pointerId,
+            x: event.clientX,
+            y: event.clientY,
+          };
+        }
+      }}
+      onPointerMove={(event) => {
+        const start = gesture.current;
+        if (!start || start.id !== event.pointerId) return;
+        const dx = Math.abs(event.clientX - start.x),
+          dy = Math.abs(event.clientY - start.y);
+        if (
+          dx > 16 &&
+          dx > dy * 1.5 &&
+          !event.currentTarget.hasPointerCapture(event.pointerId)
+        )
+          event.currentTarget.setPointerCapture(event.pointerId);
+      }}
+      onPointerUp={(event) => {
+        pointerHeld.current = false;
+        const start = gesture.current;
+        gesture.current = null;
+        if (!start || start.id !== event.pointerId) return;
+        const dx = event.clientX - start.x,
+          dy = event.clientY - start.y;
+        if (Math.abs(dx) >= 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          suppressClick.current = true;
+          select(current + (dx < 0 ? 1 : -1));
+        }
+      }}
+      onPointerCancel={() => {
+        pointerHeld.current = false;
+        gesture.current = null;
+      }}
+      onLostPointerCapture={(event) => {
+        // Touch starts with implicit capture on a child. Its transfer to this
+        // section bubbles a lost-capture event and must not cancel the swipe.
+        if (event.target === event.currentTarget) {
+          pointerHeld.current = false;
+          gesture.current = null;
+        }
+      }}
+      onClickCapture={(event) => {
+        if (suppressClick.current) {
+          suppressClick.current = false;
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }}
+      onDragStart={(event) => event.preventDefault()}
       onFocusCapture={() => setFocused(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null))
