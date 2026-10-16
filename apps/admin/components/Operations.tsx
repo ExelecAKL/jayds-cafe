@@ -243,7 +243,7 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
         suppliers: results[3].data as Supplier[],
         purchases: (results[4].data as PurchaseOrder[]).map((p) => ({
           ...p,
-          lines: p.lines.map((line) => ({
+          lines: (p.lines ?? []).map((line) => ({
             ...line,
             ingredient: (results[0].data as OperationalStock[]).find(
               (stock) => stock.id === line.ingredient_id,
