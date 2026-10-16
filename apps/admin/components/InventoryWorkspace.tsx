@@ -31,6 +31,11 @@ import {
 import { MenuItemForm } from "./MenuItemForm";
 import InventoryReadiness from "./InventoryReadiness";
 import { PaginatedTable } from "./PaginatedTable";
+import {
+  StockRecordDrawer,
+  StockForecastDrawer,
+  ReplenishmentReview,
+} from "./StockInsights";
 
 type Tab =
   "stock" | "recipes" | "movements" | "waste" | "stocktakes" | "forecasts";
@@ -865,6 +870,12 @@ export default function InventoryWorkspace() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [activate, setActivate] = useState(params.get("setup") === "1");
+  const [record, setRecord] = useState<{
+    kind: "movement" | "stocktake";
+    id: string;
+  } | null>(null);
+  const [forecastId, setForecastId] = useState<string | null>(null);
+  const [reviewPurchases, setReviewPurchases] = useState(false);
   useEffect(() => {
     const timer = setTimeout(() => {
       const next = params.get("tab");
@@ -951,10 +962,7 @@ export default function InventoryWorkspace() {
     setSuccess("");
     try {
       await ops.run("inv_refresh_forecasts");
-      await ops.run("inv_generate_drafts");
-      setSuccess(
-        "Forecasts refreshed and untouched replenishment drafts updated.",
-      );
+      setSuccess("Forecasts refreshed.");
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "Refresh failed");
     } finally {
@@ -968,84 +976,93 @@ export default function InventoryWorkspace() {
         title="Stock & recipes"
         description="Know what is on hand, what is committed, and what to replenish."
       >
-        <button
-          className="ops-button"
-          disabled={!!ops.error}
-          onClick={() => setMovement({ kind: "receipt" })}
-        >
-          <Icon name="stock" />
-          Receive stock
-        </button>
-        <button
-          className="ops-button primary"
-          disabled={!!ops.error}
-          onClick={() => setStockForm({ item: null })}
-        >
-          <Icon name="plus" />
-          Add item
-        </button>
+        {(tab === "stock" || tab === "movements") && (
+          <>
+            <button
+              className="ops-button"
+              disabled={!!ops.error}
+              onClick={() => setMovement({ kind: "receipt" })}
+            >
+              <Icon name="stock" />
+              Receive stock
+            </button>
+            <button
+              className="ops-button primary"
+              disabled={!!ops.error}
+              onClick={() => setStockForm({ item: null })}
+            >
+              <Icon name="plus" />
+              Add item
+            </button>
+          </>
+        )}
       </PageHeader>
       <Feedback error={ops.error || error} success={success} />
-      {ops.settings && (
-        <div className="ops-notice">
-          <Icon name="shield" />
-          <p>
-            {ops.settings.enforcement_enabled
-              ? "Live stock reservations protect both POS and mobile orders."
-              : "Reconciliation mode: stock enforcement is off. Post physical counts and complete recipes before activation."}
-          </p>
-          <button
-            className="ops-button small"
-            onClick={() => setActivate(true)}
-          >
-            {ops.settings.enforcement_enabled
-              ? "Manage enforcement"
-              : "Activate enforcement"}
-          </button>
-        </div>
-      )}
-      <div className="ops-metrics">
-        {[
-          {
-            label: "Stock items",
-            value: ops.stock.length,
-            note: "Ingredients, packaging & finished goods",
-          },
-          {
-            label: "Low / out of stock",
-            value: ops.stock.filter((item) =>
-              ["low", "out"].includes(status(item)),
-            ).length,
-            note: "Based on sellable quantities",
-          },
-          {
-            label: "Overstock",
-            value: ops.stock.filter(isExcess).length,
-            note: "Configured limits or forecast coverage",
-          },
-          {
-            label: "Stock value",
-            value: peso(
-              ops.stock.reduce(
-                (sum, item) => sum + Number(item.stock_value),
-                0,
-              ),
-            ),
-            note: "Physical recorded stock",
-          },
-        ].map((metric) => (
-          <div className="ops-metric" key={metric.label}>
-            <div className="ops-metric-label">
-              {metric.label}
-              <Icon name="stock" />
-            </div>
-            <div className="ops-metric-value">
-              {ops.error || ops.loading ? "—" : metric.value}
-            </div>
-            <small>{metric.note}</small>
+      {ops.settings &&
+        (tab === "stock" || !ops.settings.enforcement_enabled) && (
+          <div className="ops-notice">
+            <Icon name="shield" />
+            <p>
+              {ops.settings.enforcement_enabled
+                ? "Stock checks are on"
+                : "Stock checks are off · complete setup before activation"}
+            </p>
+            <button
+              className="ops-button small"
+              onClick={() => setActivate(true)}
+            >
+              {ops.settings.enforcement_enabled
+                ? "Manage enforcement"
+                : "Activate enforcement"}
+            </button>
           </div>
-        ))}
-      </div>
+        )}
+      {tab === "stock" && (
+        <>
+          <div className="ops-metrics">
+            {[
+              {
+                label: "Stock items",
+                value: ops.stock.length,
+                note: "Ingredients, packaging & finished goods",
+              },
+              {
+                label: "Low / out of stock",
+                value: ops.stock.filter((item) =>
+                  ["low", "out"].includes(status(item)),
+                ).length,
+                note: "Based on sellable quantities",
+              },
+              {
+                label: "Overstock",
+                value: ops.stock.filter(isExcess).length,
+                note: "Configured limits or forecast coverage",
+              },
+              {
+                label: "Stock value",
+                value: peso(
+                  ops.stock.reduce(
+                    (sum, item) => sum + Number(item.stock_value),
+                    0,
+                  ),
+                ),
+                note: "Physical recorded stock",
+              },
+            ].map((metric) => (
+              <div className="ops-metric" key={metric.label}>
+                <div className="ops-metric-label">
+                  {metric.label}
+                  <Icon name="stock" />
+                </div>
+                <div className="ops-metric-value">
+                  {ops.error || ops.loading ? "—" : metric.value}
+                </div>
+                <small>{metric.note}</small>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
       <div className="ops-tabs" role="tablist" aria-label="Inventory sections">
         {tabs.map((entry) => (
           <button
@@ -1130,12 +1147,19 @@ export default function InventoryWorkspace() {
               <option value={30}>30 days</option>
             </select>
             <button
-              className="ops-button primary"
+              className="ops-button"
               disabled={busy || !!ops.error}
               onClick={() => void refreshForecasts()}
             >
               <Icon name="refresh" />
               {busy ? "Refreshing…" : "Refresh forecasts"}
+            </button>
+            <button
+              className="ops-button primary"
+              disabled={busy || !!ops.error}
+              onClick={() => setReviewPurchases(true)}
+            >
+              Review purchase suggestions
             </button>
           </>
         )}
@@ -1157,9 +1181,6 @@ export default function InventoryWorkspace() {
                 <thead>
                   <tr>
                     <th>Stock item</th>
-                    <th>Type</th>
-                    <th className="number">On hand</th>
-                    <th className="number">Reserved</th>
                     <th className="number">Available</th>
                     <th className="number">Incoming</th>
                     <th>Status</th>
@@ -1181,17 +1202,16 @@ export default function InventoryWorkspace() {
                           {item.name}
                         </button>
                         <small>
-                          {item.sku || "No SKU"} · {item.unit}
+                          {item.stock_kind.replaceAll("_", " ")} · {item.unit}
                           {!item.is_active && " · Inactive"}
                         </small>
                       </td>
-                      <td>{item.stock_kind.replaceAll("_", " ")}</td>
-                      <td className="number">{quantity(item.current_stock)}</td>
                       <td className="number">
-                        {quantity(item.reserved_stock)}
-                      </td>
-                      <td className="number">
-                        {quantity(item.available_stock)}
+                        <strong>{quantity(item.available_stock)}</strong>
+                        <small>
+                          {quantity(item.current_stock)} on hand ·{" "}
+                          {quantity(item.reserved_stock)} reserved
+                        </small>
                       </td>
                       <td className="number">
                         {quantity(item.incoming_stock)}
@@ -1319,6 +1339,9 @@ export default function InventoryWorkspace() {
                     <th className="number">Change</th>
                     <th className="number">Balance after</th>
                     <th>Reason / reference</th>
+                    <th>
+                      <span className="sr-only">Details</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1331,7 +1354,13 @@ export default function InventoryWorkspace() {
                           row.movement_type === "disposition"),
                     )
                     .map((row) => (
-                      <tr key={row.id}>
+                      <tr
+                        key={row.id}
+                        className="ops-click-row"
+                        onClick={() =>
+                          setRecord({ kind: "movement", id: row.id })
+                        }
+                      >
                         <td>
                           {businessDate(row.created_at)}
                           <small>
@@ -1368,6 +1397,18 @@ export default function InventoryWorkspace() {
                         </td>
                         <td style={{ whiteSpace: "normal", maxWidth: 250 }}>
                           {row.reason}
+                          {row.order_id && <small>Connected to an order</small>}
+                        </td>
+                        <td>
+                          <button
+                            className="ops-button small"
+                            aria-label={`View movement details for ${ops.stock.find((item) => item.id === row.ingredient_id)?.name ?? "stock item"}`}
+                            onClick={() =>
+                              setRecord({ kind: "movement", id: row.id })
+                            }
+                          >
+                            View details
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -1406,13 +1447,22 @@ export default function InventoryWorkspace() {
                     <th className="number">Difference</th>
                     <th>Status</th>
                     <th>Reason</th>
+                    <th>
+                      <span className="sr-only">Details</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {ops.counts
                     .filter((row) => matches(row.ingredient_id))
                     .map((row) => (
-                      <tr key={row.id}>
+                      <tr
+                        key={row.id}
+                        className="ops-click-row"
+                        onClick={() =>
+                          setRecord({ kind: "stocktake", id: row.id })
+                        }
+                      >
                         <td className="item-name">
                           {
                             ops.stock.find(
@@ -1436,6 +1486,17 @@ export default function InventoryWorkspace() {
                           </Badge>
                         </td>
                         <td>{row.reason}</td>
+                        <td>
+                          <button
+                            className="ops-button small"
+                            aria-label={`View count details for ${ops.stock.find((item) => item.id === row.ingredient_id)?.name ?? "stock item"}`}
+                            onClick={() =>
+                              setRecord({ kind: "stocktake", id: row.id })
+                            }
+                          >
+                            View details
+                          </button>
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -1452,11 +1513,8 @@ export default function InventoryWorkspace() {
           <>
             <div className="ops-panel-header">
               <div>
-                <h2>Demand & replenishment outlook</h2>
-                <p>
-                  Sales history, current stock, incoming deliveries, and
-                  purchasing pack sizes
-                </p>
+                <h2>What needs replenishing?</h2>
+                <p>Choose an item to see its usage and projected stock.</p>
               </div>
               <Badge tone="brand">{horizon}-day outlook</Badge>
             </div>
@@ -1464,35 +1522,78 @@ export default function InventoryWorkspace() {
               <PaginatedTable
                 aria-label="Demand forecasts"
                 resetKey={JSON.stringify([tab, search, filter, horizon])}
-                className="ops-table"
+                className="ops-table ops-planning-table"
               >
                 <thead>
                   <tr>
                     <th>Stock item</th>
-                    <th className="number">Forecast demand</th>
-                    <th className="number">Incoming</th>
+                    <th className="number">Available</th>
                     <th className="number">Coverage</th>
-                    <th className="number">Reorder</th>
-                    <th className="number">Excess</th>
-                    <th className="number">Expiry risk</th>
-                    <th className="number">Purchase estimate</th>
-                    <th>History</th>
+                    <th className="number">Suggested purchase</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((item) => {
                     const f = forecasts.get(item.id);
+                    const stale =
+                      !f ||
+                      new Date(ops.lastUpdated ?? f.calculated_at).getTime() -
+                        new Date(f.calculated_at).getTime() >
+                        36 * 60 * 60 * 1000;
+                    const reason = stale
+                      ? "Refresh forecast"
+                      : f.history_days < 14
+                        ? "More history needed"
+                        : !item.supplier_id
+                          ? "Choose a supplier"
+                          : Number(f.expiry_risk_quantity) > 0
+                            ? "Check expiring batches"
+                            : Number(f.reorder_quantity) > 0
+                              ? "Review purchase"
+                              : Number(f.excess_quantity) > 0
+                                ? "Use existing stock"
+                                : "Stock looks sufficient";
                     return (
-                      <tr key={item.id}>
+                      <tr
+                        key={item.id}
+                        className="ops-click-row"
+                        onClick={() => setForecastId(item.id)}
+                      >
                         <td className="item-name">
-                          {item.name}
-                          <small>{item.unit}</small>
+                          <button
+                            className="ops-text-button"
+                            aria-label={`View forecast for ${item.name}`}
+                            onClick={() => setForecastId(item.id)}
+                          >
+                            {item.name} <span aria-hidden="true">→</span>
+                          </button>
+                          <small>
+                            {item.unit}
+                            <span className="ops-mobile-coverage">
+                              {" "}
+                              ·{" "}
+                              {f?.coverage_days == null
+                                ? "Coverage unknown"
+                                : `${quantity(f.coverage_days)} days coverage`}
+                            </span>
+                          </small>
+                          <Badge
+                            tone={
+                              reason === "Stock looks sufficient"
+                                ? "success"
+                                : "warning"
+                            }
+                          >
+                            {reason}
+                          </Badge>
                         </td>
                         <td className="number">
-                          {f ? quantity(f.demand) : "—"}
-                        </td>
-                        <td className="number">
-                          {quantity(item.incoming_stock)}
+                          {quantity(item.available_stock)}
+                          {Number(item.incoming_stock) > 0 && (
+                            <small>
+                              +{quantity(item.incoming_stock)} incoming
+                            </small>
+                          )}
                         </td>
                         <td className="number">
                           {f?.coverage_days == null
@@ -1500,42 +1601,21 @@ export default function InventoryWorkspace() {
                             : `${quantity(f.coverage_days)} days`}
                         </td>
                         <td className="number">
-                          {f ? quantity(f.reorder_quantity) : "—"}
-                        </td>
-                        <td className="number">
-                          {f ? quantity(f.excess_quantity) : "—"}
-                        </td>
-                        <td className="number">
-                          {f ? quantity(f.expiry_risk_quantity) : "—"}
-                        </td>
-                        <td className="number">
-                          {f
-                            ? peso(
-                                Number(f.reorder_quantity) *
-                                  Number(item.cost_per_unit),
-                              )
-                            : "—"}
-                        </td>
-                        <td>
-                          {f ? (
+                          {f && !stale && f.history_days >= 14 ? (
                             <>
-                              <Badge
-                                tone={
-                                  f.history_days >= 28 ? "success" : "warning"
-                                }
-                              >
-                                {f.history_days} days
-                              </Badge>
+                              <strong>
+                                {quantity(f.reorder_quantity)} {item.unit}
+                              </strong>
                               <small>
-                                {f.method === "weekday_8_weeks"
-                                  ? "Weekday baseline"
-                                  : "Sparse-history estimate"}
-                                {f.historical_estimate &&
-                                  " · current recipe estimates"}
+                                {peso(
+                                  Number(f.reorder_quantity) *
+                                    Number(item.cost_per_unit),
+                                )}{" "}
+                                estimate
                               </small>
                             </>
                           ) : (
-                            <Badge>Not calculated</Badge>
+                            "—"
                           )}
                         </td>
                       </tr>
@@ -1544,15 +1624,30 @@ export default function InventoryWorkspace() {
                 </tbody>
               </PaginatedTable>
             </div>
-            <p className="ops-chart-caption" style={{ paddingTop: 16 }}>
-              Daily refresh at 02:00 Philippine time. Automatic drafts require
-              at least 14 days of history and a preferred supplier. Stockouts
-              can suppress recorded demand; review recommendations before
-              purchasing.
+            <p className="ops-chart-caption">
+              Forecasts refresh daily at 2 AM. Review suggestions before
+              creating purchase drafts.
             </p>
           </>
         )}
       </section>
+      {record && (
+        <StockRecordDrawer
+          key={record.id}
+          {...record}
+          onClose={() => setRecord(null)}
+        />
+      )}
+      {forecastId && (
+        <StockForecastDrawer
+          id={forecastId}
+          horizon={horizon}
+          onClose={() => setForecastId(null)}
+        />
+      )}
+      {reviewPurchases && (
+        <ReplenishmentReview onClose={() => setReviewPurchases(false)} />
+      )}
       {selected && (
         <Drawer
           title={selected.name}

@@ -2,6 +2,7 @@
 // Supabase browser client singleton - use in 'use client' components
 
 import { createBrowserClient, type CookieOptions } from '@supabase/ssr';
+import { browserFetch } from '../utils/request';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -86,6 +87,7 @@ function writeCookie(name: string, value: string, options: CookieOptions = {}) {
 }
 
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+  global: { fetch: browserFetch },
   cookieOptions: {
     name: authStorageKey,
   },

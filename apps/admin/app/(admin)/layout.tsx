@@ -17,7 +17,16 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { initialized, user, profile, signOut } = useAuth();
+  const {
+    initialized,
+    user,
+    profile,
+    signOut,
+    profileLoading,
+    profileError,
+    sessionError,
+    refreshProfile,
+  } = useAuth();
   const resolvedRole = profile?.id === user?.id ? profile?.role : null;
   const hasAccess = resolvedRole === "admin" && profile?.is_approved === true;
 
@@ -32,7 +41,7 @@ export default function AdminLayout({
       return;
     }
 
-    if (!user) {
+    if (!user && !sessionError) {
       router.replace("/login");
       return;
     }
@@ -51,30 +60,46 @@ export default function AdminLayout({
       void handleSignOut();
       router.replace("/login");
     }
-  }, [hasAccess, initialized, resolvedRole, router, handleSignOut, user]);
+  }, [
+    hasAccess,
+    initialized,
+    resolvedRole,
+    router,
+    handleSignOut,
+    user,
+    sessionError,
+  ]);
 
   if (!initialized || !user || !resolvedRole || !hasAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center space-y-4 p-6">
-          <p role="status">Verifying approved administrator access…</p>
-          {initialized && user && !profile && (
-            <>
-              <p>
-                Administrator access could not be verified yet. Retry or sign
-                out.
-              </p>
-              <button
-                className="ops-button"
-                onClick={() => window.location.reload()}
-              >
-                Retry verification
-              </button>
-              <button className="ops-button" onClick={handleSignOut}>
-                Sign out
-              </button>
-            </>
-          )}
+          <p role="status">
+            {profileError || sessionError
+              ? "Let’s reconnect your account"
+              : "Opening Admin…"}
+          </p>
+          {initialized &&
+            (profileError ||
+              sessionError ||
+              (user && !profile && !profileLoading)) && (
+              <>
+                <p>
+                  Your account could not load. Try again, or sign out and sign
+                  back in.
+                </p>
+                <button
+                  className="ops-button"
+                  disabled={profileLoading}
+                  onClick={() => void refreshProfile()}
+                >
+                  {profileLoading ? "Reconnecting…" : "Retry verification"}
+                </button>
+                <button className="ops-button" onClick={handleSignOut}>
+                  Sign out
+                </button>
+              </>
+            )}
         </div>
       </div>
     );

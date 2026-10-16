@@ -276,16 +276,6 @@ export default function AnalyticsPage() {
   const maxHeat = useMemo(() => Math.max(1, ...heatmap.flat()), [heatmap]);
 
   // Exports Handlers
-  const handleExportPageCSV = () => {
-    // Export raw orders vs revenue for the CSV overview
-    const payload = chartData.map((c) => ({
-      Period: c.label,
-      Orders: c.orders,
-      Revenue: c.revenue.toFixed(2),
-    }));
-    exportAsCsv(payload, `Financial_Overview_${period}`);
-  };
-
   const handleExportMarginsCSV = () => {
     const payload = margins.map((m) => ({
       Item: m.name,
@@ -329,12 +319,7 @@ export default function AnalyticsPage() {
                     : "Annual"}
             </button>
           ))}
-          <button
-            onClick={handleExportPageCSV}
-            className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-sm rounded-lg ml-2"
-          >
-            ↓ Global CSV
-          </button>
+
         </div>
       </div>
 

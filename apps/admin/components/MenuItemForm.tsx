@@ -4,6 +4,9 @@ import { notifyAdmin } from "./AdminToasts";
 import { validateMenuDefaults } from "@cafeos/shared/menu/options";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { useEffect, useState, type FormEvent } from "react";
+import Image from "next/image";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
+import { appPath } from "@cafeos/shared/utils/app-path";
 import { supabase } from "@cafeos/shared/supabase/client";
 import type {
   MenuItem,
@@ -38,8 +41,19 @@ export function MenuItemForm({
   const confirm = useActionConfirm();
   const [tab, setTab] = useState("Product");
   const [busy, setBusy] = useState(false);
-  const [loading, setLoading] = useState(!!item);
+  const [loading, setLoading] = useState(true);
+  const [loadAttempt, setLoadAttempt] = useState(0);
+  const [loadError, setLoadError] = useState(false);
   const [error, setError] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [uploading, setUploading] = useState(false);
+  useEffect(
+    () => () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+    },
+    [photoPreview],
+  );
   const [form, setForm] = useState({
     name: item?.name ?? "",
     description: item?.description ?? "",
@@ -65,43 +79,54 @@ export function MenuItemForm({
   useEffect(() => {
     let alive = true;
     async function load() {
-      const optionsResult = await supabase
-        .from("item_variants")
-        .select("*")
-        .order("sort_order");
-      if (!alive) return;
-      if (optionsResult.error) {
-        setError(optionsResult.error.message);
-        setLoading(false);
-        return;
-      }
-      const unique = new Map<string, Option>();
-      (optionsResult.data as ItemVariant[]).forEach((v) =>
-        unique.set(v.variant_group + ":" + v.label, {
-          variant_group: v.variant_group,
-          label: v.label,
-          price_modifier: v.price_modifier,
-          is_default: false,
-          sort_order: v.sort_order,
-        }),
-      );
-      setLibrary([...unique.values()]);
-      if (item) {
-        const [product, recipe] = await Promise.all([
-          supabase.from("menu_items").select("*").eq("id", item.id).single(),
-          supabase
-            .from("menu_item_ingredients")
-            .select("*")
-            .eq("menu_item_id", item.id),
-        ]);
+      setLoading(true);
+      setLoadError(false);
+      setError("");
+      try {
+        const [optionsResult, product, recipe] = await withRequestDeadline(
+          (signal) =>
+            Promise.all([
+              supabase
+                .from("item_variants")
+                .select("*")
+                .order("sort_order")
+                .abortSignal(signal),
+              item
+                ? supabase
+                    .from("menu_items")
+                    .select("*")
+                    .eq("id", item.id)
+                    .abortSignal(signal)
+                    .single()
+                : Promise.resolve({ data: null, error: null }),
+              item
+                ? supabase
+                    .from("menu_item_ingredients")
+                    .select("*")
+                    .eq("menu_item_id", item.id)
+                    .abortSignal(signal)
+                : Promise.resolve({ data: [], error: null }),
+            ]),
+        );
         if (!alive) return;
-        if (product.error || recipe.error)
-          setError(
-            product.error?.message ??
-              recipe.error?.message ??
-              "Could not load recipe",
+        if (optionsResult.error || product.error || recipe.error)
+          throw new Error(
+            "Product details could not load. Try again before editing.",
           );
-        else {
+        const unique = new Map<string, Option>();
+        (optionsResult.data as ItemVariant[]).forEach((v) =>
+          unique.set(v.variant_group + ":" + v.label, {
+            variant_group: v.variant_group,
+            label: v.label,
+            price_modifier: v.price_modifier,
+            is_default: false,
+            sort_order: v.sort_order,
+          }),
+        );
+        setLibrary([...unique.values()]);
+        if (item) {
+          if (!product.data)
+            throw new Error("This product could not be found.");
           setForm((previous) => ({
             ...previous,
             manually_available:
@@ -115,19 +140,31 @@ export function MenuItemForm({
             })),
           );
         }
+      } catch (failure) {
+        if (alive) {
+          setLoadError(true);
+          setError(
+            failure instanceof Error
+              ? failure.message
+              : "Product details could not load.",
+          );
+        }
+      } finally {
+        if (alive) setLoading(false);
       }
-      setLoading(false);
     }
-    void load();
+    const timer = setTimeout(() => void load(), 0);
     return () => {
       alive = false;
+      clearTimeout(timer);
     };
-  }, [item]);
+  }, [item, loadAttempt]);
   const sizes = options
     .filter((v) => v.variant_group === "size")
     .map((v) => v.label);
   const save = async (event: FormEvent) => {
     event.preventDefault();
+    if (busy || loading || loadError) return;
     setBusy(true);
     setError("");
     try {
@@ -179,10 +216,37 @@ export function MenuItemForm({
         }))
       )
         return;
+      let imageUrl = form.image_url;
+      if (photo) {
+        setUploading(true);
+        const {
+          data: { session },
+        } = await withRequestDeadline(() => supabase.auth.getSession());
+        if (!session)
+          throw new Error("Sign in again before uploading a photo.");
+        const result = await fetch(appPath("/api/menu/images"), {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            "Content-Type": photo.type,
+          },
+          body: photo,
+          signal: AbortSignal.timeout(60_000),
+        });
+        const uploaded = await result.json();
+        if (!result.ok || typeof uploaded.url !== "string")
+          throw new Error(uploaded.error || "Photo upload failed. Try again.");
+        imageUrl = uploaded.url;
+        setForm((previous) => ({ ...previous, image_url: imageUrl }));
+        setPhoto(null);
+        setPhotoPreview("");
+        setUploading(false);
+      }
       await ops.run("inv_save_menu", {
         p_id: item?.id ?? null,
         p_item: {
           ...form,
+          image_url: imageUrl || null,
           name: form.name.trim(),
           price: Number(form.price),
           prep_time_minutes: Number(form.prep_time_minutes),
@@ -200,6 +264,7 @@ export function MenuItemForm({
       setError(failure instanceof Error ? failure.message : "Save failed");
     } finally {
       setBusy(false);
+      setUploading(false);
     }
   };
   return (
@@ -213,6 +278,13 @@ export function MenuItemForm({
       <Feedback error={error} />
       {loading ? (
         <p role="status">Loading stock requirements…</p>
+      ) : loadError ? (
+        <button
+          className="ops-button"
+          onClick={() => setLoadAttempt((value) => value + 1)}
+        >
+          Try loading product again
+        </button>
       ) : (
         <form className="ops-form" onSubmit={save}>
           <div className="ops-tabs">
@@ -288,17 +360,71 @@ export function MenuItemForm({
                   />
                 </label>
               </div>
-              <label>
-                Image URL
-                <FieldRequirement required={false} />
-                <input
-                  type="url"
-                  value={form.image_url}
-                  onChange={(e) =>
-                    setForm({ ...form, image_url: e.target.value })
-                  }
-                />
-              </label>
+              <div className="ops-photo-field">
+                <div className="ops-photo-preview">
+                  {photoPreview || form.image_url ? (
+                    <Image
+                      src={photoPreview || form.image_url}
+                      alt="Product photo preview"
+                      fill
+                      unoptimized
+                      sizes="120px"
+                      style={{ objectFit: "contain" }}
+                    />
+                  ) : (
+                    <span>No photo</span>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="menu-photo">
+                    Product photo <FieldRequirement required={false} />
+                  </label>
+                  <input
+                    id="menu-photo"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    disabled={busy}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (!file) return;
+                      if (
+                        !["image/jpeg", "image/png", "image/webp"].includes(
+                          file.type,
+                        ) ||
+                        file.size > 5 * 1024 * 1024
+                      ) {
+                        setError(
+                          "Choose a JPG, PNG or WebP photo smaller than 5 MB.",
+                        );
+                        event.target.value = "";
+                        return;
+                      }
+                      setError("");
+                      setPhoto(file);
+                      setPhotoPreview(URL.createObjectURL(file));
+                    }}
+                  />
+                  <small>JPG, PNG or WebP · up to 5 MB</small>
+                  {(photoPreview || form.image_url) && (
+                    <button
+                      className="ops-button small"
+                      type="button"
+                      disabled={busy}
+                      onClick={() => {
+                        setPhoto(null);
+                        setPhotoPreview("");
+                        setForm((previous) => ({ ...previous, image_url: "" }));
+                        const input = document.getElementById(
+                          "menu-photo",
+                        ) as HTMLInputElement | null;
+                        if (input) input.value = "";
+                      }}
+                    >
+                      Remove photo
+                    </button>
+                  )}
+                </div>
+              </div>
               <label>
                 Product tags
                 <FieldRequirement required={false} />
@@ -685,7 +811,11 @@ export function MenuItemForm({
               className="ops-button primary"
               disabled={busy || !!ops.error}
             >
-              {busy ? "Saving…" : "Save product"}
+              {uploading
+                ? "Uploading photo…"
+                : busy
+                  ? "Saving…"
+                  : "Save product"}
             </button>
           </div>
         </form>

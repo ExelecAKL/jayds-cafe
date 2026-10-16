@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { useOrders } from "@cafeos/shared/hooks/useOrders";
@@ -13,6 +13,8 @@ import {
   useOperations,
   type IconName,
 } from "./Operations";
+import { OrderDetailsModal } from "./OrderDetailsModal";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { PaginatedTable } from "./PaginatedTable";
 interface Sales {
   revenue: number;
@@ -24,6 +26,8 @@ interface Sales {
 }
 export default function Overview() {
   const ops = useOperations();
+  const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const request = useRef(0);
   const [days, setDays] = useState(7);
   const [sales, setSales] = useState<Sales | null>(null);
   const [error, setError] = useState("");
@@ -34,19 +38,21 @@ export default function Overview() {
     itemMode: "none",
   });
   const fetchSales = useCallback(async () => {
-    const { data, error } = await supabase.rpc("inv_dashboard", {
-      p_days: days,
-    });
-    if (error) {
-      setError(
-        error.code === "PGRST202"
-          ? "Sales overview will be available after applying the inventory database upgrade."
-          : error.message,
+    const version = ++request.current;
+    try {
+      const { data, error } = await withRequestDeadline((signal) =>
+        supabase.rpc("inv_dashboard", { p_days: days }).abortSignal(signal),
       );
-      return;
+      if (version !== request.current) return;
+      if (error) throw new Error("Sales could not load. Try Refresh.");
+      setSales(data);
+      setError("");
+    } catch (failure) {
+      if (version === request.current)
+        setError(
+          failure instanceof Error ? failure.message : "Sales could not load.",
+        );
     }
-    setSales(data);
-    setError("");
   }, [days]);
   useEffect(() => {
     void Promise.resolve().then(fetchSales);
@@ -158,43 +164,6 @@ export default function Overview() {
         </button>
       </PageHeader>
       <Feedback error={ops.error || error} />
-      <section className="ops-everyday" aria-label="Everyday tasks">
-        <h2>What would you like to do?</h2>
-        <div className="ops-everyday-links">
-          <Link href="/menu">
-            <Icon name="catalog" />
-            <span>
-              <strong>Change a price or product</strong>
-              <small>Menu, options & publishing</small>
-            </span>
-            <Icon name="arrow" />
-          </Link>
-          <Link href="/inventory">
-            <Icon name="stock" />
-            <span>
-              <strong>Check or count stock</strong>
-              <small>Deliveries, waste & physical counts</small>
-            </span>
-            <Icon name="arrow" />
-          </Link>
-          <Link href="/purchasing">
-            <Icon name="purchase" />
-            <span>
-              <strong>Buy or receive supplies</strong>
-              <small>Suppliers & purchase orders</small>
-            </span>
-            <Icon name="arrow" />
-          </Link>
-          <Link href="/analytics">
-            <Icon name="reports" />
-            <span>
-              <strong>See how sales are doing</strong>
-              <small>Sales, products & estimated margins</small>
-            </span>
-            <Icon name="arrow" />
-          </Link>
-        </div>
-      </section>
       {ops.settings && !ops.settings.enforcement_enabled && (
         <div className="ops-notice">
           <Icon name="shield" />
@@ -223,6 +192,25 @@ export default function Overview() {
             <small>{metric.note}</small>
           </Link>
         ))}
+      </div>
+      <div className="ops-quick-actions">
+        <span>Quick actions</span>
+        <Link href="/orders">
+          <Icon name="orders" />
+          View orders
+        </Link>
+        <Link href="/menu">
+          <Icon name="catalog" />
+          Edit menu
+        </Link>
+        <Link href="/inventory?tab=stocktakes">
+          <Icon name="stock" />
+          Count stock
+        </Link>
+        <Link href="/purchasing">
+          <Icon name="purchase" />
+          Receive supplies
+        </Link>
       </div>
       <div className="ops-overview-grid">
         <section className="ops-panel">
@@ -354,7 +342,14 @@ export default function Overview() {
               <tbody>
                 {orders.map((order) => (
                   <tr key={order.id}>
-                    <td className="item-name">{order.order_number}</td>
+                    <td>
+                      <button
+                        className="item-name ops-text-button"
+                        onClick={() => setSelectedOrder(order.id)}
+                      >
+                        {order.order_number}
+                      </button>
+                    </td>
                     <td>{order.customer?.full_name || "Walk-in / guest"}</td>
                     <td>
                       {order.order_source === "pos" ? "Counter" : "Mobile"}
@@ -427,6 +422,12 @@ export default function Overview() {
           </div>
         </section>
       </div>
+      {selectedOrder && (
+        <OrderDetailsModal
+          orderId={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { supabase } from "@cafeos/shared/supabase/client";
 import {
   PageHeader,
@@ -26,16 +27,34 @@ export default function AuditPage() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Entry | null>(null);
   const [loading, setLoading] = useState(true);
+  const requestVersion = useRef(0);
   const load = async () => {
+    const version = ++requestVersion.current;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("admin_audit")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(200);
-    setError(error?.message ?? "");
-    setRows(data ?? []);
-    setLoading(false);
+    try {
+      const { data, error } = await withRequestDeadline((signal) =>
+        supabase
+          .from("admin_audit")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(200)
+          .abortSignal(signal),
+      );
+      if (requestVersion.current !== version) return;
+      if (error)
+        throw new Error("The audit trail could not load. Please try again.");
+      setError("");
+      setRows(data ?? []);
+    } catch (failure) {
+      if (requestVersion.current === version)
+        setError(
+          failure instanceof Error
+            ? failure.message
+            : "The audit trail could not load. Please try again.",
+        );
+    } finally {
+      if (requestVersion.current === version) setLoading(false);
+    }
   };
   useEffect(() => {
     void Promise.resolve().then(load);
@@ -47,8 +66,12 @@ export default function AuditPage() {
         title="Audit trail"
         description="The latest 200 immutable changes to catalog, inventory, and purchasing."
       >
-        <button className="ops-button" onClick={() => void load()}>
-          Refresh
+        <button
+          className="ops-button"
+          disabled={loading}
+          onClick={() => void load()}
+        >
+          {loading ? "Loading…" : error ? "Try again" : "Refresh"}
         </button>
       </PageHeader>
       <Feedback error={error} />

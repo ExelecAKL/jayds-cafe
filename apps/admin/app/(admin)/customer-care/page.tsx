@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@cafeos/shared/supabase/client";
 import ProviderReconciliation from "../../../components/ProviderReconciliation";
+import { Drawer, PageHeader, Badge } from "../../../components/Operations";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
+import { OrderDetailsModal } from "../../../components/OrderDetailsModal";
 import { notifyAdmin } from "../../../components/AdminToasts";
 interface Case {
   id: string;
@@ -24,6 +27,9 @@ interface PaymentReviewOrder {
   payment_review_reason: string | null;
 }
 export default function CustomerCare() {
+  const [section, setSection] = useState("requests");
+  const [caseFilter, setCaseFilter] = useState("open");
+  const [orderOpen, setOrderOpen] = useState(false);
   const [cases, setCases] = useState<Case[]>([]),
     [selected, setSelected] = useState<Case | null>(null),
     [response, setResponse] = useState(""),
@@ -50,22 +56,29 @@ export default function CustomerCare() {
   const load = useCallback(async () => {
     setOperationsLoading(true);
     try {
-      const [requests, operations, reviews] = await Promise.all([
-        supabase
-          .from("customer_support_cases")
-          .select("id,kind,subject,message,response,status,order_id,created_at")
-          .order("created_at", { ascending: false })
-          .limit(100),
-        supabase.rpc("get_customer_operations"),
-        supabase
-          .from("orders")
-          .select(
-            "id,order_number,status,payment_status,total,payment_review_reason",
-          )
-          .eq("payment_review_required", true)
-          .order("created_at", { ascending: false })
-          .limit(100),
-      ]);
+      const [requests, operations, reviews] = await withRequestDeadline(
+        (signal) =>
+          Promise.all([
+            supabase
+              .from("customer_support_cases")
+              .select(
+                "id,kind,subject,message,response,status,order_id,created_at",
+              )
+              .order("created_at", { ascending: false })
+              .limit(100)
+              .abortSignal(signal),
+            supabase.rpc("get_customer_operations").abortSignal(signal),
+            supabase
+              .from("orders")
+              .select(
+                "id,order_number,status,payment_status,total,payment_review_reason",
+              )
+              .eq("payment_review_required", true)
+              .order("created_at", { ascending: false })
+              .limit(100)
+              .abortSignal(signal),
+          ]),
+      );
       if (requests.error)
         setError(
           "Private requests are unavailable. Confirm your approved Admin access and retry.",
@@ -137,49 +150,86 @@ export default function CustomerCare() {
       setBusy(false);
     }
   }
+  const visibleCases = cases.filter(
+    (item) =>
+      caseFilter === "all" ||
+      (caseFilter === "open"
+        ? item.status !== "resolved"
+        : item.status === "resolved"),
+  );
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm text-text-muted">Customer operations</p>
-        <h1 className="text-3xl font-semibold">Support & reconciliation</h1>
-      </div>
-      <aside
-        className="ops-panel space-y-2 p-4 text-sm"
-        aria-label="Operator readiness"
+      <PageHeader
+        eyebrow="CUSTOMER CARE"
+        title="Customer help"
+        description="Reply to customer requests and review payment issues."
       >
-        <p>
-          Demo stock and the four SAMPLE frappe recipes do not certify physical
-          stock or actual portions.{" "}
-          <Link className="underline" href="/scheduling">
-            Scheduling
-          </Link>{" "}
-          requires current stock/recipe verification and configured hours and
-          capacities before pickup slots can be enabled.
-        </p>
-        <p>
-          Live email, Maya/Lalamove, push delivery and installed Android/iOS
-          validation remain operator/deployment launch checks. This page does
-          not certify those checks or automatically gate every ordering channel.
-        </p>
-      </aside>
-      {error && (
+        <button
+          className="ops-button"
+          disabled={operationsLoading}
+          onClick={() => void load()}
+        >
+          {operationsLoading
+            ? "Refreshing operations…"
+            : operationsError
+              ? "Retry operations"
+              : "Refresh operations"}
+        </button>
+      </PageHeader>
+      <div className="ops-tabs" aria-label="Customer help sections">
+        <button
+          aria-pressed={section === "requests"}
+          className={section === "requests" ? "active" : ""}
+          onClick={() => setSection("requests")}
+        >
+          Private requests{" "}
+          <small>
+            {cases.filter((item) => item.status !== "resolved").length}
+          </small>
+        </button>
+        <button
+          aria-pressed={section === "payments"}
+          className={section === "payments" ? "active" : ""}
+          onClick={() => setSection("payments")}
+        >
+          Payments & delivery{" "}
+          {(operationsError || paymentReviewsError) && (
+            <small>Check connection</small>
+          )}
+        </button>
+      </div>
+      {error && !selected && (
         <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-700">
           {error}
         </p>
       )}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <section className="ops-panel p-5">
-          <h2 className="mb-4 text-xl font-semibold">Private requests</h2>
-          {cases.length === 0 ? (
+      <div className="grid gap-4">
+        <section className="ops-panel p-5" hidden={section !== "requests"}>
+          <div className="ops-toolbar">
+            <h2 className="text-lg font-semibold">Private requests</h2>
+            <span className="spacer" />
+            <select
+              aria-label="Request status"
+              value={caseFilter}
+              onChange={(event) => setCaseFilter(event.target.value)}
+            >
+              <option value="open">Needs a reply</option>
+              <option value="all">All requests</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+          {visibleCases.length === 0 ? (
             <p role={requestsLoaded ? undefined : "status"}>
               {requestsLoaded
-                ? "No requests to review."
+                ? cases.length
+                  ? "No requests match this filter."
+                  : "No requests to review."
                 : error
                   ? "Private requests are unavailable. Retry operations to load them."
                   : "Loading private requests…"}
             </p>
           ) : (
-            cases.map((c) => (
+            visibleCases.map((c) => (
               <button
                 key={c.id}
                 className="block min-h-12 w-full border-b border-border py-3 text-left"
@@ -189,7 +239,12 @@ export default function CustomerCare() {
                   setStatus(c.status === "open" ? "in_review" : c.status);
                 }}
               >
-                <strong>{c.subject}</strong>
+                <span className="flex items-center justify-between gap-4">
+                  <strong>{c.subject}</strong>
+                  <Badge tone={c.status === "resolved" ? "success" : "warning"}>
+                    {c.status.replaceAll("_", " ")}
+                  </Badge>
+                </span>
                 <small className="block">
                   {c.kind} · {c.status} ·{" "}
                   {new Date(c.created_at).toLocaleDateString("en-PH", {
@@ -200,7 +255,7 @@ export default function CustomerCare() {
             ))
           )}
         </section>
-        <section className="ops-panel p-5">
+        <section className="ops-panel p-5" hidden={section !== "payments"}>
           <h2 className="mb-4 text-xl font-semibold">Provider recovery</h2>
           <p className="mb-3 text-sm">
             Reconcile uncertain provider responses before making another charge
@@ -243,31 +298,16 @@ export default function CustomerCare() {
           <p className="mt-4 text-sm">
             Failed notification deliveries: {ops?.failed_push ?? "Unavailable"}
           </p>
-          <button
-            className="ops-button mt-4 min-h-12"
-            disabled={operationsLoading}
-            onClick={() => void load()}
-          >
-            {operationsLoading
-              ? "Refreshing operations…"
-              : operationsError
-                ? "Retry operations"
-                : "Refresh operations"}
-          </button>
         </section>
       </div>
-      <section className="ops-panel space-y-3 p-5">
+      <section
+        className="ops-panel space-y-3 p-5"
+        hidden={section !== "payments"}
+      >
         <h2 className="text-xl font-semibold">Payment & delivery review</h2>
-        <p className="text-sm">
-          Flagged orders need manual review, including payments received after
-          cancellation, additional settled payments and bookings completed after
-          order closure. Find the order number in{" "}
-          <Link className="underline" href="/orders">
-            Orders
-          </Link>{" "}
-          and use the existing authorized refund or provider-cancellation
-          workflow. This list retains flags for review and shows up to 100 of
-          the most recent flagged orders.
+        <p className="ops-muted text-sm">
+          Review flagged payments before charging again or booking another
+          rider. Latest 100 flagged orders.
         </p>
         {paymentReviewsError && (
           <div
@@ -297,7 +337,9 @@ export default function CustomerCare() {
             key={order.id}
             className="space-y-1 border-b border-border py-3 text-sm"
           >
-            <strong>{order.order_number}</strong>
+            <Link className="ops-text-button" href="/orders">
+              {order.order_number} →
+            </Link>
             <p>
               Order status: {order.status} · Payment: {order.payment_status}
             </p>
@@ -305,9 +347,6 @@ export default function CustomerCare() {
             <p>
               {order.payment_review_reason ||
                 "Manual payment or delivery review required."}
-            </p>
-            <p className="break-all text-text-muted">
-              Order reference: {order.id}
             </p>
           </article>
         ))}
@@ -323,53 +362,72 @@ export default function CustomerCare() {
               : "Refresh payment reviews"}
         </button>
       </section>
-      {selected && (
-        <section className="ops-panel ops-form space-y-4 p-5">
-          <h2 className="text-xl font-semibold">{selected.subject}</h2>
-          <p className="whitespace-pre-wrap">{selected.message}</p>
-          {selected.order_id && (
-            <p className="text-sm">Order {selected.order_id}</p>
-          )}
-          <label className="block">
-            Status
-            <FieldRequirement required={true} />
-            <select
-              className="ops-input w-full"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="open">Open</option>
-              <option value="in_review">In review</option>
-              <option value="resolved">Resolved</option>
-            </select>
-          </label>
-          <label className="block">
-            Private reply
-            <FieldRequirement required={false} />
-            <textarea
-              className="ops-input w-full"
-              rows={4}
-              maxLength={4000}
-              value={response}
-              onChange={(e) => setResponse(e.target.value)}
-            />
-          </label>
-          <div className="flex gap-3">
-            <button
-              className="ops-button primary min-h-12"
-              disabled={busy}
-              onClick={save}
-            >
-              Save review
-            </button>
-            <button
-              className="ops-button min-h-12"
-              onClick={() => setSelected(null)}
-            >
-              Close
-            </button>
+      {selected && !orderOpen && (
+        <Drawer
+          title={selected.subject}
+          onClose={() => setSelected(null)}
+          busy={busy}
+        >
+          <div className="ops-form">
+            {error && (
+              <p role="alert" className="ops-feedback error">
+                {error}
+              </p>
+            )}
+            <Badge tone="brand">{selected.kind}</Badge>
+            <p className="whitespace-pre-wrap">{selected.message}</p>
+            {selected.order_id && (
+              <button className="ops-button" onClick={() => setOrderOpen(true)}>
+                View connected order →
+              </button>
+            )}
+            <label className="block">
+              Status
+              <FieldRequirement required={true} />
+              <select
+                className="ops-input w-full"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="open">Open</option>
+                <option value="in_review">In review</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </label>
+            <label className="block">
+              Private reply
+              <FieldRequirement required={false} />
+              <textarea
+                className="ops-input w-full"
+                rows={4}
+                maxLength={4000}
+                value={response}
+                onChange={(e) => setResponse(e.target.value)}
+              />
+            </label>
+            <div className="flex gap-3">
+              <button
+                className="ops-button primary min-h-12"
+                disabled={busy}
+                onClick={save}
+              >
+                Save review
+              </button>
+              <button
+                className="ops-button min-h-12"
+                onClick={() => setSelected(null)}
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </section>
+        </Drawer>
+      )}
+      {selected?.order_id && orderOpen && (
+        <OrderDetailsModal
+          orderId={selected.order_id}
+          onClose={() => setOrderOpen(false)}
+        />
       )}
     </div>
   );

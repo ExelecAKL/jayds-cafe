@@ -15,7 +15,13 @@ import {
 } from "../../../components/Operations";
 import { PaginatedTable } from "../../../components/PaginatedTable";
 export default function CatalogPage() {
-  const { menuItems, categories, loading, refetch } = useMenu({
+  const {
+    menuItems,
+    categories,
+    loading,
+    refetch,
+    error: catalogError,
+  } = useMenu({
     includeUnavailable: true,
   });
   const [edit, setEdit] = useState<MenuItem | null | undefined>();
@@ -65,7 +71,17 @@ export default function CatalogPage() {
           Add product
         </button>
       </PageHeader>
-      <Feedback error={error} success={success} />
+      <Feedback error={error || catalogError || ""} success={success} />
+      {catalogError && (
+        <button
+          type="button"
+          className="ops-button"
+          disabled={loading}
+          onClick={() => void refetch()}
+        >
+          Try loading menu again
+        </button>
+      )}
       <section className="ops-panel">
         <div className="ops-toolbar">
           <input

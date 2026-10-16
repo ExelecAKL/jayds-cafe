@@ -661,53 +661,47 @@ export function PurchasingWorkspace() {
         </button>
       </PageHeader>
       <Feedback error={ops.error || error} success={success} />
-      <div className="ops-metrics">
-        <div className="ops-metric">
-          <span>Drafts to review</span>
-          <strong>
-            {ops.purchases.filter((p) => p.status === "draft").length}
-          </strong>
-          <small>Administrator approval required</small>
-        </div>
-        <div className="ops-metric">
-          <span>Incoming deliveries</span>
-          <strong>
-            {
-              ops.purchases.filter((p) =>
-                ["ordered", "partial"].includes(p.status),
-              ).length
-            }
-          </strong>
-          <small>Physically unreceived</small>
-        </div>
-        <div className="ops-metric">
-          <span>Committed purchasing</span>
-          <strong>
-            {peso(
-              ops.purchases
-                .filter((p) =>
-                  ["approved", "ordered", "partial"].includes(p.status),
-                )
-                .reduce(
-                  (sum, p) =>
-                    sum +
-                    (p.lines ?? []).reduce(
-                      (value, l) =>
-                        value +
-                        (l.quantity - l.received_quantity) * l.unit_cost,
-                      0,
-                    ),
-                  0,
-                ),
-            )}
-          </strong>
-          <small>Outstanding quantities</small>
-        </div>
-        <div className="ops-metric">
-          <span>Active suppliers</span>
-          <strong>{ops.suppliers.filter((s) => s.is_active).length}</strong>
-          <small>Preferred items set in Inventory</small>
-        </div>
+      <div className="ops-purchase-stages" aria-label="Purchase stages">
+        {[
+          {
+            key: "draft",
+            label: "Review drafts",
+            count: ops.purchases.filter((p) => p.status === "draft").length,
+          },
+          {
+            key: "approved",
+            label: "Send to supplier",
+            count: ops.purchases.filter((p) => p.status === "approved").length,
+          },
+          {
+            key: "incoming",
+            label: "Receive delivery",
+            count: ops.purchases.filter((p) =>
+              ["ordered", "partial"].includes(p.status),
+            ).length,
+          },
+          {
+            key: "received",
+            label: "Received",
+            count: ops.purchases.filter((p) => p.status === "received").length,
+          },
+        ].map((step, index) => (
+          <button
+            key={step.key}
+            aria-pressed={tab === "orders" && filter === step.key}
+            onClick={() => {
+              setTab("orders");
+              setFilter(step.key);
+            }}
+          >
+            <span className="ops-step-number">{index + 1}</span>
+            <span>
+              {step.label}
+              <strong>{ops.loading ? "—" : step.count}</strong>
+            </span>
+            <Icon name="arrow" size={15} />
+          </button>
+        ))}
       </div>
       <div className="ops-tabs">
         {[
@@ -800,7 +794,7 @@ export function PurchasingWorkspace() {
                           {p.generated
                             ? p.manually_edited
                               ? "Generated · manually edited"
-                              : "Automatic draft"
+                              : "Forecast suggestion"
                             : "Manual purchase"}
                         </small>
                       </td>
@@ -868,7 +862,7 @@ export function PurchasingWorkspace() {
             {!orders.length && (
               <Empty
                 title="No purchase orders here"
-                description="Create a draft manually or refresh forecasts to generate replenishment drafts."
+                description="Create a purchase draft or review suggestions in Stock planning."
               />
             )}
           </>
@@ -1043,6 +1037,17 @@ export function PurchasingWorkspace() {
             </div>
           ) : (
             <div className="ops-form-actions">
+              {selected.status === "draft" && (
+                <button
+                  className="ops-button"
+                  onClick={() => {
+                    setSelected(null);
+                    setDraft(selected);
+                  }}
+                >
+                  Edit draft
+                </button>
+              )}
               {selected.status === "draft" && (
                 <button
                   className="ops-button primary"

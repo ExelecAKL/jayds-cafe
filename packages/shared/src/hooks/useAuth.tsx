@@ -16,6 +16,7 @@ import { normalizeContactPhone, isValidContactPhone } from "../customer/phone";
 import { appPath } from "../utils/app-path";
 import type { Profile, UserRole } from "../types/index";
 import type { User, Session } from "@supabase/supabase-js";
+import { withRequestDeadline } from "../utils/request";
 
 // ── State & Actions ─────────────────────────────────────────
 
@@ -25,6 +26,9 @@ interface AuthState {
   session: Session | null;
   loading: boolean;
   initialized: boolean;
+  profileLoading: boolean;
+  profileError: string | null;
+  sessionError: string | null;
 }
 
 type AuthAction =
@@ -33,6 +37,9 @@ type AuthAction =
       payload: { session: Session | null; user: User | null };
     }
   | { type: "SET_PROFILE"; payload: Profile | null }
+  | { type: "PROFILE_LOADING" }
+  | { type: "PROFILE_ERROR"; payload: string }
+  | { type: "SESSION_ERROR"; payload: string }
   | { type: "SET_LOADING"; payload: boolean }
   | { type: "SET_INITIALIZED" }
   | { type: "SIGN_OUT" };
@@ -44,11 +51,23 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         ...state,
         session: action.payload.session,
         user: action.payload.user,
+        sessionError: null,
         profile:
           state.profile?.id === action.payload.user?.id ? state.profile : null,
       };
     case "SET_PROFILE":
-      return { ...state, profile: action.payload };
+      return {
+        ...state,
+        profile: action.payload,
+        profileLoading: false,
+        profileError: null,
+      };
+    case "PROFILE_LOADING":
+      return { ...state, profileLoading: true, profileError: null };
+    case "PROFILE_ERROR":
+      return { ...state, profileLoading: false, profileError: action.payload };
+    case "SESSION_ERROR":
+      return { ...state, sessionError: action.payload };
     case "SET_LOADING":
       return { ...state, loading: action.payload };
     case "SET_INITIALIZED":
@@ -60,6 +79,9 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         profile: null,
         session: null,
         loading: false,
+        profileLoading: false,
+        profileError: null,
+        sessionError: null,
       };
     default:
       return state;
@@ -72,6 +94,9 @@ const initialState: AuthState = {
   session: null,
   loading: true,
   initialized: false,
+  profileLoading: false,
+  profileError: null,
+  sessionError: null,
 };
 
 // ── Context ─────────────────────────────────────────────────
@@ -88,6 +113,7 @@ interface AuthContextValue extends AuthState {
   ) => Promise<{ error: Error | null; needsEmailConfirmation: boolean }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
+  refreshProfile: () => Promise<void>;
   isCustomer: boolean;
   isStaff: boolean;
   isAdmin: boolean;
@@ -101,28 +127,51 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const profileOwner = useRef<string | null>(null);
+  const profileVersion = useRef(0);
+  const profileTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
   // Fetch profile from Supabase
   const fetchProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
+    const version = ++profileVersion.current;
+    dispatch({ type: "PROFILE_LOADING" });
+    try {
+      const { data, error } = await withRequestDeadline((signal) =>
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", userId)
+          .abortSignal(signal)
+          .single(),
+      );
 
-    if (error) {
-      console.error("Error fetching profile:", error);
+      if (error) {
+        throw new Error("Account details could not load. Please try again.");
+      }
+
+      if (profileOwner.current !== userId || profileVersion.current !== version)
+        return null;
+      dispatch({ type: "SET_PROFILE", payload: data as Profile });
+      return data as Profile;
+    } catch (failure) {
+      if (profileOwner.current === userId && profileVersion.current === version)
+        dispatch({
+          type: "PROFILE_ERROR",
+          payload:
+            failure instanceof Error
+              ? failure.message
+              : "Account details could not load. Please try again.",
+        });
       return null;
     }
-
-    if (profileOwner.current !== userId) return null;
-    dispatch({ type: "SET_PROFILE", payload: data as Profile });
-    return data as Profile;
   }, []);
 
   const resolveAuthenticatedUser = useCallback(
     async (session: Session | null) => {
       if (!session || !session.user) {
+        ++profileVersion.current;
+        clearTimeout(profileTimer.current);
         profileOwner.current = null;
         dispatch({
           type: "SET_SESSION",
@@ -137,7 +186,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         type: "SET_SESSION",
         payload: { session, user: session.user },
       });
-      void fetchProfile(session.user.id);
+      // Run data reads after the SDK's auth-event callback has returned.
+      clearTimeout(profileTimer.current);
+      profileTimer.current = setTimeout(
+        () => void fetchProfile(session.user.id),
+        0,
+      );
       return session.user;
     },
     [fetchProfile],
@@ -145,16 +199,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize auth state
   useEffect(() => {
+    let active = true;
     const initAuth = async () => {
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        await resolveAuthenticatedUser(session);
+        const { data, error } = await withRequestDeadline(() =>
+          supabase.auth.getSession(),
+        );
+        if (error) throw error;
+        if (!active) return;
+        await resolveAuthenticatedUser(data.session);
       } catch (err) {
-        console.error("Auth initialization error:", err);
+        if (active)
+          dispatch({
+            type: "SESSION_ERROR",
+            payload:
+              err instanceof Error
+                ? err.message
+                : "Your session could not load. Please try again.",
+          });
       } finally {
-        dispatch({ type: "SET_INITIALIZED" });
+        if (active) dispatch({ type: "SET_INITIALIZED" });
       }
     };
 
@@ -169,7 +233,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => {
+      active = false;
       subscription.unsubscribe();
+      clearTimeout(profileTimer.current);
+      ++profileVersion.current;
     };
   }, [resolveAuthenticatedUser]);
 
@@ -182,6 +249,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () =>
       window.removeEventListener("jayds-profile-updated", refreshOwnedProfile);
   }, [fetchProfile]);
+
+  const refreshProfile = useCallback(async () => {
+    dispatch({ type: "PROFILE_LOADING" });
+    try {
+      const { data, error } = await withRequestDeadline(() =>
+        supabase.auth.getSession(),
+      );
+      if (error) throw error;
+      await resolveAuthenticatedUser(data.session);
+      if (!data.session) dispatch({ type: "SET_PROFILE", payload: null });
+    } catch {
+      dispatch({
+        type: "PROFILE_ERROR",
+        payload: "Your session could not be checked. Try again or sign out.",
+      });
+    }
+  }, [resolveAuthenticatedUser]);
 
   // ── Auth Methods ────────────────────────────────────────
 
@@ -200,6 +284,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             type: "SET_SESSION",
             payload: { session: data.session, user: data.user },
           });
+          clearTimeout(profileTimer.current);
           void fetchProfile(data.user.id);
         }
 
@@ -313,6 +398,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signOut,
     resetPassword,
+    refreshProfile,
     isCustomer,
     isStaff,
     isAdmin,

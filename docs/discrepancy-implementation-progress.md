@@ -1,6 +1,6 @@
 # Jayds discrepancy implementation progress
 
-Updated 16 October 2026, Philippine time. This is an implementation checklist, not a defense sign-off. Publication remains after the combined audit.
+Updated 16 October 2026, Philippine time. This is an implementation checklist, not a defense sign-off. The small mobile-menu release was audited and published separately. The wider discrepancy release remains on the working branch until its audit.
 
 ## Scope change, 16 October 2026
 
@@ -17,14 +17,25 @@ The linked Court announcement concerns non-stacking of discounts, not abolition 
 - Customer invoice view; issued invoice through the existing expiring POS receipt token; print layout and PDF verification added to the browser audit.
 - Show/Hide controls and eye icons across Customer, POS and Admin password fields, plus Manager PIN entry. Passwords start masked, preserve their value on toggle, support keyboard use and mask on leaving the field.
 
+## Admin and Help improvements in progress, 16 October
+
+- Bounded profile, catalog, audit and operations reads; in-page retry. Product forms do not permit a save if their recipe data failed to load. Playwright has passed stalled profile/catalog/audit recovery checks.
+- Grouped navigation with one active page; Overview prioritizes key figures and compact quick actions. Purchasing uses selectable next-step stages. Hours & pickup groups opening hours and pickup limits ahead of branch/delivery details, with a 1 PM–10 PM shortcut for already-open days. No physical counts, open weekdays or capacities are invented.
+- Menu product photo upload replaces the URL input: preview, removal, file validation, approved-Admin API, actual image decoding, metadata removal and fixed random storage paths. Recipe and category layouts are retained.
+- Stock movements, waste and counts open linked details; planning opens historical usage and projected balance with a matching numeric table. Refresh does not generate purchases. Draft creation uses reviewed server quantities and protects edited drafts.
+- Export has its own navigation page with group/table selection, consistent server snapshots, 500-row pages, CSV ZIP/JSON, manifest, secret redaction, current approved-owner checks and expiry/cleanup. Sales Reports' global CSV button is removed; its useful existing reports remain.
+- Customer Help offers compact shortcuts, answers, a private form on request and scoped request history with retry. Admin Customer help separates requests from payment/delivery tools, with private replies in a drawer.
+- Explicit 120 ms controls, 180 ms notices/modals and 220 ms drawer motion; reduced motion removes movement. Keyboard/focus and responsive browser checks remain part of the audit.
+- Full backend repeat: 151 tests passed, 0 failed/skipped. All three builds and type checks passed; full lint passed after excluding generated audit artifacts and nested release checkouts. Customer browser suite passed with 55 products and 9 sizes. The stock-planning overflow and post-confirmation focus recovery were caught and corrected. The new graph/upload/export browser checks and the 21-case detailed Admin form audit passed. The combined Admin/POS/finance, real-worker PWA/offline and Customer motion suites also passed. The final real-time profile/catalog/audit/product-form recovery checks passed. Both export formats, all-table selection and failed-read recovery passed; the actual downloaded ZIP was opened independently and every row count matched its manifest.
+
 ## Still required before the complete plan can be called implemented
 
 - Shared read-only server quote endpoint for ordinary Customer/POS checkout totals. The SC/PWD workflow is cancelled, not a remaining implementation gate.
 - Supporting document uploads for expenses; input VAT for stock purchases and full reconciliation review. The current expense form records a document reference and reviewed operating-expense input VAT only.
-- Clearer forecast table and detail drawer, separate refresh and reviewed purchase-draft creation, server aggregation for the existing Analytics page, removal of its 200-order best-seller limit and Philippine dates/hour corrections.
+- Server aggregation for the existing Sales Reports page, removal of its 200-order best-seller limit and Philippine dates/hour corrections. The stock-planning table, investigation/chart drawers, separate refresh and reviewed draft creation are implemented; their focused browser audit has passed.
 - Customer carousel swipe/interruption and return-state improvements, keyboard-safe fixed actions, consistent 120/180/220 ms motion and reduced-motion behavior across affected flows.
 - Full API/browser/permission/failure-path tests for those remaining workflows, phase audits and the combined audit tied to the final release commit.
-- GitHub and Vercel publication, main as the current release, preserved previous version and hosted post-deployment checks.
+- GitHub and Vercel publication of the wider release, with tagged rollback versions and hosted post-deployment checks. The isolated mobile-menu fix is already on main and the public Customer alias; pre-mobile-menu-2026-10-16 preserves the earlier main.
 
 ## Operator/direct-check gates
 

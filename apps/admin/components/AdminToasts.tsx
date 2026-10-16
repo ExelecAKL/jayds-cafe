@@ -41,11 +41,11 @@ export function AdminToastProvider({ children }: { children: ReactNode }) {
     const scan = () => document.querySelectorAll('[role="alert"],.ops-feedback.success,[data-admin-success]').forEach(node => {
       if (node.closest('[data-admin-toasts]')) return;
       const message = node.textContent?.trim() ?? "";
-      if (seen.get(node) === message) return;
+      if (!message || !node.getClientRects().length || seen.get(node) === message) return;
       seen.set(node, message);
-      if (message && node.getClientRects().length) show(message, node.getAttribute("role") === "alert" ? "error" : "success");
+      show(message, node.getAttribute("role") === "alert" ? "error" : "success");
     });
-    const observer = new MutationObserver(scan); observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    const observer = new MutationObserver(scan); observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden", "aria-hidden", "open"] });
     let invalidTimer: number | undefined;
     const invalid = (event: Event) => {
       if (invalidTimer !== undefined) return;

@@ -3,63 +3,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
-import { Icon, type IconName } from "./Operations";
+import { Icon } from "./Operations";
 import { BrandArtwork, BrandIcon } from "@cafeos/shared/brand";
-const groups: {
-  label: string;
-  items: { href: string; label: string; icon: IconName }[];
-}[] = [
-  {
-    label: "Overview",
-    items: [
-      { href: "/dashboard", label: "Café overview", icon: "overview" },
-      { href: "/orders", label: "Orders", icon: "orders" },
-      { href: "/scheduling", label: "Hours & pickup", icon: "coffee" },
-      { href: "/customer-care", label: "Customer help", icon: "people" },
-    ],
-  },
-  {
-    label: "Catalog",
-    items: [
-      { href: "/menu", label: "Menu & prices", icon: "catalog" },
-      { href: "/categories", label: "Menu categories", icon: "coffee" },
-      { href: "/vouchers", label: "Vouchers", icon: "catalog" },
-    ],
-  },
-  {
-    label: "Inventory",
-    items: [{ href: "/inventory", label: "Stock & recipes", icon: "stock" }],
-  },
-  {
-    label: "Purchasing",
-    items: [
-      {
-        href: "/purchasing",
-        label: "Buy & receive stock",
-        icon: "purchase",
-      },
-    ],
-  },
-  {
-    label: "Reports",
-    items: [{ href: "/analytics", label: "Sales reports", icon: "reports" },{href:"/finance",label:"Finance & invoices",icon:"reports"}],
-  },
-  {
-    label: "People",
-    items: [
-      { href: "/staff-accounts", label: "Staff access", icon: "people" },
-      { href: "/staff", label: "Account roles", icon: "people" },
-      { href: "/loyalty", label: "Customer points", icon: "coffee" },
-    ],
-  },
-  {
-    label: "Security",
-    items: [
-      { href: "/void-security", label: "Cancellation PIN", icon: "shield" },
-      { href: "/audit", label: "Change history", icon: "orders" },
-    ],
-  },
-];
+import { adminNavGroups as groups, isNavActive } from "./adminNav";
 export function Sidebar({
   isOpen = false,
   onClose,
@@ -132,13 +78,13 @@ export function Sidebar({
                   key={item.href}
                   onClick={onClose}
                   aria-current={
-                    pathname.startsWith(item.href) ? "page" : undefined
+                    isNavActive(pathname, item.href) ? "page" : undefined
                   }
-                  className={pathname.startsWith(item.href) ? "active" : ""}
+                  className={isNavActive(pathname, item.href) ? "active" : ""}
                 >
                   <Icon name={item.icon} />
                   <span>{item.label}</span>
-                  {pathname.startsWith(item.href) && <i />}
+                  {isNavActive(pathname, item.href) && <i />}
                 </Link>
               ))}
             </div>

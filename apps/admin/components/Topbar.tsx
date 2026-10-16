@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { AdminHelp, adminGuides } from "./AdminHelp";
+import { findNavItem } from "./adminNav";
 import { Icon, useOperations } from "./Operations";
 const titles: Record<string, string> = {
   dashboard: "Overview",
@@ -39,7 +40,10 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
         <span className="ops-breadcrumb">
           Back office <span>/</span>{" "}
           <strong>
-            {adminGuides[page]?.title ?? titles[page] ?? "Management"}
+            {findNavItem(pathname)?.label ??
+              adminGuides[page]?.title ??
+              titles[page] ??
+              "Management"}
           </strong>
         </span>
       </div>
@@ -59,11 +63,20 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
         >
           <i />
           {ops.error
-            ? "Setup required"
+            ? "Data unavailable"
             : ops.connected
               ? "Live"
               : "Reconnecting"}
         </span>
+        {ops.error && (
+          <button
+            className="ops-button small"
+            disabled={ops.loading}
+            onClick={() => void ops.refresh()}
+          >
+            Retry data
+          </button>
+        )}
         <Link
           href="/inventory?filter=low"
           className="ops-alert-button"

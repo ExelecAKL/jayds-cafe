@@ -27,7 +27,7 @@ export function AdminDialog({ title, onClose, className, children }: {
     document.addEventListener("keydown", keydown);
     return () => { document.removeEventListener("keydown", keydown); document.body.style.overflow = overflow; if (previous?.isConnected) previous.focus(); };
   }, []);
-  return <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-    <section ref={panel} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} className={className}>{children}</section>
+  return <div className="admin-dialog-backdrop fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+    <section ref={panel} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} className={`admin-dialog-panel ${className}`}>{children}</section>
   </div>;
 }

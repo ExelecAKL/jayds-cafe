@@ -211,6 +211,13 @@ await context.addInitScript(() => {
     } as PerformanceObserverInit);
   } catch {}
 });
+if (process.env.JAYDS_AUDIT_PROTECTION_BYPASS) {
+  const bypass = process.env.JAYDS_AUDIT_PROTECTION_BYPASS;
+  // Scope the credential to the audited deployment; never send it to providers.
+  await context.route(base + "/**", (route) => route.fallback({
+    headers: { ...route.request().headers(), "x-vercel-protection-bypass": bypass },
+  }));
+}
 await context.routeWebSocket(/supabase\.co\/realtime/, (socket) => {
   socket.onMessage((m) => {
     const a = JSON.parse(String(m));

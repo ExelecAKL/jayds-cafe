@@ -39,6 +39,7 @@
     "./customer/phone": "./src/customer/phone.ts",
     "./customer/scheduling": "./src/customer/scheduling.ts",
     "./utils/uuid": "./src/utils/uuid.ts",
+    "./utils/request": "./src/utils/request.ts",
     "./utils/app-path": "./src/utils/app-path.ts",
     "./utils/product-images": "./src/utils/product-images.ts"
   },

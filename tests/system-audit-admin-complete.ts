@@ -323,6 +323,7 @@ export async function completeAdminJourneys({ page, base, db, stockId, actor }: 
     await form.getByLabel("Maximum uses").fill("2");
     await form.getByLabel("Target tier").selectOption("silver");
     await form.getByLabel("Valid until").fill("2026-12-31");
+    await form.getByText("Product rules & discount limit",{exact:true}).click();
     await form.getByLabel("Application mode").selectOption("selected_items");
     await form.getByPlaceholder("e.g. 50 (Caps the percentage discount)").fill("25");
     await form.getByRole("button", { name: "Save Changes", exact: true }).click();
@@ -350,6 +351,7 @@ export async function completeAdminJourneys({ page, base, db, stockId, actor }: 
     await db.exec("ALTER TABLE orders DROP COLUMN pickup_window_start, DROP COLUMN preparation_due_at;");
     for (const file of ["20261003000100_customer_security.sql", "20261003000200_customer_scheduling.sql"]) await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
     await open("/scheduling");
+    await page.getByText(/Stock & recipe verification ·/).click();
     await page.getByLabel("Verification record").fill("Isolated audit physical counts and portions verification.");
     await page.getByRole("button", { name: "Record production verification" }).click();
     await expect(page.locator(".ops-feedback.error")).toContainText(/physical counts|stock|recipes/);
@@ -359,10 +361,11 @@ export async function completeAdminJourneys({ page, base, db, stockId, actor }: 
     const counts = (await db.query<{ id: string }>("INSERT INTO stocktakes(ingredient_id,expected,counted,version,reason,actor_id) SELECT id,current_stock,current_stock,stock_version,'Isolated audit physical count',$1 FROM ingredients WHERE is_active RETURNING id", [actor])).rows;
     for (const row of counts) await db.query("SELECT inv_post_stocktake($1)", [row.id]);
     await open("/scheduling");
+    await page.getByText(/Stock & recipe verification ·/).click();
     await page.getByLabel("Verification record").fill("Isolated audit physical counts and actual portions verification.");
     await page.getByRole("button", { name: "Record production verification" }).click();
     await expect(page.getByText("Actual stock and recipe verification is current.", { exact: true })).toBeVisible();
-    for (const day of ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]) await page.getByLabel(day + " open").check();
+    for (const day of ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]) await page.getByLabel(day,{exact:true}).check();
     for (const input of await page.getByLabel("Opens").all()) await input.fill("00:00");
     for (const input of await page.getByLabel("Closes").all()) await input.fill("23:59");
     await page.getByLabel("Full-day closures").fill("2026-12-25\n2026-12-25");
@@ -397,6 +400,7 @@ export async function completeAdminJourneys({ page, base, db, stockId, actor }: 
     });
     try {
       await open("/customer-care");
+      await page.getByRole("button",{name:/Payments & delivery/}).click();
       const submit = page.getByRole("button", { name: "Review & associate existing reference", exact: true });
       await expect(submit).toBeDisabled();
       const input = page.getByLabel(provider === "maya" ? "Existing Maya checkout ID" : "Existing Lalamove order ID");

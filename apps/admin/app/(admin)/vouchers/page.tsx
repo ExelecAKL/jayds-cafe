@@ -4,8 +4,9 @@
 "use client";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
-import { Feedback } from "../../../components/Operations";
+import { Feedback, Drawer, PageHeader } from "../../../components/Operations";
 
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 
@@ -64,12 +65,22 @@ export default function VouchersPage() {
   const [formData, setFormData] = useState(defaultForm);
 
   const fetchVouchers = useCallback(async () => {
-    const { data } = await supabase
-      .from("vouchers")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setVouchers((data || []) as Voucher[]);
-    setLoading(false);
+    setLoading(true);
+    try {
+      const { data, error } = await withRequestDeadline((signal) =>
+        supabase
+          .from("vouchers")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .abortSignal(signal),
+      );
+      if (error) throw error;
+      setVouchers((data ?? []) as Voucher[]);
+    } catch {
+      setActionError("Vouchers could not load. Try again.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const fetchMenuItems = useCallback(async () => {
@@ -270,20 +281,29 @@ export default function VouchersPage() {
   return (
     <div>
       {!showForm && <Feedback error={actionError} />}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Voucher Management</h1>
+      <PageHeader
+        eyebrow="CUSTOMER OFFERS"
+        title="Vouchers"
+        description="Create offers and control when customers can use them."
+      >
         <button
+          className="ops-button"
+          disabled={loading}
+          onClick={() => void fetchVouchers()}
+        >
+          Refresh
+        </button>
+        <button
+          className="ops-button primary"
           onClick={() => {
             setEditingId(null);
             setFormData(defaultForm);
             setShowForm(true);
           }}
-          className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg shadow-amber-200 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
         >
           + Create Voucher
         </button>
-      </div>
-
+      </PageHeader>
       {/* Search */}
       <input
         type="search"
@@ -411,30 +431,20 @@ export default function VouchersPage() {
 
       {/* Create / Edit Modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+        <Drawer
+          title={editingId ? "Edit Voucher" : "Create Voucher"}
+          onClose={() => setShowForm(false)}
+          busy={saving}
+        >
           <form
-            role="dialog"
-            aria-modal="true"
-            aria-label={editingId ? "Edit Voucher" : "Create Voucher"}
             onSubmit={handleSave}
-            className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl space-y-4 max-h-[90vh] overflow-y-auto"
+            className="ops-form"
+            onInvalidCapture={(event) => {
+              const details = (event.target as HTMLElement).closest("details");
+              if (details) details.open = true;
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-2 sticky top-0 bg-white z-10 pb-2 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-gray-900">
-                {editingId ? "Edit Voucher" : "Create Voucher"}
-              </h2>
-              <button
-                type="button"
-                aria-label="Close voucher form"
-                disabled={saving}
-                onClick={() => setShowForm(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
-
             <Feedback error={actionError} />
 
             <div>
@@ -595,10 +605,15 @@ export default function VouchersPage() {
               </div>
             </div>
 
-            <div className="border-t border-gray-100 pt-3">
-              <p className="text-sm font-bold text-gray-900 mb-2">
-                Advanced Restrictions
-              </p>
+            <details
+              className="ops-disclosure"
+              open={
+                formData.application_mode === "selected_items" ||
+                formData.applicable_item_ids.length > 0 ||
+                !!formData.max_discount_amount
+              }
+            >
+              <summary>Product rules & discount limit</summary>
 
               <div className="mb-3">
                 <label className="block text-xs font-medium text-gray-500 mb-1">
@@ -697,12 +712,12 @@ export default function VouchersPage() {
                   })}
                 </div>
               </div>
-            </div>
+            </details>
 
             <button
               type="submit"
               disabled={saving}
-              className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg shadow-amber-200 hover:scale-[1.01] active:scale-[0.99] transition-all mt-4"
+              className="ops-button primary ops-sticky-actions"
             >
               {saving
                 ? "Saving…"
@@ -711,7 +726,7 @@ export default function VouchersPage() {
                   : "Create Voucher"}
             </button>
           </form>
-        </div>
+        </Drawer>
       )}
     </div>
   );

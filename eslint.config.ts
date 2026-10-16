@@ -15,5 +15,7 @@ export default defineConfig([
     // Copied upstream MapLibre distribution; maintained map code remains linted.
     'apps/customer/public/maplibre/**',
     '.codex-logs/**', '**/.vercel*/**', 'docs/**',
+    // Audit artifacts and nested release checkouts are not application sources.
+    'output/**', 'tmp/**', '.tmp.*/**',
   ]),
 ]);

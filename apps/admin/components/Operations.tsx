@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import type {
   StockItem,
   StockBatch,
@@ -40,7 +41,16 @@ export type IconName =
   | "refresh"
   | "plus"
   | "check"
-  | "logout";
+  | "logout"
+  | "support"
+  | "tag"
+  | "ticket"
+  | "receipt"
+  | "userCheck"
+  | "star"
+  | "clock"
+  | "lock"
+  | "history";
 const paths: Record<IconName, string> = {
   overview: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z",
   orders: "M8 3h8v3H8zM6 5H4v16h16V5h-2M8 11h8M8 15h5",
@@ -62,6 +72,16 @@ const paths: Record<IconName, string> = {
   plus: "M12 5v14M5 12h14",
   check: "m5 12 4 4L19 6",
   logout: "M9 4H4v16h5M9 12h12m-4-4 4 4-4 4",
+  support: "M4 13V9a8 8 0 0 1 16 0v4M4 10H2v7h4v-7H4m16 0h2v7h-4v-7h2m0 7v4h-8",
+  tag: "m3 3 9 0 9 9-9 9-9-9V3zm5 5h.01",
+  ticket: "M3 5h18v5a2 2 0 0 0 0 4v5H3v-5a2 2 0 0 0 0-4V5zm12 0v3m0 3v2m0 3v3",
+  receipt: "M5 3h14v18l-3-2-4 2-4-2-3 2V3zm3 5h8m-8 4h8m-8 4h4",
+  userCheck:
+    "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0m3 3 2 2 4-4",
+  star: "m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z",
+  clock: "M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0",
+  lock: "M5 10h14v11H5V10zm3 0V6a4 4 0 0 1 8 0v4m-4 5v2",
+  history: "M3 3v6h6M3 9a10 10 0 1 1 0 6m9-8v6l4 2",
 };
 export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   return (
@@ -140,38 +160,57 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   const refresh = useCallback(async () => {
     const request = ++generation.current;
     try {
-      const results = await Promise.all([
-        supabase.from("stock_overview").select("*").order("name"),
-        supabase
-          .from("stock_batches")
-          .select("*")
-          .order("expires_on", { nullsFirst: false }),
-        supabase
-          .from("stock_movements")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(150),
-        supabase.from("suppliers").select("*").order("name"),
-        supabase
-          .from("purchase_orders")
-          .select(
-            "*,supplier:suppliers(*),lines:purchase_order_lines(*,ingredient:ingredients(*))",
-          )
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("goods_receipts")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(100),
-        supabase
-          .from("stocktakes")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(150),
-        supabase.from("forecast_overview").select("*"),
-        supabase.from("inventory_settings").select("*").single(),
-        supabase.rpc("get_inventory_readiness"),
-      ]);
+      const results = await withRequestDeadline((signal) =>
+        Promise.all([
+          supabase
+            .from("stock_overview")
+            .select("*")
+            .order("name")
+            .abortSignal(signal),
+          supabase
+            .from("stock_batches")
+            .select("*")
+            .order("expires_on", { nullsFirst: false })
+            .abortSignal(signal),
+          supabase
+            .from("stock_movements")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(150)
+            .abortSignal(signal),
+          supabase
+            .from("suppliers")
+            .select("*")
+            .order("name")
+            .abortSignal(signal),
+          supabase
+            .from("purchase_orders")
+            .select(
+              "*,supplier:suppliers(*),lines:purchase_order_lines(*,ingredient:ingredients(*))",
+            )
+            .order("created_at", { ascending: false })
+            .abortSignal(signal),
+          supabase
+            .from("goods_receipts")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(100)
+            .abortSignal(signal),
+          supabase
+            .from("stocktakes")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(150)
+            .abortSignal(signal),
+          supabase.from("forecast_overview").select("*").abortSignal(signal),
+          supabase
+            .from("inventory_settings")
+            .select("*")
+            .abortSignal(signal)
+            .single(),
+          supabase.rpc("get_inventory_readiness").abortSignal(signal),
+        ]),
+      );
       const failure = results.find((result) => result.error)?.error;
       if (failure)
         throw new Error(
@@ -356,6 +395,22 @@ export function Drawer({
 }) {
   const ref = useRef<HTMLElement>(null);
   const close = useRef(onClose);
+  const busyRef = useRef(busy);
+  const [closing, setClosing] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  const requestClose = useCallback(() => {
+    if (busyRef.current || closeTimer.current) return;
+    setClosing(true);
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    closeTimer.current = setTimeout(() => close.current(), reduced ? 0 : 220);
+  }, []);
+  useEffect(() => {
+    busyRef.current = busy;
+  }, [busy]);
   useEffect(() => {
     close.current = onClose;
   }, [onClose]);
@@ -365,14 +420,28 @@ export function Drawer({
     document.body.style.overflow = "hidden";
     ref.current?.focus();
     const keydown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !busy) close.current();
-      if (event.key !== "Tab") return;
-      const nodes = ref.current?.querySelectorAll<HTMLElement>(
-        'button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href],[tabindex="0"]',
+      const dialogs = document.querySelectorAll(
+        '[role="dialog"][aria-modal="true"]',
       );
+      if (dialogs[dialogs.length - 1] !== ref.current) return;
+      if (event.key === "Escape" && !busyRef.current) requestClose();
+      if (event.key !== "Tab") return;
+      const nodes = Array.from(
+        ref.current?.querySelectorAll<HTMLElement>(
+          'button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href],[tabindex="0"]',
+        ) ?? [],
+      ).filter((node) => node.getClientRects().length);
       if (!nodes?.length) return;
       const first = nodes[0];
       const last = nodes[nodes.length - 1];
+      if (
+        document.activeElement === ref.current ||
+        !ref.current?.contains(document.activeElement)
+      ) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
       if (
         event.shiftKey &&
         (document.activeElement === first ||
@@ -391,9 +460,13 @@ export function Drawer({
       document.removeEventListener("keydown", keydown);
       previous?.focus();
     };
-  }, [busy]);
+  }, [requestClose]);
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
   return (
-    <div className="ops-overlay" onClick={() => !busy && onClose()}>
+    <div
+      className={`ops-overlay${closing ? " closing" : ""}`}
+      onClick={requestClose}
+    >
       <section
         ref={ref}
         tabIndex={-1}
@@ -412,7 +485,7 @@ export function Drawer({
           <button
             className="ops-icon-button"
             aria-label="Close dialog"
-            onClick={onClose}
+            onClick={requestClose}
             disabled={busy}
           >
             <Icon name="close" />

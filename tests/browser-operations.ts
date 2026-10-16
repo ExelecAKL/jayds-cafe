@@ -8,6 +8,7 @@ import { completeAdminJourneys } from "./system-audit-admin-complete.ts";
 import { scannerAudit } from "./system-audit-scanner.ts";
 import {financeJourneys} from "./finance-browser-journeys.ts";
 import {passwordJourneys} from "./password-browser-journeys.ts";
+import {adminLoadingJourneys,adminUxJourneys} from "./admin-ux-browser-journeys.ts";
 import {
   submissionIdentity,
   priceCatalogItems,
@@ -628,7 +629,7 @@ async function attach(
           await db.query<{ value: unknown }>(
             query,
             keys.map((k) =>
-              typeof args[k] === "object" && args[k] !== null
+              typeof args[k] === "object" && args[k] !== null && !(name === "admin_export_create" && k === "p_tables")
                 ? JSON.stringify(args[k])
                 : args[k],
             ),
@@ -783,7 +784,7 @@ const browser = await chromium.launch({
 try {
   await db.exec(readFileSync("tests/fixtures/inventory-base.sql", "utf8"));
   await db.exec(
-    "ALTER TABLE profiles ADD COLUMN is_approved boolean DEFAULT true; CREATE TABLE pickup_tokens(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),order_id uuid REFERENCES orders(id),token_hash text UNIQUE,is_used boolean DEFAULT false); CREATE TABLE guest_receipts(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),order_id uuid REFERENCES orders(id),receipt_token text UNIQUE,receipt_data jsonb,created_at timestamptz DEFAULT now(),expires_at timestamptz DEFAULT now()+interval '30 days'); ALTER TABLE guest_receipts ENABLE ROW LEVEL SECURITY; CREATE POLICY guest_receipts_public_read ON guest_receipts FOR SELECT USING(true);",
+    "ALTER TABLE profiles ADD COLUMN is_approved boolean DEFAULT true, ADD COLUMN full_name text; CREATE TABLE pickup_tokens(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),order_id uuid REFERENCES orders(id),token_hash text UNIQUE,is_used boolean DEFAULT false); CREATE TABLE guest_receipts(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),order_id uuid REFERENCES orders(id),receipt_token text UNIQUE,receipt_data jsonb,created_at timestamptz DEFAULT now(),expires_at timestamptz DEFAULT now()+interval '30 days'); ALTER TABLE guest_receipts ENABLE ROW LEVEL SECURITY; CREATE POLICY guest_receipts_public_read ON guest_receipts FOR SELECT USING(true);",
   );
   await db.exec(
     readFileSync(
@@ -835,6 +836,8 @@ try {
     "20261007000500_guest_pickup_qr.sql",
     "20261007000600_cash_at_pickup.sql",
     "20261013000400_finance_invoices.sql",
+    "20261016000100_stock_planning_details.sql",
+    "20261016000300_admin_exports.sql",
   ])
     await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
   await db.query("UPDATE inventory_settings SET enforcement_enabled=true");
@@ -863,8 +866,13 @@ try {
     start("pos", ports.pos),
     start("customer", ports.customer),
   ]);
-  await passwordJourneys(browser,{customer:auditUrls.customer || `http://${demoHost}:${ports.customer}`,pos:auditUrls.pos || `http://${demoHost}:${ports.pos}`,admin:auditUrls.admin || `http://${demoHost}:${ports.admin}`});
-  if (process.env.JAYDS_PASSWORD_ONLY === "1") {
+  if(process.env.JAYDS_LOADING_ONLY !== "1" && process.env.JAYDS_UX_ONLY !== "1") await passwordJourneys(browser,{customer:auditUrls.customer || `http://${demoHost}:${ports.customer}`,pos:auditUrls.pos || `http://${demoHost}:${ports.pos}`,admin:auditUrls.admin || `http://${demoHost}:${ports.admin}`});
+  if(process.env.JAYDS_LOADING_ONLY === "1" || process.env.JAYDS_UX_ONLY === "1") {
+    const auditContext=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:"block"});
+    const auditBase=await attach(auditContext,"admin",ports.admin);
+    try {const auditPage=await auditContext.newPage();if(process.env.JAYDS_LOADING_ONLY === "1")await adminLoadingJourneys({page:auditPage,base:auditBase});else await adminUxJourneys({page:auditPage,base:auditBase,db,stockId,itemId,actor:adminId});}
+    finally{await auditContext.close();}
+  } else if (process.env.JAYDS_PASSWORD_ONLY === "1") {
     console.log("Password-only browser audit complete.");
   } else if(process.env.JAYDS_FINANCE_ONLY === "1") {
     const financeContext=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:"block"});
@@ -996,6 +1004,7 @@ try {
     },
   );
   await page.goto(base + "/customer-care");
+  await page.getByRole("button",{name:/Payments & delivery/}).click();
   await page.locator("main").getByText(/Provider recovery is unavailable/).waitFor();
   assert.equal(
     await page.getByText("No uncertain provider attempts to review.").count(),
@@ -1005,17 +1014,18 @@ try {
   await page.getByRole("button", { name: "Retry operations" }).click();
   await page.getByText("No uncertain provider attempts to review.").waitFor();
   await page.getByText("Failed notification deliveries: 3").waitFor();
-  await page.getByText("ORD-10123", { exact: true }).waitFor();
+  await page.getByRole("link", { name: /ORD-10123/ }).waitFor();
   operationsUnavailable = true;
   await page.getByRole("button", { name: "Refresh operations" }).click();
   await page.locator("main").getByText(/Showing the last loaded references/).waitFor();
   await page.locator("main").getByText(/Showing the last loaded review list/).waitFor();
-  await page.getByText("ORD-10123", { exact: true }).waitFor();
+  await page.getByRole("link", { name: /ORD-10123/ }).waitFor();
   await page.getByText("Failed notification deliveries: 3").waitFor();
   assert.equal(
     await page.getByText("No uncertain provider attempts to review.").count(),
     0,
   );
+  await page.getByRole("button",{name:/Private requests/}).click();
   await page.getByRole("button", { name: /Isolated receipt question/ }).click();
   await page
     .getByLabel("Private reply")

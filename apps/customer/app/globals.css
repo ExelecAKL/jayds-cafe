@@ -2074,3 +2074,38 @@ details[open] > :not(summary) {
     min-height: 330px;
   }
 }
+
+.help-screen .app-content {max-width:1060px;}
+.help-intro {display:flex;align-items:center;gap:16px;margin:8px 0 24px;}
+.help-intro-icon {display:grid;place-items:center;width:56px;height:56px;flex-shrink:0;border-radius:18px;background:#efe2cf;color:#805837;}
+.help-intro h2 {font-size:24px;font-weight:600;letter-spacing:-.5px;}
+.help-intro p {font-size:13px;color:var(--text-secondary,#796956);margin-top:6px;}
+.help-shortcuts {display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.help-shortcuts > * {display:flex;align-items:center;gap:13px;text-align:left;padding:20px;border:1px solid #e5d8c8;border-radius:16px;background:#fffaf3;transition:background-color 120ms ease,border-color 120ms ease;}
+.help-shortcuts > *:hover {background:#f6eddf;border-color:#b99b78;}
+.help-shortcuts > * > span {flex:1;font-size:14px;font-weight:600;}
+.help-shortcuts small {display:block;font-size:11px;font-weight:400;color:#87745d;margin-top:5px;}
+.help-content-grid {display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:20px;}
+.help-answers,.help-request {padding:24px;}
+.help-content-grid h2,.help-history h2 {font-size:19px;font-weight:600;letter-spacing:-.2px;}
+.help-answers details {border-bottom:1px solid #eee4d7;}
+.help-answers summary {display:flex;align-items:center;justify-content:space-between;gap:15px;min-height:62px;cursor:pointer;font-size:13px;list-style:none;}
+.help-answers summary::-webkit-details-marker {display:none;}
+.help-answers details[open] summary > svg {transform:rotate(45deg);}
+.help-answers details p {font-size:13px;line-height:1.7;color:#796956;padding-bottom:16px;}
+.help-answers details > a {display:block;font-size:12px;text-decoration:underline;margin-bottom:16px;}
+.help-privacy {display:flex;align-items:center;gap:7px;font-size:11px;color:#88745b;margin-top:20px;flex-wrap:wrap;}
+.help-section-heading {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px;}
+.help-section-heading p {font-size:12px;color:#87745d;line-height:1.6;margin-top:6px;}
+.help-form label {font-size:12px;display:block;margin-bottom:7px;font-weight:500;}
+.help-history {margin-top:28px;display:grid;gap:12px;}
+.help-history > p {font-size:13px;color:#87745d;}
+.help-history article {padding:20px;}
+.help-history article > div {display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.help-history strong {font-size:14px;}
+.help-history span {font-size:10px;padding:5px 8px;border-radius:20px;background:#f1e7d8;color:#795735;white-space:nowrap;}
+.help-history small {display:block;font-size:11px;color:#87745d;margin-top:8px;}
+.help-history article p {white-space:pre-wrap;font-size:13px;line-height:1.7;margin-top:14px;padding-top:14px;border-top:1px solid #eee4d7;}
+@media(prefers-reduced-motion:no-preference){.help-form {animation:help-reveal 180ms ease-out;} .help-answers summary svg {transition:transform 120ms ease;} }
+@keyframes help-reveal {from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:640px){.help-intro h2{font-size:21px;}.help-content-grid{grid-template-columns:1fr;}.help-shortcuts{gap:10px;}.help-shortcuts > *{padding:15px 12px;gap:10px;}.help-shortcuts > * > svg:last-child{display:none;}.help-shortcuts > * > span{font-size:12px;}.help-shortcuts small{font-size:10px;line-height:1.5;}.help-answers,.help-request{padding:20px;}}
