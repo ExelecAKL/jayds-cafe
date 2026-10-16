@@ -1,0 +1,100 @@
+{
+  "testedCommit": "aa93e23174ab622ee7ddd394ba69f66b29433c63",
+  "checkedAt": "2026-10-16T06:25:58.334288+00:00",
+  "scope": "Local production apps with isolated SQL and provider fixtures; no hosted writes",
+  "backend": {
+    "tests": 154,
+    "pass": 154,
+    "fail": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "status": "PASS",
+    "isolated": true,
+    "browserTimezone": "America/Los_Angeles",
+    "orders": 1206,
+    "noTruncation": true,
+    "philippineMidnight": true,
+    "thirteenToTwentyTwoHours": true,
+    "reportFailureRetry": true,
+    "detailFailureRetry": true,
+    "productAddons": true,
+    "tenOrderPagination": true,
+    "staleResponseIgnored": true,
+    "widths": [
+      1440,
+      834,
+      390
+    ],
+    "errors": []
+  },
+  "source": [
+    {
+      "path": "apps/admin/app/(admin)/analytics/page.tsx",
+      "gitBlob": "6786076db350de0039c570ad3ebeba4d859bc8e4",
+      "sha256": "c580cd5791b361b7cd49f1e11c11b8c75a2493eb92525924ff70ffaf0d8d1269"
+    },
+    {
+      "path": "apps/admin/app/globals.css",
+      "gitBlob": "26c73dc4b54817988f9c3994096c0aabf490d80c",
+      "sha256": "6d488db43c0fc13ca8ffee736380b13be6fbaea62982b362320f5d2b447cae5c"
+    },
+    {
+      "path": "apps/admin/components/AnalyticsModals.tsx",
+      "gitBlob": "ef2bc9634669194e48612fe47133aa7cb77ae5e1",
+      "sha256": "aefc63a7a02e56d86a7a7e44af3b876a078c300687dc8e3743d0f29349d44674"
+    },
+    {
+      "path": "apps/admin/utils/exportMetrics.ts",
+      "gitBlob": "08cc60c90e2538923d7d0c62348484099381fb70",
+      "sha256": "19188c4aab99e9d2cf79dffb2169e6c2928c32f5e625973e1f2ead8f79954a82"
+    },
+    {
+      "path": "supabase/migrations/20261016000400_admin_sales_reports.sql",
+      "gitBlob": "0693252a917f42ef8dbbc024801295b95667a05d",
+      "sha256": "1d1ff9bd4b1b0a5646ff39fa71dfd7e61b57eec3ebf3a860217a506027a18a5e"
+    },
+    {
+      "path": "tests/admin-sales-browser-journeys.ts",
+      "gitBlob": "5077ccd2e9b4a2b4550753fb75648ece2a1b4764",
+      "sha256": "caacea40cede6c8f757dbaa5eeabd1aa93dd2e461d62738ea019e06b719aa35e"
+    },
+    {
+      "path": "tests/admin-sales-reports.test.ts",
+      "gitBlob": "1c6eaf9f1809607cb41f7e9144fdc35fb43e49cc",
+      "sha256": "e2231bbcf04f42707ba484609d5190204a897104ab7e41081252d32d2edd5c24"
+    },
+    {
+      "path": "tests/browser-operations.ts",
+      "gitBlob": "f5fe7c97f4c4fa7c855f6c3537a4b94e7420f7d4",
+      "sha256": "f7cb40accd46f46bb8a69eda2d45e6aa63a1089405ee4ccdb3a9066c631dd4e1"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".codex-logs/sales-reports-backend.log",
+      "sha256": "019651a5eef9eed1c548a71ebea15f5c0b65413c94749deba7a0e452f44e7826"
+    },
+    {
+      "path": ".codex-logs/sales-reports-build.log",
+      "sha256": "f0ed0e5b019e2e8bad90e3633255a8a12288a39b7d59c8325d7aadec3c660572"
+    },
+    {
+      "path": ".codex-logs/sales-reports-browser.log",
+      "sha256": "c7c45cc9f6c2ec3f61a2a4e15aa4ca904561a94d6823bf6cae8cf17b4955bf81"
+    },
+    {
+      "path": ".codex-logs/sales-reports-typecheck.log",
+      "sha256": "2a15c23c73dcb633aa3598feeded2fc5d689cbb6fc560330327c86e641849c8c"
+    },
+    {
+      "path": ".codex-logs/sales-reports-lint.log",
+      "sha256": "dbd6493b15da3a88b87f205fd8b23ad9176526483bdcadbcf84f3e983aff4e51"
+    },
+    {
+      "path": ".codex-logs/sales-reports-focused-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "hosted": "NOT TESTED; not deployed"
+}

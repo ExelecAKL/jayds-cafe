@@ -28,11 +28,15 @@ The linked Court announcement concerns non-stacking of discounts, not abolition 
 - Explicit 120 ms controls, 180 ms notices/modals and 220 ms drawer motion; reduced motion removes movement. Keyboard/focus and responsive browser checks remain part of the audit.
 - Full backend repeat: 151 tests passed, 0 failed/skipped. All three builds and type checks passed; full lint passed after excluding generated audit artifacts and nested release checkouts. Customer browser suite passed with 55 products and 9 sizes. The stock-planning overflow and post-confirmation focus recovery were caught and corrected. The new graph/upload/export browser checks and the 21-case detailed Admin form audit passed. The combined Admin/POS/finance, real-worker PWA/offline and Customer motion suites also passed. The final real-time profile/catalog/audit/product-form recovery checks passed. Both export formats, all-table selection and failed-read recovery passed; the actual downloaded ZIP was opened independently and every row count matched its manifest.
 
+## Sales Reports checkpoint, 16 October
+
+- Complete server aggregation replaces the 200-order best-seller limit, uses Philippine dates and 1 PM–10 PM peak hours, and aligns Overview collected sales with report eligibility. Charts retain numeric views; product/hour dialogs use real item identities and paginated orders. Recipe pricing estimates are kept separate from Finance profit/tax.
+- Local audit at `aa93e23174ab622ee7ddd394ba69f66b29433c63`: 154/154 backend tests; production Admin build and full type checks pass; Playwright passes 1,206 paid orders, three widths, a US browser timezone, failure/retry and stale-response recovery. Full lint has zero errors and one existing auth-hook warning; focused lint is clean. Not hosted yet. See `docs/audits/2026-10-16-sales-reports-audit.md`.
+
 ## Still required before the complete plan can be called implemented
 
 - Shared read-only server quote endpoint for ordinary Customer/POS checkout totals. The SC/PWD workflow is cancelled, not a remaining implementation gate.
 - Supporting document uploads for expenses; input VAT for stock purchases and full reconciliation review. The current expense form records a document reference and reviewed operating-expense input VAT only.
-- Server aggregation for the existing Sales Reports page, removal of its 200-order best-seller limit and Philippine dates/hour corrections. The stock-planning table, investigation/chart drawers, separate refresh and reviewed draft creation are implemented; their focused browser audit has passed.
 - Customer carousel swipe/interruption and return-state improvements, keyboard-safe fixed actions, consistent 120/180/220 ms motion and reduced-motion behavior across affected flows.
 - Full API/browser/permission/failure-path tests for those remaining workflows, phase audits and the combined audit tied to the final release commit.
 - GitHub and Vercel publication of the wider release, with tagged rollback versions and hosted post-deployment checks. The isolated mobile-menu fix is already on main and the public Customer alias; pre-mobile-menu-2026-10-16 preserves the earlier main.
