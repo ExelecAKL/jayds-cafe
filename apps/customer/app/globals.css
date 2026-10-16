@@ -1589,7 +1589,7 @@ textarea {
   }
 }
 
-/* Familiar Jayds startup, with fast transitions instead of a forced long wait. */
+/* Logo introduction, then a banner while session and catalog reads settle. */
 .startup-overlay {
   position: fixed;
   inset: 0;
@@ -1598,7 +1598,7 @@ textarea {
   background: #fbf5ee;
   opacity: 1;
   transition: opacity 220ms ease;
-  pointer-events: none;
+  pointer-events: auto;
 }
 .startup-overlay.is-leaving {
   opacity: 0;
@@ -1611,8 +1611,8 @@ textarea {
   align-items: center;
   justify-content: center;
   transition:
-    opacity 200ms ease,
-    transform 240ms var(--ease-out-expo);
+    opacity 220ms ease,
+    transform 220ms var(--ease-out-expo);
 }
 .startup-logo-scene.is-hidden {
   opacity: 0;
@@ -1676,15 +1676,6 @@ textarea {
   font-size: 15px;
   letter-spacing: 0.06em;
   line-height: 1.8;
-}
-.brand-loader-cup {
-  display: grid;
-  place-items: center;
-  width: 58px;
-  height: 58px;
-  background: #efdeca;
-  border-radius: 20px;
-  margin-top: 8px;
 }
 .brand-loader p {
   font-size: 13px;
@@ -2075,3 +2066,6 @@ details[open] > :not(summary) {
     min-height: 330px;
   }
 }
+
+.startup-retry {display:grid;justify-items:center;gap:10px;}
+.startup-retry .btn-secondary {min-height:44px;padding:8px 20px;}

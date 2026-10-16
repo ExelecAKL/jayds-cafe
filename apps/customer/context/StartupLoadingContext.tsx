@@ -1,13 +1,13 @@
 "use client";
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
   type ReactNode,
 } from "react";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
+import { useMenu } from "@cafeos/shared/hooks/useMenu";
 
 type StartupPhase = "logo" | "welcome" | "leaving" | "hidden";
 const StartupLoadingContext = createContext({
@@ -15,31 +15,28 @@ const StartupLoadingContext = createContext({
   bannerPhaseDone: false,
   isFadingOut: false,
   isOverlayVisible: true,
-  markStartupReady: () => undefined as void,
+  startupTimedOut: false,
 });
 export function StartupLoadingProvider({ children }: { children: ReactNode }) {
   const { initialized } = useAuth();
+  const { loading: catalogLoading } = useMenu();
   const [phase, setPhase] = useState<StartupPhase>("logo");
-  const [ready, setReady] = useState(false);
-  const [fallbackReady, setFallbackReady] = useState(false);
-  const markStartupReady = useCallback(() => setReady(true), []);
+  const [startupTimedOut, setStartupTimedOut] = useState(false);
+  const ready = initialized && !catalogLoading;
   useEffect(() => {
-    const firstFrame = requestAnimationFrame(markStartupReady);
-    const logoTimer = setTimeout(() => setPhase("welcome"), 350);
-    // A failed session/network check must never leave the app behind a splash.
-    const fallback = setTimeout(() => setFallbackReady(true), 4000);
-    return () => {
-      cancelAnimationFrame(firstFrame);
-      clearTimeout(logoTimer);
-      clearTimeout(fallback);
-    };
-  }, [markStartupReady]);
+    const logoTimer = setTimeout(() => setPhase("welcome"), 2500);
+    return () => clearTimeout(logoTimer);
+  }, []);
   useEffect(() => {
-    if (phase !== "welcome" || !((initialized && ready) || fallbackReady))
-      return;
+    if (phase !== "welcome" || !ready) return;
     const timer = setTimeout(() => setPhase("leaving"), 250);
     return () => clearTimeout(timer);
-  }, [phase, initialized, ready, fallbackReady]);
+  }, [phase, ready]);
+  useEffect(() => {
+    if (phase !== "welcome" || ready) return;
+    const timer = setTimeout(() => setStartupTimedOut(true), 12000);
+    return () => clearTimeout(timer);
+  }, [phase, ready]);
   useEffect(() => {
     if (phase !== "leaving") return;
     const timer = setTimeout(() => setPhase("hidden"), 220);
@@ -52,7 +49,7 @@ export function StartupLoadingProvider({ children }: { children: ReactNode }) {
         bannerPhaseDone: phase === "leaving" || phase === "hidden",
         isFadingOut: phase === "leaving",
         isOverlayVisible: phase !== "hidden",
-        markStartupReady,
+        startupTimedOut,
       }}
     >
       {children}

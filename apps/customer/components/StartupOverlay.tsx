@@ -3,7 +3,8 @@ import Image from "next/image";
 import { useStartupLoading } from "../context/StartupLoadingContext";
 import BrandLoader from "./BrandLoader";
 export default function StartupOverlay() {
-  const { logoPhaseDone, isFadingOut, isOverlayVisible } = useStartupLoading();
+  const { logoPhaseDone, isFadingOut, isOverlayVisible, startupTimedOut } =
+    useStartupLoading();
   if (!isOverlayVisible) return null;
   return (
     <div
@@ -14,7 +15,7 @@ export default function StartupOverlay() {
         className={`startup-logo-scene ${logoPhaseDone ? "is-hidden" : ""}`}
         aria-hidden={logoPhaseDone}
       >
-        <BrandLoader />
+        <BrandLoader indicator={false} />
       </div>
       <div
         className={`startup-welcome-scene ${logoPhaseDone ? "is-visible" : ""}`}
@@ -29,12 +30,27 @@ export default function StartupOverlay() {
           alt="Jayds Café. Order now."
         />
         <div className="startup-welcome-caption">
-          <span className="brand-loading-dots" aria-hidden="true">
+          <span
+            className="brand-loading-dots"
+            role="status"
+            aria-label="Loading Jayds Café"
+          >
             <i />
             <i />
             <i />
           </span>
           <p>Welcome to your little cup of happy.</p>
+          {startupTimedOut && (
+            <div className="startup-retry">
+              <p role="alert">Loading is taking longer than expected.</p>
+              <button
+                className="btn-secondary"
+                onClick={() => window.location.reload()}
+              >
+                Try again
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

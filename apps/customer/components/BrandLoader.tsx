@@ -1,4 +1,3 @@
-import Icon from "./Icon";
 import LogoArtwork from "./LogoArtwork";
 export function BrandMark() {
   return (
@@ -8,22 +7,28 @@ export function BrandMark() {
   );
 }
 export default function BrandLoader({
-  label = "Getting your café ready…",
+  label,
+  indicator = true,
 }: {
   label?: string;
+  indicator?: boolean;
 }) {
   return (
-    <div className="brand-loader" role="status" aria-live="polite">
+    <div
+      className="brand-loader"
+      role="status"
+      aria-live="polite"
+      aria-label={label || "Loading Jayds Café"}
+    >
       <BrandMark />
-      <span className="brand-loader-cup" aria-hidden="true">
-        <Icon name="coffee" size={32} />
-      </span>
-      <p>{label}</p>
-      <span className="brand-loading-dots" aria-hidden="true">
-        <i />
-        <i />
-        <i />
-      </span>
+      {label && <p>{label}</p>}
+      {indicator && (
+        <span className="brand-loading-dots" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+      )}
     </div>
   );
 }

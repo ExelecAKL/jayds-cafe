@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "../supabase/client";
 import type { Category, MenuItem } from "../types/index";
+import { withRequestDeadline } from "../utils/request";
 
 interface UseMenuOptions {
   includeUnavailable?: boolean;
@@ -81,9 +82,12 @@ function getMenuCacheKey(includeUnavailable: boolean) {
 
 async function fetchMenuData(
   includeUnavailable: boolean,
+  signal: AbortSignal,
 ): Promise<MenuCacheEntry> {
   if (!includeUnavailable) {
-    const { data, error } = await supabase.rpc("get_published_catalog");
+    const { data, error } = await supabase
+      .rpc("get_published_catalog")
+      .abortSignal(signal);
     if (!error && data)
       return {
         categories: data.categories ?? [],
@@ -95,11 +99,13 @@ async function fetchMenuData(
   let categoriesQuery = supabase
     .from("categories")
     .select(CATEGORY_SELECT)
-    .order("sort_order", { ascending: true });
+    .order("sort_order", { ascending: true })
+    .abortSignal(signal);
   let itemsQuery = supabase
     .from("menu_items")
     .select(MENU_ITEM_SELECT)
-    .order("sort_order", { ascending: true });
+    .order("sort_order", { ascending: true })
+    .abortSignal(signal);
   if (!includeUnavailable) {
     categoriesQuery = categoriesQuery
       .eq("is_active", true)
@@ -115,7 +121,7 @@ async function fetchMenuData(
     categoriesQuery,
     itemsQuery,
     includeUnavailable
-      ? supabase.rpc("get_published_catalog")
+      ? supabase.rpc("get_published_catalog").abortSignal(signal)
       : Promise.resolve(null),
   ]);
 
@@ -230,7 +236,9 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
         let request = menuRequests.get(cacheKey);
 
         if (!request || force) {
-          request = fetchMenuData(includeUnavailable);
+          request = withRequestDeadline((signal) =>
+            fetchMenuData(includeUnavailable, signal),
+          );
           menuRequests.set(cacheKey, request);
           menuRequestVersions.set(
             cacheKey,
