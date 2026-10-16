@@ -39,6 +39,8 @@ Customer checkpoint, 16 October: free Whole Milk was applied to the hosted catal
 
 The operator's final sample-data choice is the current hosted database. An explicitly approved private backup was saved outside Git; the coherent 20-month dataset has not been loaded at this checkpoint. New Lalamove sandbox credentials were validated read-only and saved in Vercel Production/Preview; their activation requires a new Customer deployment.
 
+Publication follow-up: the Customer checkpoint is now live at `https://jaydscafe.vercel.app`, deployment `dpl_DnWYAGQBdREdi6j7X4aDEzVD87eC`. Local and hosted fixture regressions and the actual public read-only startup/catalogue check pass. This deployment activates the updated Production sandbox environment; complete courier outcomes remain untested. Previous main is tagged `pre-customer-startup-2026-10-16`. The wider branch also has clearer labels for known legacy stock setup notes; immutable source records remain intact. The wider Admin/finance release and sample dataset are still pending.
+
 - Shared read-only server quote endpoint for ordinary Customer/POS checkout totals. The SC/PWD workflow is cancelled, not a remaining implementation gate.
 - Supporting document uploads for expenses; input VAT for stock purchases and full reconciliation review. The current expense form records a document reference and reviewed operating-expense input VAT only.
 - Customer carousel swipe/interruption and return-state improvements, keyboard-safe fixed actions, consistent 120/180/220 ms motion and reduced-motion behavior across affected flows.
