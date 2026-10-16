@@ -23,3 +23,15 @@ Tested Customer release commit: `fe5985952546fe6f1c04850aea2693eceb4c8dc2`. Equi
 **BLOCKED on operator/direct inputs:** actual physical stock counts, pickup capacities/closures, delivery-fee tax treatment, owner tax inputs and the remaining physical/provider checks. Sample history cannot clear these gates. This is not a clean defense sign-off.
 
 Evidence hashes and compact results: [Customer audit evidence](evidence/2026-10-16-customer-startup.json). Raw logs, screenshots and all private configuration stay in ignored `.codex-logs/`.
+
+## Hosted staging follow-up
+
+The first Preview build failed because that environment did not contain the public Supabase settings. A Production-target deployment was then staged with `--skip-domain`, retaining the public site's existing alias during verification. That staged build passed.
+
+A fresh anonymous browser used the actual hosted catalogue, delayed its read and inspected the result without creating orders or changing records. **PASS:** the configured 2,500 ms logo (2,930 ms observed from the first visible hosted frame, including hydration), no cup/old sentence, banner retained beyond the former fixed fallback, then 52 actual published products, free Whole Milk selected and Oat Milk unselected. No runtime errors or writes. The 55-product matrix above is a separate fixture dataset.
+
+The initial probe was corrected to use normal hosted time, the menu browsing route, the actual catalogue count and the read-only configuration-availability RPC. Pausing browser time before hydration and expecting a Home page to contain menu cards were probe errors, not passing evidence.
+
+Cross-page offline navigation is verified by `customer-pwa-browser.ts` with the real service worker installed. The general Customer fixture harness disables service workers to isolate remote writes; its former cross-page offline check depended on an incidental warm router cache and failed on the hosted run. That unsuitable check was moved out of its scope; its ordinary Add to Bag/return/cart assertion remains. The separate real-worker offline test passed and is the evidence for offline navigation/draft recovery.
+
+**Final hosted fixture regression: PASS.** The complete 55-product/nine-width matrix passed against the staged Vercel build, followed by a passing local repeat with the same corrected harness. Three fixture checkout requests yielded one canonical fixture sale; Account/QR, milk defaults, return-to-menu, promotions, recommendations and recovery passed with zero browser runtime errors. Remote writes were intercepted into the fixture, not sent to the hosted business database.

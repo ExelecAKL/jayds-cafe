@@ -146,6 +146,101 @@
       "sandboxEndpointPreserved": true,
       "deployed": false,
       "backupPrivate": true
+    },
+    "customerFinalLocal": {
+      "base": "http://127.0.0.1:4320",
+      "isolated": true,
+      "products": 55,
+      "widths": [
+        360,
+        390,
+        430,
+        768,
+        834,
+        844,
+        1024,
+        1180,
+        1280
+      ],
+      "continuousCategorySections": 7,
+      "categoryJumpAndScrollTracking": true,
+      "tabletAndLandscapeMenuAligned": true,
+      "soldOutPricesVisibleAndGrey": true,
+      "favoritesOnProductDetailsOnly": true,
+      "automaticReturnToMenuAfterAdd": true,
+      "gpsOnlyAfterTap": 1,
+      "checkoutRequests": 3,
+      "canonicalSales": 1,
+      "voucherValidations": 3,
+      "voucherAndPointsReview": true,
+      "includedWholeMilkDefault": true,
+      "paidMilkOptional": true,
+      "compactAccountQr": true,
+      "crossPageOfflineScope": "Separate real-service-worker PWA suite",
+      "homePersonalRecommendations": true,
+      "recommendationReads": 23,
+      "controlledLocalMetrics": {
+        "lcp": 268,
+        "cls": 0,
+        "interaction": 0
+      },
+      "metricScope": "Local fixture browser timings, not production measurements or field INP.",
+      "errors": []
+    },
+    "customerHostedFixture": {
+      "base": "https://jaydscafe-3k229r07k-aaron-martinezs-projects-ea1c41f7.vercel.app",
+      "isolated": true,
+      "products": 55,
+      "widths": [
+        360,
+        390,
+        430,
+        768,
+        834,
+        844,
+        1024,
+        1180,
+        1280
+      ],
+      "continuousCategorySections": 7,
+      "categoryJumpAndScrollTracking": true,
+      "tabletAndLandscapeMenuAligned": true,
+      "soldOutPricesVisibleAndGrey": true,
+      "favoritesOnProductDetailsOnly": true,
+      "automaticReturnToMenuAfterAdd": true,
+      "gpsOnlyAfterTap": 1,
+      "checkoutRequests": 3,
+      "canonicalSales": 1,
+      "voucherValidations": 3,
+      "voucherAndPointsReview": true,
+      "includedWholeMilkDefault": true,
+      "paidMilkOptional": true,
+      "compactAccountQr": true,
+      "crossPageOfflineScope": "Separate real-service-worker PWA suite",
+      "homePersonalRecommendations": true,
+      "recommendationReads": 22,
+      "controlledLocalMetrics": {
+        "lcp": 408,
+        "cls": 0,
+        "interaction": 0
+      },
+      "metricScope": "Local fixture browser timings, not production measurements or field INP.",
+      "errors": []
+    },
+    "hostedReadOnly": {
+      "status": "PASS",
+      "hostedStagedDeployment": "https://jaydscafe-3k229r07k-aaron-martinezs-projects-ea1c41f7.vercel.app",
+      "actualPublicCatalog": true,
+      "products": 52,
+      "configuredLogoDurationMs": 2500,
+      "observedLogoMs": 2930,
+      "cupRemoved": true,
+      "oldSentenceRemoved": true,
+      "bannerWaitsBeyondFixedFallback": true,
+      "includedMilkSelected": true,
+      "paidMilkOptIn": true,
+      "zeroWrites": true,
+      "errors": []
     }
   },
   "sha256": {
@@ -158,7 +253,11 @@
     "milk-defaults-hosted-ui": "58026c9e6b81ec263c18f1e510f4095ca6e33c1f4d098fea736dd702e6350687",
     "milk-defaults-hosted-result": "913b9fd10c0f63121d6e762598e0913050870ba5b443f3ecb532e4f70735b11a",
     "lalamove-sandbox-validation": "4fd3d13589a4534a841b8570906cf15b11e568e75d13b417fa78414585df2eba",
-    "lalamove-credential-update-result": "9fa742ca56d496831edf38ba0374a363586ea0175e2c4f36e7b7f237f94f4a51"
+    "lalamove-credential-update-result": "9fa742ca56d496831edf38ba0374a363586ea0175e2c4f36e7b7f237f94f4a51",
+    "customerFinalLocal": "f390e795ca9c42a6083e5e4bf3ef5cc4dcd371f011bc06a4f563824d0ab122c8",
+    "customerHostedFixture": "ead391e8bbdbe027da80f4b4974593e12eadbc2b76abfd939fb49f89d047ef72",
+    "hostedReadOnly": "be70312898edcc8162c5c2c09b11ad756211a78dbf3ea78a7a9ae7e220946d6e",
+    "stagedBuild": "519d789033c4bcc47ab1740d5eba758c9611b0db7678f7055045ab99ec04bb6a"
   },
   "sourceSha256": {
     "apps/customer/components/BrandLoader.tsx": "be245bf2b8af454be8dc2ecf7e5a202be407474752c323c99a0857f30c5c2a16",
@@ -171,9 +270,12 @@
     "packages/shared/src/hooks/useMenu.ts": "d011c42b37a0c3274514de116bbbd72e65ac002c7cda9fde404aa71ab5372605",
     "packages/shared/src/utils/request.ts": "cdb266864a5e012ac8ba3f867abc507db4c5126acf401053b2679a871e30fcc4",
     "packages/shared/src/supabase/client.ts": "bf4964c908ff417d85515123522d8fad986e774931dda5f1d95b1dba28dd3add",
-    "tests/customer-browser.ts": "27a0409fac0f97af8f26aa1d46892d21d7af927b4529f68c51c507147b12ed9f",
+    "tests/customer-browser.ts": "98a16d54f9fb77a130067d1d825c8543eb73fdfccc774d1aba1fd261e5c38b38",
     "tests/customer-motion-browser.ts": "22ffcbf415e380ba74717f7f033f738ab8912c1e1e0ed16e9115aacb6cd00f0a",
     "tests/customer-pwa-browser.ts": "1699d1f75d184cf5bf8efa68a299d0b29bcdb65dbc39c0ccd5736d33761772b3",
     "tests/menu-defaults.test.ts": "e3b09ba66f6cf402ef433f671a27e21aa7e1d1fa82e7cd19e10496de35c693d3"
-  }
+  },
+  "deploymentSourceCommit": "d7772c6ab68a2f9b901feba101e47c1e197a330f",
+  "applicationSourceUnchangedAfterBuild": true,
+  "offlineScope": "Real-service-worker PWA suite; general fixture harness blocks workers and does not establish cross-page offline support"
 }
