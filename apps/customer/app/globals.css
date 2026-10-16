@@ -943,6 +943,30 @@ textarea {
 .detail-mobile-summary .price-unavailable {
   color: #737373;
 }
+.product-card.is-sold-out .product-art {
+  background: #e9e7e5;
+}
+.product-card.is-sold-out .product-image,
+.product-card.is-sold-out .product-placeholder {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+.product-card.is-sold-out .product-name,
+.product-card.is-sold-out .product-description,
+.product-card.is-sold-out .product-configuration,
+.product-card.is-sold-out .product-reason {
+  color: #737373;
+}
+.product-card.is-sold-out .product-select {
+  background: #e7e5e4;
+  color: #666;
+}
+.product-card.is-sold-out .product-select:hover {
+  background: #d6d3d1;
+}
+.product-card.is-sold-out .sold-out-label {
+  background: #666;
+}
 .home-carousel-price.price-unavailable {
   color: #c4c4c4;
 }

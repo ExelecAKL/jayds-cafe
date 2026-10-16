@@ -858,6 +858,9 @@ try {
       }),
     });
     await expect(soldOutCard.locator(".product-price")).toHaveText("₱145.00");
+    await expect(soldOutCard).toHaveClass(/is-sold-out/);
+    await expect(soldOutCard.locator('.product-image, .product-placeholder').first()).toHaveCSS('filter','grayscale(1)');
+    await expect(soldOutCard.locator('.product-select')).toHaveCSS('background-color','rgb(231, 229, 228)');
     await expect(soldOutCard.locator(".product-price")).toHaveCSS(
       "color",
       "rgb(115, 115, 115)",

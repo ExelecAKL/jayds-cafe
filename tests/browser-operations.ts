@@ -789,7 +789,7 @@ async function attach(
   return base;
 }
 const browser = await chromium.launch({
-  channel: "chrome",
+  channel: process.env.JAYDS_BROWSER_CHANNEL || "chrome",
   headless: true,
   args: ["--use-fake-device-for-media-stream"],
 });

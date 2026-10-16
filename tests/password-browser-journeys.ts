@@ -180,6 +180,9 @@ async function exercise(input: Locator) {
     toggle = wrapper.getByRole("button");
   await expect(input).toHaveAttribute("type", "password");
   await input.fill("FixturePass1");
+  await expect(wrapper.getByRole('button')).toHaveCount(1);
+  if(process.env.JAYDS_BROWSER_CHANNEL==='msedge')
+    assert.equal(await input.evaluate(el=>getComputedStyle(el,'::-ms-reveal').display),'none','Edge native reveal is suppressed alongside the single app control');
   await toggle.click();
   await expect(input).toHaveAttribute("type", "text");
   await expect(input).toHaveValue("FixturePass1");

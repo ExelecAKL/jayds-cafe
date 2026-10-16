@@ -55,7 +55,7 @@ export default function MenuCard({
     Number(item.price) +
       (defaults?.reduce((sum, v) => sum + v.price_modifier, 0) ?? 0);
   return (
-    <article className={`product-card ${className}`}>
+    <article className={`product-card${item.is_available ? "" : " is-sold-out"} ${className}`}>
       <div className="product-art">
         <Link
           href={`/menu/browse/${item.id}`}

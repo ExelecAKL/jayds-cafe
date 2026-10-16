@@ -1,5 +1,6 @@
 "use client";
 import { useId, useState, type InputHTMLAttributes } from "react";
+import './password-input.css';
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
   secretName?: string;
 };
