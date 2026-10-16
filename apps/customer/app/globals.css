@@ -1589,7 +1589,7 @@ textarea {
   }
 }
 
-/* Familiar Jayds startup, with fast transitions instead of a forced long wait. */
+/* Logo introduction, then a banner while session and catalog reads settle. */
 .startup-overlay {
   position: fixed;
   inset: 0;
@@ -1598,7 +1598,7 @@ textarea {
   background: #fbf5ee;
   opacity: 1;
   transition: opacity 220ms ease;
-  pointer-events: none;
+  pointer-events: auto;
 }
 .startup-overlay.is-leaving {
   opacity: 0;
@@ -1611,8 +1611,8 @@ textarea {
   align-items: center;
   justify-content: center;
   transition:
-    opacity 200ms ease,
-    transform 240ms var(--ease-out-expo);
+    opacity 220ms ease,
+    transform 220ms var(--ease-out-expo);
 }
 .startup-logo-scene.is-hidden {
   opacity: 0;
@@ -1676,15 +1676,6 @@ textarea {
   font-size: 15px;
   letter-spacing: 0.06em;
   line-height: 1.8;
-}
-.brand-loader-cup {
-  display: grid;
-  place-items: center;
-  width: 58px;
-  height: 58px;
-  background: #efdeca;
-  border-radius: 20px;
-  margin-top: 8px;
 }
 .brand-loader p {
   font-size: 13px;
@@ -2110,3 +2101,6 @@ details[open] > :not(summary) {
 @media(prefers-reduced-motion:no-preference){.help-form {animation:help-reveal 180ms ease-out;} .help-answers summary svg {transition:transform 120ms ease;} }
 @keyframes help-reveal {from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:640px){.help-intro h2{font-size:21px;}.help-content-grid{grid-template-columns:1fr;}.help-shortcuts{gap:10px;}.help-shortcuts > *{padding:15px 12px;gap:10px;}.help-shortcuts > * > svg:last-child{display:none;}.help-shortcuts > * > span{font-size:12px;}.help-shortcuts small{font-size:10px;line-height:1.5;}.help-answers,.help-request{padding:20px;}}
+
+.startup-retry {display:grid;justify-items:center;gap:10px;}
+.startup-retry .btn-secondary {min-height:44px;padding:8px 20px;}

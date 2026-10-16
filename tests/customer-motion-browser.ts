@@ -88,8 +88,13 @@ await context.addInitScript(() => {
   }).observe({ type: "layout-shift", buffered: true });
 });
 await context.routeWebSocket("**", (socket) => socket.close());
-await context.route(/https:\/\/[^/]+\.supabase\.co\/.*/, (route) => {
+let releaseInitialCatalog!: () => void;
+const initialCatalogGate = new Promise<void>((resolve) => {
+  releaseInitialCatalog = resolve;
+});
+await context.route(/https:\/\/[^/]+\.supabase\.co\/.*/, async (route) => {
   const pathname = new URL(route.request().url()).pathname;
+  if (pathname.endsWith("get_published_catalog")) await initialCatalogGate;
   return route.fulfill({
     status: pathname.includes("/auth/") ? 401 : 200,
     json: pathname.endsWith("get_published_catalog")
@@ -164,10 +169,35 @@ try {
   }
   await assertOriginalLogoRatio(".startup-logo-scene .original-logo-image");
   await capture("startup-logo.png");
-  await page.clock.runFor(400);
+  await page.clock.runFor(2499);
+  assert.equal(
+    await page.locator(".startup-logo-scene:not(.is-hidden)").count(),
+    1,
+    "Logo remains until 2.5 seconds",
+  );
+  assert.equal(
+    await page.locator(".startup-welcome-scene.is-visible").count(),
+    0,
+  );
+  assert.equal(await page.locator(".brand-loader-cup").count(), 0);
+  await page.clock.runFor(1);
   await page.locator(".startup-welcome-scene.is-visible").waitFor();
-  await new Promise((resolve) => setTimeout(resolve, 220));
+  await page.clock.runFor(220);
   await capture("startup-welcome-banner.png");
+  await page.clock.runFor(5000);
+  assert.equal(
+    await page.locator(".startup-overlay:not(.is-leaving)").count(),
+    1,
+    "The banner waits for actual catalog loading beyond the former fixed fallback",
+  );
+  await page.locator('.startup-welcome-caption [role="status"]').waitFor();
+  releaseInitialCatalog();
+  await page
+    .getByRole("button", {
+      name: `Show featured slide 2: ${products[0].name}`,
+      exact: true,
+    })
+    .waitFor();
   for (
     let step = 0;
     step < 6 && (await page.locator(".startup-overlay").count());
@@ -403,6 +433,9 @@ try {
   );
   const report = {
     genuineLogoAndBanner: true,
+    logoDurationMs: 2500,
+    noCupOrGettingReadyCopy: true,
+    bannerWaitsForActualCatalog: true,
     phoneTabletWidths: [360, 390, 430, 768, 1024],
     originalLogoProportions: true,
     targets48px: true,
