@@ -10,6 +10,7 @@ import {
   Feedback,
 } from "../../../components/Operations";
 import { PaginatedTable } from "../../../components/PaginatedTable";
+import { stockAction, stockReason } from "../../../lib/stock-copy";
 type Entry = {
   id: string;
   actor_id: string | null;
@@ -123,11 +124,11 @@ export default function AuditPage() {
                         </small>
                       </td>
                       <td>
-                        <Badge>{r.action}</Badge>
+                        <Badge>{stockAction(r.action)}</Badge>
                       </td>
                       <td>
                         {r.entity}
-                        <small>{r.reason}</small>
+                        <small>{stockReason(r.reason)}</small>
                       </td>
                       <td>{r.actor_id?.slice(0, 8) ?? "System"}</td>
                       <td>

@@ -1,6 +1,7 @@
 "use client";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { notifyAdmin } from "./AdminToasts";
+import { stockReason } from "../lib/stock-copy";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -1396,7 +1397,7 @@ export default function InventoryWorkspace() {
                           {quantity(row.balance_after)}
                         </td>
                         <td style={{ whiteSpace: "normal", maxWidth: 250 }}>
-                          {row.reason}
+                          {stockReason(row.reason)}
                           {row.order_id && <small>Connected to an order</small>}
                         </td>
                         <td>
@@ -1485,7 +1486,7 @@ export default function InventoryWorkspace() {
                             {row.state}
                           </Badge>
                         </td>
-                        <td>{row.reason}</td>
+                        <td>{stockReason(row.reason)}</td>
                         <td>
                           <button
                             className="ops-button small"
@@ -1776,7 +1777,7 @@ export default function InventoryWorkspace() {
               .map((row) => (
                 <div className="ops-action-row" key={row.id}>
                   <div>
-                    <strong>{row.reason}</strong>
+                    <strong>{stockReason(row.reason)}</strong>
                     <p>
                       {businessDate(row.created_at)} · {row.movement_type}
                     </p>

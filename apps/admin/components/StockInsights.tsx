@@ -33,6 +33,7 @@ import {
 } from "./Operations";
 import { OrderDetailsModal } from "./OrderDetailsModal";
 import { notifyAdmin } from "./AdminToasts";
+import { stockReason } from "../lib/stock-copy";
 
 async function read<T>(name: string, args: Record<string, unknown>) {
   const { data, error } = await withRequestDeadline((signal) =>
@@ -200,7 +201,7 @@ export function StockRecordDrawer({
               </div>
             ))}
           </div>
-          <p className="ops-record-reason">{d.record.reason}</p>
+          <p className="ops-record-reason">{stockReason(d.record.reason)}</p>
           {d.order ? (
             <button
               className="ops-source-card"
