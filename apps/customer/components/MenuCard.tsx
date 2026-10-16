@@ -3,7 +3,6 @@ import { useState } from "react";
 import Link from "./OfflineMenuLink";
 import type { MenuItem, SelectedVariant } from "@cafeos/shared/types";
 import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
-import FavoriteButton from "./FavoriteButton";
 import Icon from "./Icon";
 import { categoryIcon } from "../utils/menuArtwork";
 function defaultConfiguration(item: MenuItem): SelectedVariant[] | null {
@@ -83,7 +82,6 @@ export default function MenuCard({
             </div>
           )}
         </Link>
-        <FavoriteButton item={item} className="absolute right-2 top-2" />
         {!item.is_available && <span className="sold-out-label">Sold out</span>}
       </div>
       <div className="product-copy">
@@ -100,7 +98,9 @@ export default function MenuCard({
           </p>
         )}
         <div className="product-footer">
-          <span className="product-price">
+          <span
+            className={`product-price${item.is_available ? "" : " price-unavailable"}`}
+          >
             {!defaults && (item.variants?.length ?? 0) > 0 ? "From " : ""}₱
             {price.toFixed(2)}
           </span>

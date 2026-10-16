@@ -271,16 +271,18 @@ try {
     console.log(JSON.stringify({ runtimeErrors }));
     throw error;
   }
+  await page.waitForURL(base + "/menu/browse");
   await page
-    .getByRole("link", { name: /View bag/ })
-    .first()
+    .getByRole("heading", { name: "Offline fixture coffee", exact: true })
     .waitFor();
   const draft = await page.evaluate(
     () => JSON.parse(localStorage.getItem("cafeos-cart:guest") ?? "{}").items,
   );
   assert.equal(draft.length, 1);
   await page.reload();
-  await page.getByRole("button", { name: /Add to bag/ }).waitFor();
+  await page
+    .getByRole("heading", { name: "Offline fixture coffee", exact: true })
+    .waitFor();
   assert.equal(
     await page.evaluate(
       () =>
@@ -290,8 +292,6 @@ try {
     1,
     "Worker reload retains the draft",
   );
-  await page.getByRole("link", { name: "Go back", exact: true }).click();
-  await page.waitForURL(base + "/menu/browse");
   await page
     .getByRole("heading", { name: "Offline fixture coffee", exact: true })
     .waitFor();
@@ -330,7 +330,9 @@ try {
     "Reconnection preserves the document",
   );
   assert.equal(
-    await page.getByLabel(/^A little note(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).inputValue(),
+    await page
+      .getByLabel(/^A little note(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
+      .inputValue(),
     "Preserve this unsaved note",
     "Reconnection preserves unsubmitted configuration",
   );
