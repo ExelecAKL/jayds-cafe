@@ -1,0 +1,179 @@
+{
+  "status": "PASS",
+  "testedReleaseCommit": "fe5985952546fe6f1c04850aea2693eceb4c8dc2",
+  "widerBranchCommit": "476c7d4504a435f9cc73c4c10c8ff849d751c2ad",
+  "scope": "Customer checkpoint; wider release and defense gates remain",
+  "checks": {
+    "customer": {
+      "base": "http://127.0.0.1:4320",
+      "isolated": true,
+      "products": 55,
+      "widths": [
+        360,
+        390,
+        430,
+        768,
+        834,
+        844,
+        1024,
+        1180,
+        1280
+      ],
+      "continuousCategorySections": 7,
+      "categoryJumpAndScrollTracking": true,
+      "tabletAndLandscapeMenuAligned": true,
+      "soldOutPricesVisibleAndGrey": true,
+      "favoritesOnProductDetailsOnly": true,
+      "automaticReturnToMenuAfterAdd": true,
+      "gpsOnlyAfterTap": 1,
+      "checkoutRequests": 3,
+      "canonicalSales": 1,
+      "voucherValidations": 3,
+      "voucherAndPointsReview": true,
+      "includedWholeMilkDefault": true,
+      "paidMilkOptional": true,
+      "compactAccountQr": true,
+      "homePersonalRecommendations": true,
+      "recommendationReads": 21,
+      "controlledLocalMetrics": {
+        "lcp": 228,
+        "cls": 0,
+        "interaction": 0
+      },
+      "metricScope": "Local fixture browser timings, not production measurements or field INP.",
+      "errors": []
+    },
+    "motion": {
+      "genuineLogoAndBanner": true,
+      "logoDurationMs": 2500,
+      "noCupOrGettingReadyCopy": true,
+      "bannerWaitsForActualCatalog": true,
+      "phoneTabletWidths": [
+        360,
+        390,
+        430,
+        768,
+        1024
+      ],
+      "originalLogoProportions": true,
+      "targets48px": true,
+      "carouselUsesPublishedFixtures": true,
+      "stableSlideGeometry": true,
+      "keyboardFocusPreserved": true,
+      "autoplayPausesForFocus": true,
+      "touchSwipeBothDirections": true,
+      "touchPausesAutoplay": true,
+      "verticalGesturePreserved": true,
+      "swipeDoesNotFollowLink": true,
+      "reducedMotion": true,
+      "controlledLocalCls": 0.0015465782065392363,
+      "productionMetricsNotMeasured": true,
+      "errors": []
+    },
+    "pwa": {
+      "realServiceWorker": true,
+      "publicCacheOnly": true,
+      "offlineReload": true,
+      "offlineDraftEditing": true,
+      "draftPreserved": true,
+      "reconnectionPreservesDocumentAndNotes": true,
+      "cachedResources": 135,
+      "remoteNetworkDenied": true,
+      "remoteOrigins": [
+        "https://segzigvrcgxdjskfltju.supabase.co"
+      ],
+      "remoteFrameRequests": 14,
+      "remoteWorkerRequests": 0,
+      "runtimeErrors": [],
+      "realAndroidIosNotVerified": true
+    },
+    "milk-defaults-hosted-ui": {
+      "status": "PASS",
+      "publicCatalog": true,
+      "hostedUi": true,
+      "freeDefaultGroups": 9,
+      "paidSubstitutionsOptIn": true,
+      "stockEnforcement": true,
+      "errors": []
+    },
+    "milk-defaults-hosted-result": {
+      "catalogVersion": 38553,
+      "freeMilkDefaults": 9,
+      "historicalOrdersAndStockUnchanged": true,
+      "migration": "20261013000300",
+      "preservedBusinessTables": 9
+    },
+    "lalamove-sandbox-validation": {
+      "readOnlyEndpoint": "/v3/cities",
+      "market": "PH",
+      "httpStatus": 200,
+      "authenticated": true,
+      "cityCount": 7
+    },
+    "lalamove-credential-update-result": {
+      "changedAt": "2026-10-16T10:19:43.462Z",
+      "project": "jaydscafe",
+      "changed": [
+        {
+          "name": "LALAMOVE_API_SECRET",
+          "targets": [
+            "production",
+            "preview"
+          ]
+        },
+        {
+          "name": "LALAMOVE_API_KEY",
+          "targets": [
+            "production",
+            "preview"
+          ]
+        },
+        {
+          "name": "LALAMOVE_BASE_URL",
+          "targets": [
+            "production",
+            "preview"
+          ]
+        }
+      ],
+      "localFile": "apps/customer/.env.local",
+      "localNames": [
+        "LALAMOVE_API_KEY",
+        "LALAMOVE_API_SECRET",
+        "LALAMOVE_BASE_URL"
+      ],
+      "remoteVerified": true,
+      "sandboxEndpointPreserved": true,
+      "deployed": false,
+      "backupPrivate": true
+    }
+  },
+  "sha256": {
+    "customer": "e09b0ff53b098ac5bb822995c24a968d8ea8664f0e62a9758387637487326882",
+    "motion": "803f77ac1557fe74db927b5571a4813c76b5a6d0282fd3f955d3c9c715f56f38",
+    "pwa": "64e183b86ddfd0e7dfae3817f446f72cb53cb6f323bf164e980386962c08641f",
+    "backend": "09bc60301b6dcc1abb9eff9dc471acf6c1802e38c2c6eb11586fc417155c52b0",
+    "build": "5485e5a8581db238b093f0619c560fb90763def8cd352a2dd67c72e6faa09266",
+    "types": "2a15c23c73dcb633aa3598feeded2fc5d689cbb6fc560330327c86e641849c8c",
+    "milk-defaults-hosted-ui": "58026c9e6b81ec263c18f1e510f4095ca6e33c1f4d098fea736dd702e6350687",
+    "milk-defaults-hosted-result": "913b9fd10c0f63121d6e762598e0913050870ba5b443f3ecb532e4f70735b11a",
+    "lalamove-sandbox-validation": "4fd3d13589a4534a841b8570906cf15b11e568e75d13b417fa78414585df2eba",
+    "lalamove-credential-update-result": "9fa742ca56d496831edf38ba0374a363586ea0175e2c4f36e7b7f237f94f4a51"
+  },
+  "sourceSha256": {
+    "apps/customer/components/BrandLoader.tsx": "be245bf2b8af454be8dc2ecf7e5a202be407474752c323c99a0857f30c5c2a16",
+    "apps/customer/components/StartupOverlay.tsx": "9825a1594b9b9a0341b9f9a3ab8ee71eee95c7050dc9f464e4dd7cbf1dbb2997",
+    "apps/customer/context/StartupLoadingContext.tsx": "04e175a8d302bb393efef558cd2e1a0f03bfebb0717d7965b10ef2a8b5bdac8e",
+    "apps/customer/app/globals.css": "8a316180de8d5fbc9e4e994b5fcb072c3dc0ea71887b54d2a1bff02e38580263",
+    "apps/customer/app/(shop)/account/page.tsx": "8b685a86aeccf64b52502f71c64f69736e6c3d2cc0966b290ef1d58f9ba4ff46",
+    "apps/customer/components/HomeCarousel.tsx": "c9a133096fd8b907c93e7379abfbcf91f658f3acfd14cc44a8f8163e13668313",
+    "apps/customer/utils/orderReorder.ts": "ebf9971b7672ea08f9b9ff9a8cde4c8247cb0a86c9dc3bfe28d5b7a1e0a55db0",
+    "packages/shared/src/hooks/useMenu.ts": "d011c42b37a0c3274514de116bbbd72e65ac002c7cda9fde404aa71ab5372605",
+    "packages/shared/src/utils/request.ts": "cdb266864a5e012ac8ba3f867abc507db4c5126acf401053b2679a871e30fcc4",
+    "packages/shared/src/supabase/client.ts": "bf4964c908ff417d85515123522d8fad986e774931dda5f1d95b1dba28dd3add",
+    "tests/customer-browser.ts": "27a0409fac0f97af8f26aa1d46892d21d7af927b4529f68c51c507147b12ed9f",
+    "tests/customer-motion-browser.ts": "22ffcbf415e380ba74717f7f033f738ab8912c1e1e0ed16e9115aacb6cd00f0a",
+    "tests/customer-pwa-browser.ts": "1699d1f75d184cf5bf8efa68a299d0b29bcdb65dbc39c0ccd5736d33761772b3",
+    "tests/menu-defaults.test.ts": "e3b09ba66f6cf402ef433f671a27e21aa7e1d1fa82e7cd19e10496de35c693d3"
+  }
+}
