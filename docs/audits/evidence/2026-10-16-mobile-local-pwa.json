@@ -1,0 +1,17 @@
+{
+  "realServiceWorker": true,
+  "publicCacheOnly": true,
+  "offlineReload": true,
+  "offlineDraftEditing": true,
+  "draftPreserved": true,
+  "reconnectionPreservesDocumentAndNotes": true,
+  "cachedResources": 136,
+  "remoteNetworkDenied": true,
+  "remoteOrigins": [
+    "https://segzigvrcgxdjskfltju.supabase.co"
+  ],
+  "remoteFrameRequests": 13,
+  "remoteWorkerRequests": 0,
+  "runtimeErrors": [],
+  "realAndroidIosNotVerified": true
+}
