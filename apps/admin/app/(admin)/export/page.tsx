@@ -3,7 +3,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { createUuid } from "@cafeos/shared/utils/uuid";
-import { PageHeader, Feedback, Icon } from "../../../components/Operations";
+import {
+  PageHeader,
+  Feedback,
+  Icon,
+  LoadingRows,
+} from "../../../components/Operations";
 import { notifyAdmin } from "../../../components/AdminToasts";
 import { dataZip, recordsCsv } from "../../../utils/exportData";
 type Table = {
@@ -212,9 +217,7 @@ export default function ExportPage() {
             </label>
           </div>
           {loading ? (
-            <div role="status" className="ops-empty">
-              Loading export options…
-            </div>
+            <LoadingRows label="Loading export options…" />
           ) : (
             sections.map((section) => {
               const tables = catalog.filter(

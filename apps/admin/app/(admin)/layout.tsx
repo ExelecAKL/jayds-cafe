@@ -10,6 +10,8 @@ import { resolveCustomerPortalUrl } from "@cafeos/shared/customer-url";
 import { OperationsProvider } from "../../components/Operations";
 import { Topbar } from "../../components/Topbar";
 import { Sidebar } from "../../components/Sidebar";
+import { BrandArtwork } from "@cafeos/shared/brand";
+import { LoadingRows } from "../../components/Operations";
 
 export default function AdminLayout({
   children,
@@ -74,7 +76,16 @@ export default function AdminLayout({
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center space-y-4 p-6">
-          <p role="status">
+          <div style={{ width: 220, margin: "0 auto" }}>
+            <BrandArtwork variant="lockup" />
+          </div>
+          {!profileError && !sessionError && (
+            <LoadingRows label="Opening Admin…" rows={2} />
+          )}
+          <p
+            role="status"
+            className={profileError || sessionError ? "" : "sr-only"}
+          >
             {profileError || sessionError
               ? "Let’s reconnect your account"
               : "Opening Admin…"}

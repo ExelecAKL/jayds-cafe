@@ -10,7 +10,8 @@ import type { Category } from "@cafeos/shared/types";
 type ManagedCategory = Category & { status?: "active" | "archived" };
 import { Pagination } from "../../../components/Pagination";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
-import { Feedback } from "../../../components/Operations";
+import { Feedback, LoadingRows } from "../../../components/Operations";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { AdminDialog } from "../../../components/AdminDialog";
 import { notifyAdmin } from "../../../components/AdminToasts";
 
@@ -19,6 +20,7 @@ export default function CategoriesPage() {
   const [actionError, setActionError] = useState("");
   const [categories, setCategories] = useState<ManagedCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -39,15 +41,27 @@ export default function CategoriesPage() {
   const pageSize = 10;
 
   const fetchCategories = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("categories")
-      .select("*")
-      .order("sort_order", { ascending: true });
-
-    if (!error) {
+    setLoading(true);
+    try {
+      const { data, error } = await withRequestDeadline((signal) =>
+        supabase
+          .from("categories")
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .abortSignal(signal),
+      );
+      if (error) throw Error("Categories could not load. Please try again.");
       setCategories((data as Category[]) || []);
+      setLoadError("");
+    } catch (error) {
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : "Categories could not load. Please try again.",
+      );
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -280,7 +294,16 @@ export default function CategoriesPage() {
 
   return (
     <div>
-      <Feedback error={actionError} />
+      <Feedback error={actionError || loadError} />
+      {loadError && (
+        <button
+          className="ops-button"
+          disabled={loading}
+          onClick={() => void fetchCategories()}
+        >
+          Retry categories
+        </button>
+      )}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
         <button
@@ -333,9 +356,7 @@ export default function CategoriesPage() {
       {/* Categories List */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center">
-            <div className="w-8 h-8 mx-auto border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
-          </div>
+          <LoadingRows label="Loading categories…" />
         ) : (
           <div className="divide-y divide-gray-50 flex flex-col h-full">
             <div className="flex-1">

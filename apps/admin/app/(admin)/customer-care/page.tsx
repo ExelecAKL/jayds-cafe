@@ -295,9 +295,7 @@ export default function CustomerCare() {
             </div>
           )}
           {operationsLoading && !ops && !operationsError && (
-            <p role="status" className="mb-3 text-sm">
-              Loading provider recovery…
-            </p>
+            <LoadingRows label="Loading provider recovery…" rows={3} />
           )}
           {!operationsLoading &&
             !operationsError &&
@@ -341,9 +339,7 @@ export default function CustomerCare() {
           </div>
         )}
         {operationsLoading && !paymentReviews && !paymentReviewsError && (
-          <p role="status" className="text-sm">
-            Loading flagged orders…
-          </p>
+          <LoadingRows label="Loading flagged orders…" rows={3} />
         )}
         {!operationsLoading &&
           !paymentReviewsError &&

@@ -11,6 +11,7 @@ import {
 import { supabase } from "@cafeos/shared/supabase/client";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import type { PostgrestError } from "@supabase/supabase-js";
+import { usePathname } from "next/navigation";
 import type {
   StockItem,
   StockBatch,
@@ -155,6 +156,11 @@ async function allOperationRows<T>(
   }
 }
 export function OperationsProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const needsOperations =
+    /(?:^|\/)(dashboard|inventory|purchasing|menu|scheduling)(?:\/|$)/.test(
+      pathname,
+    );
   const [state, setState] = useState<Omit<State, "refresh" | "run">>({
     stock: [],
     batches: [],
@@ -173,8 +179,12 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   });
   const mounted = useRef(true);
   const generation = useRef(0);
-  const refresh = useCallback(async () => {
+  const readOnce = useCallback(async () => {
     const request = ++generation.current;
+    setState((previous) => ({
+      ...previous,
+      loading: previous.lastUpdated === null,
+    }));
     try {
       const results = await withRequestDeadline((signal) =>
         Promise.all([
@@ -271,6 +281,22 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
         }));
     }
   }, []);
+  const activeRead = useRef<Promise<void> | null>(null);
+  const readPending = useRef(false);
+  const refresh = useCallback(() => {
+    readPending.current = true;
+    if (activeRead.current) return activeRead.current;
+    const work = async () => {
+      do {
+        readPending.current = false;
+        await readOnce();
+      } while (readPending.current && mounted.current);
+    };
+    activeRead.current = work().finally(() => {
+      activeRead.current = null;
+    });
+    return activeRead.current;
+  }, [readOnce]);
   const run = useCallback(
     async (name: string, args: Record<string, unknown> = {}) => {
       const { data, error } = await supabase.rpc(name, args);
@@ -287,13 +313,16 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   );
   useEffect(() => {
     mounted.current = true;
-    void refresh();
+    if (needsOperations) void refresh();
+    else setState((previous) => ({ ...previous, loading: false, error: "" }));
     const channel = supabase
       .channel("jayds-operations")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "catalog_state" },
-        () => void refresh(),
+        () => {
+          if (needsOperations) void refresh();
+        },
       )
       .subscribe((status) =>
         setState((previous) => ({
@@ -302,11 +331,16 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
         })),
       );
     const poll = setInterval(() => {
-      if (document.visibilityState === "visible") void refresh();
-    }, 30_000);
+      if (
+        needsOperations &&
+        document.visibilityState === "visible" &&
+        !activeRead.current
+      )
+        void refresh();
+    }, 60_000);
     const online = () => {
       setState((previous) => ({ ...previous, connected: navigator.onLine }));
-      if (navigator.onLine) void refresh();
+      if (needsOperations && navigator.onLine) void refresh();
     };
     window.addEventListener("online", online);
     window.addEventListener("offline", online);
@@ -319,7 +353,7 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
       window.removeEventListener("focus", online);
       void supabase.removeChannel(channel);
     };
-  }, [refresh]);
+  }, [refresh, needsOperations]);
   return (
     <Context.Provider value={{ ...state, refresh, run }}>
       {children}

@@ -9,7 +9,7 @@ import {
 } from "@cafeos/shared/finance/invoice";
 import { estimateOsdIncomeTax } from "@cafeos/shared/finance/calculations";
 import { manilaDate } from "@cafeos/shared/customer/scheduling";
-import { PageHeader, Drawer, Feedback, peso } from "./Operations";
+import { PageHeader, Drawer, Feedback, LoadingRows, peso } from "./Operations";
 import { notifyAdmin } from "./AdminToasts";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import {
@@ -260,7 +260,7 @@ function FinanceSession() {
           </button>
         ))}
       </nav>
-      {loading && <p role="status">Loading finance records…</p>}
+      {loading && <LoadingRows label="Loading finance records…" />}
       {Number(report?.pending_invoices) > 0 && (
         <p role="status" className="ops-feedback">
           {report?.pending_invoices} posted payments await invoice setup or

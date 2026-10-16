@@ -103,6 +103,99 @@ export async function adminLoadingJourneys({
     "Failed product loading cannot save empty recipes; retry restores the editor",
   );
   await page.keyboard.press("Escape");
+  const categories = await stall(/\/rest\/v1\/categories(?:\?|$)/);
+  await page.goto(base + "/categories");
+  await categories.started;
+  await page
+    .getByPlaceholder("Category name")
+    .fill("Retained during reconnect");
+  await expect(
+    page.getByRole("button", { name: "Retry categories", exact: true }),
+  ).toBeEnabled({ timeout: 20000 });
+  await expect(
+    page.getByRole("status", { name: "Loading categories…", exact: true }),
+  ).toHaveCount(0);
+  categories.release();
+  await page
+    .getByRole("button", { name: "Retry categories", exact: true })
+    .click();
+  await expect(
+    page.getByText("Espresso", { exact: true }).first(),
+  ).toBeVisible();
+  await expect(page.getByPlaceholder("Category name")).toHaveValue(
+    "Retained during reconnect",
+  );
+  results.push(
+    "Stalled categories leave the skeleton, retain entries and recover through Retry",
+  );
+  const unrelatedReads: string[] = [];
+  const recordUnrelated = (request: import("@playwright/test").Request) => {
+    if (
+      /\/rest\/v1\/(?:stock_overview|stock_batches|stock_movements|rpc\/admin_purchase_orders)(?:\?|$)/.test(
+        request.url(),
+      )
+    )
+      unrelatedReads.push(new URL(request.url()).pathname);
+  };
+  page.on("request", recordUnrelated);
+  await page.reload();
+  await expect(
+    page.getByText("Espresso", { exact: true }).first(),
+  ).toBeVisible();
+  await page.evaluate(() => {
+    for (let i = 0; i < 5; i++) window.dispatchEvent(new Event("focus"));
+  });
+  await page.waitForLoadState("networkidle");
+  page.off("request", recordUnrelated);
+  assert.deepEqual(
+    unrelatedReads,
+    [],
+    "Categories must not fetch the stock and purchasing workspace",
+  );
+  results.push(
+    "Categories and repeated focus events do not fetch unrelated stock or purchase history",
+  );
+  let purchaseReads = 0;
+  const countPurchaseRead = (request: import("@playwright/test").Request) => {
+    if (new URL(request.url()).pathname.endsWith("/rpc/admin_purchase_orders"))
+      purchaseReads++;
+  };
+  page.on("request", countPurchaseRead);
+  const purchaseRead = await stall(
+    /\/rest\/v1\/rpc\/admin_purchase_orders(?:\?|$)/,
+  );
+  await page
+    .getByRole("link", { name: "Stock & recipes", exact: true })
+    .click();
+  await purchaseRead.started;
+  await expect(
+    page.getByRole("status", { name: "Loading inventory…", exact: true }),
+  ).toBeVisible();
+  await page.evaluate(() => {
+    for (let i = 0; i < 5; i++) window.dispatchEvent(new Event("focus"));
+  });
+  assert.equal(
+    purchaseReads,
+    1,
+    "Focus refreshes must wait for the active operations read",
+  );
+  purchaseRead.release();
+  await expect(
+    page
+      .getByRole("table", { name: "Stock items", exact: true })
+      .locator("tbody tr")
+      .first(),
+  ).toBeVisible({ timeout: 20000 });
+  await page.waitForLoadState("networkidle");
+  page.off("request", countPurchaseRead);
+  assert.equal(
+    purchaseReads,
+    2,
+    "A burst of refreshes schedules one follow-up read",
+  );
+  results.push(
+    "Entering Stock shows loading; repeated focus events share one active read and one fresh follow-up",
+  );
   console.log(
     JSON.stringify({ adminLoadingRecovery: "PASS", checks: results }),
   );
@@ -360,16 +453,14 @@ export async function adminUxJourneys({
   await page.getByLabel("Food & stock", { exact: true }).check();
   await capture("export");
   let exportFails = true;
-  await page
-    .context()
-    .route(/\/rest\/v1\/rpc\/admin_export_page$/, (route) =>
-      exportFails
-        ? route.fulfill({
-            status: 503,
-            json: { message: "Fixture export read unavailable. Try again." },
-          })
-        : route.fallback(),
-    );
+  await page.context().route(/\/rest\/v1\/rpc\/admin_export_page$/, (route) =>
+    exportFails
+      ? route.fulfill({
+          status: 503,
+          json: { message: "Fixture export read unavailable. Try again." },
+        })
+      : route.fallback(),
+  );
   await page.getByRole("button", { name: "Download selected data" }).click();
   await expect(page.locator("main").getByRole("alert")).toContainText(
     "Fixture export read unavailable",

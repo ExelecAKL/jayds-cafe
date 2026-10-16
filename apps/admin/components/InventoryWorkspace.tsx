@@ -23,6 +23,7 @@ import {
   Empty,
   Feedback,
   Icon,
+  LoadingRows,
   PageHeader,
   peso,
   quantity,
@@ -1167,10 +1168,7 @@ export default function InventoryWorkspace() {
       </div>
       <section className="ops-panel">
         {ops.loading ? (
-          <Empty
-            title="Loading inventory…"
-            description="Retrieving recorded stock and movements."
-          />
+          <LoadingRows label="Loading inventory…" />
         ) : tab === "stock" ? (
           <>
             <div className="ops-table-wrap">

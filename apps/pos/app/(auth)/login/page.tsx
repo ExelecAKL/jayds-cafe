@@ -25,14 +25,19 @@ export default function PosLoginPage() {
     if (busy) return;
     setBusy(true);
     setError("");
-    const { error } = await signIn(email, password);
-    if (error)
-      setError(
-        error.message.toLowerCase().includes("invalid")
-          ? "Check your email and password, then try again."
-          : error.message,
-      );
-    setBusy(false);
+    try {
+      const { error } = await signIn(email, password);
+      if (error)
+        setError(
+          error.message.toLowerCase().includes("invalid")
+            ? "Check your email and password, then try again."
+            : "Sign-in could not connect. Please try again.",
+        );
+    } catch {
+      setError("Sign-in could not connect. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   };
   return (
     <main className="pos-auth">

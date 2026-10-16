@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
+import { BrandArtwork } from "@cafeos/shared/brand";
 export default function PosProtectedLayout({
   children,
 }: {
@@ -24,7 +25,24 @@ export default function PosProtectedLayout({
   if (!initialized || !user)
     return (
       <div className="pos-auth">
-        <p style={{ color: "#ead4bc" }}>Opening Jayds POS…</p>
+        <div
+          className="pos-auth-card"
+          role="status"
+          aria-label="Opening Jayds POS…"
+        >
+          <BrandArtwork variant="lockup" className="pos-auth-logo" />
+          <span className="sr-only">Opening Jayds POS…</span>
+          <div
+            aria-hidden="true"
+            style={{
+              height: 8,
+              borderRadius: 8,
+              background: "#ead4bc",
+              marginTop: 24,
+              opacity: 0.6,
+            }}
+          />
+        </div>
       </div>
     );
   if (!approved)
