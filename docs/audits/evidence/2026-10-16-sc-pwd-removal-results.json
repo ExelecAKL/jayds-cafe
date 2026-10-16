@@ -1,0 +1,104 @@
+{
+  "source_commit": "10d35036ff90e5c2a1d8feb0ae2ca306198c9f34",
+  "checked_date": "2026-10-16",
+  "timezone": "Asia/Manila",
+  "backend": {
+    "skipped": 0,
+    "tests": 138,
+    "fail": 0,
+    "pass": 138,
+    "runtime": "serial; --no-wasm-code-gc"
+  },
+  "targeted_tests": {
+    "tests": 14,
+    "fail": 0,
+    "pass": 14
+  },
+  "builds": {
+    "pos": "PASS",
+    "customer": "PASS",
+    "admin": "PASS"
+  },
+  "typecheck": "PASS",
+  "lint": "PASS",
+  "combined_browser": "PASS",
+  "customer_browser": "PASS",
+  "invoice_pdf": {
+    "format": "A4",
+    "pages": 1,
+    "fixture_only": true,
+    "rendered_and_visually_verified": true
+  },
+  "finance_browser": {
+    "status": "PASS",
+    "fixtureOnly": true,
+    "setupRequiredFeedback": true,
+    "setupSuccessToast": true,
+    "invoiceFromPosCash": true,
+    "customerInvoiceView": true,
+    "expensePostingAndReversal": true,
+    "removedBenefitApiUnavailable": true,
+    "viewports": [
+      1440,
+      768,
+      390
+    ],
+    "counts": {
+      "invoices": 4,
+      "events": 4,
+      "expenses": 1,
+      "reversals": 1
+    }
+  },
+  "hosted_changes": false,
+  "complete_plan": false,
+  "defense_signoff": false,
+  "sources": [
+    {
+      "sha256": "106c06f164c82ff01c74ce24b7274e659dd2e788852fee5b477977d9b069d4fc",
+      "path": "docs/audits/2026-10-16-phase1-invoice-password-audit.md"
+    },
+    {
+      "sha256": "e223d17f453296e8a980da4b03e688c926df7745f51d3407fe7945aec7208d3f",
+      "path": "docs/discrepancy-implementation-progress.md"
+    },
+    {
+      "sha256": "613c64eee501affe3e513ce95cb2b65e0d4dc70b10645460edc1a6a843395183",
+      "path": "packages/shared/src/finance/calculations.ts"
+    },
+    {
+      "sha256": "7399be47a9e33bdae4105206ff9ad77b362ee7865a40ad36b70973879dcc8ae3",
+      "path": "packages/shared/src/finance/invoice.tsx"
+    },
+    {
+      "sha256": "c7242c783fbb931fe44fbd582d39b2dae6b7b42ab26b89bf1bb2deebdb02dfa5",
+      "path": "supabase/migrations/20261013000400_finance_invoices.sql"
+    },
+    {
+      "sha256": "8140e5b502f1a4ce6b6ca1c18c140f250fccf49add7d8c2e99d63b6d1170216f",
+      "path": "tests/finance-browser-journeys.ts"
+    },
+    {
+      "sha256": "eeaaffc169d4d11bf4bcb287d243ac3202ef6897f5890073736f5be7924c5304",
+      "path": "tests/finance-calculations.test.ts"
+    },
+    {
+      "sha256": "9d7932940df55146928d4994251525040d122b4e5912b73d99bfa3afb7498d64",
+      "path": "tests/finance-invoices.test.ts"
+    }
+  ],
+  "logs": [
+    {
+      "sha256": "705a6f4981675b7aeb702cdf84d8f0706566a1b11e96e031af2ec6932c3b1b20",
+      "path": ".codex-logs/sc-pwd-removal-backend.log"
+    },
+    {
+      "sha256": "1998c192b9a21dcb30647df52653399ae8daba5f9a026ecabbed1ccee8c16c36",
+      "path": ".codex-logs/sc-pwd-removal-browser.log"
+    },
+    {
+      "sha256": "3b26a5294c224c9c85a80ffbd378890da7534f118f0763912721632f96ef0254",
+      "path": ".codex-logs/sc-pwd-removal-customer.log"
+    }
+  ]
+}
