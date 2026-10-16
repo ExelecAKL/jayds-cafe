@@ -67,3 +67,6 @@ docs/classmate_pdf_pages/
 # Product originals are kept once; app PNGs and download archives are prepared.
 apps/*/public/products/
 /assets/menu-products/*.zip
+
+# Private provider credentials
+/Key pk_test_*.txt

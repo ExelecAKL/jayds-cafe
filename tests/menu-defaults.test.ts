@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import { PGlite } from "@electric-sql/pglite";
+import { buildReorderDraft } from "../apps/customer/utils/orderReorder.ts";
+import type { MenuItem, Order } from "../packages/shared/src/types/index.ts";
 import {
   resolveMenuDefaults,
   validateMenuDefaults,
@@ -16,6 +18,61 @@ const milk = [
   },
   { variant_group: "milk_sub", label: "Oat Milk Sub", price_modifier: 30 },
 ];
+test("older orders gain only the available free Whole Milk default without changing history or choosing paid milk", () => {
+  const product = {
+    id: "20000000-0000-4000-8000-000000000001",
+    name: "Latte",
+    status: "active",
+    is_available: true,
+    price: 112,
+    prep_time_minutes: 5,
+    variants: milk,
+  } as MenuItem;
+  const order = {
+    items: [
+      {
+        menu_item_id: product.id,
+        name: "Latte",
+        quantity: 1,
+        price: 112,
+        variants: [],
+        notes: "",
+      },
+    ],
+  } as unknown as Order;
+  const result = buildReorderDraft(order, [product]);
+  assert.equal(result.items[0].price, 112);
+  assert.equal(result.items[0].variants[0].label, "Whole Milk");
+  assert.deepEqual(result.issues, []);
+  assert.equal(order.items![0].variants.length, 0);
+  const unavailable = {
+    ...product,
+    variants: milk.map((v) => ({
+      ...v,
+      is_available: v.label !== "Whole Milk",
+    })),
+  } as MenuItem;
+  assert.equal(buildReorderDraft(order, [unavailable]).items.length, 0);
+  const paidOrder = {
+    items: [
+      {
+        ...order.items![0],
+        price: 142,
+        variants: [
+          {
+            variant_group: "milk_sub",
+            label: "Oat Milk Sub",
+            price_modifier: 30,
+          },
+        ],
+      },
+    ],
+  } as unknown as Order;
+  assert.equal(
+    buildReorderDraft(paidOrder, [product]).items[0].variants[0].label,
+    "Oat Milk Sub",
+  );
+});
 test("milk defaults never force a paid substitute, including unavailable defaults and legacy groups", () => {
   assert.equal(resolveMenuDefaults(milk)[0].label, "Whole Milk");
   assert.deepEqual(

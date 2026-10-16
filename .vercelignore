@@ -38,3 +38,6 @@ coverage/
 /assets/menu-products/final-prompts.json
 /assets/menu-products/revisions/
 /assets/menu-products/README.md
+
+# Private provider credentials
+/Key pk_test_*.txt

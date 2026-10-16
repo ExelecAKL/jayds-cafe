@@ -21,7 +21,25 @@ export function buildReorderDraft(
     const required = [...new Set(choices.map((v) => v.variant_group))].filter(
       (group) => group !== "add_on",
     );
-    const previous = line.variants ?? [];
+    const previous = [...(line.variants ?? [])];
+    // Older purchases predate the explicit included-milk option. Restore only
+    // this free default; paid replacements and other changed groups need review.
+    if (!previous.some((v) => v.variant_group === "milk_sub")) {
+      const included = choices.find(
+        (v) =>
+          v.variant_group === "milk_sub" &&
+          v.label === "Whole Milk" &&
+          v.is_default &&
+          v.is_available !== false &&
+          Number(v.price_modifier) === 0,
+      );
+      if (included)
+        previous.push({
+          variant_group: included.variant_group,
+          label: included.label,
+          price_modifier: 0,
+        });
+    }
     const variants = previous.map((v) =>
       choices.find(
         (current) =>
