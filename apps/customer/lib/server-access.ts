@@ -57,6 +57,7 @@ function guestDevice(req: Request): string | null {
   const expected = digest(`guest-cookie.v1:${device}.${expiry}`);
   const supplied = Buffer.from(signature || "", "base64url");
   return supplied.length === expected.length &&
+    supplied.toString('base64url') === signature &&
     timingSafeEqual(supplied, expected)
     ? device
     : null;

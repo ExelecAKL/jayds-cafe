@@ -16,7 +16,7 @@ test("quote APIs enforce current sessions, roles, body limits and retryable fail
     stock = true,
     tax = true,
     writes = 0;
-  globalThis.fetch = async (input, init) => {
+  globalThis.fetch = async (input) => {
     const url = new URL(String(input instanceof Request ? input.url : input));
     assert.equal(url.origin, "https://quotes-fixture.supabase.co");
     if (url.pathname === "/auth/v1/user")

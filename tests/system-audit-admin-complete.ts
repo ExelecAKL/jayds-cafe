@@ -348,7 +348,7 @@ export async function completeAdminJourneys({ page, base, db, stockId, actor }: 
     await db.exec("ALTER TABLE profiles ADD COLUMN IF NOT EXISTS full_name text,ADD COLUMN IF NOT EXISTS email text,ADD COLUMN IF NOT EXISTS phone text,ADD COLUMN IF NOT EXISTS avatar_url text,ADD COLUMN IF NOT EXISTS account_qr_hash text,ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now(),ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now(); ALTER TABLE orders ADD COLUMN IF NOT EXISTS maya_checkout_id text, ADD COLUMN IF NOT EXISTS maya_checkout_url text, ADD COLUMN IF NOT EXISTS maya_payment_id text; CREATE SEQUENCE IF NOT EXISTS order_number_seq;");
     // Earlier cashier fixtures introduce these projection-only columns. The
     // unchanged scheduling migration owns their real definitions/backfill.
-    await db.exec("ALTER TABLE orders DROP COLUMN pickup_window_start, DROP COLUMN preparation_due_at;");
+    await db.exec("ALTER TABLE orders DROP COLUMN pickup_window_start, DROP COLUMN preparation_due_at, DROP COLUMN payment_review_required;");
     for (const file of ["20261003000100_customer_security.sql", "20261003000200_customer_scheduling.sql"]) await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
     await open("/scheduling");
     await page.getByText(/Stock & recipe verification ·/).click();
