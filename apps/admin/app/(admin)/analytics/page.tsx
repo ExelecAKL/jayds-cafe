@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import {
   LineChart,
@@ -22,6 +22,9 @@ import {
   BestSellerModal,
   MarginModal,
 } from "../../../components/AnalyticsModals";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
+import { PageHeader, Feedback, Icon } from "../../../components/Operations";
+import Link from "next/link";
 import { PaginatedTable } from "../../../components/PaginatedTable";
 
 type Period = "today" | "week" | "month" | "year";
@@ -32,6 +35,7 @@ interface RevenuePoint {
   orders: number;
 }
 interface BestSeller {
+  item_key: string;
   name: string;
   qty: number;
   revenue: number;
@@ -45,52 +49,12 @@ interface MarginRow {
   margin: number;
 }
 
-function getDateRange(period: Period): {
-  start: Date;
-  end: Date;
-  prevStart: Date;
-  prevEnd: Date;
-} {
-  const now = new Date();
-  const end = new Date(now);
-  let start: Date;
-  let prevStart: Date;
-  let prevEnd: Date;
-
-  if (period === "today") {
-    start = new Date(now);
-    start.setHours(0, 0, 0, 0);
-    prevStart = new Date(start);
-    prevStart.setDate(prevStart.getDate() - 1);
-    prevEnd = new Date(start);
-  } else if (period === "week") {
-    start = new Date(now);
-    start.setDate(start.getDate() - 7);
-    start.setHours(0, 0, 0, 0);
-    prevStart = new Date(start);
-    prevStart.setDate(prevStart.getDate() - 7);
-    prevEnd = new Date(start);
-  } else if (period === "month") {
-    start = new Date(now);
-    start.setDate(start.getDate() - 30);
-    start.setHours(0, 0, 0, 0);
-    prevStart = new Date(start);
-    prevStart.setDate(prevStart.getDate() - 30);
-    prevEnd = new Date(start);
-  } else {
-    start = new Date(now);
-    start.setFullYear(start.getFullYear() - 1);
-    start.setHours(0, 0, 0, 0);
-    prevStart = new Date(start);
-    prevStart.setFullYear(prevStart.getFullYear() - 1);
-    prevEnd = new Date(start);
-  }
-  return { start, end, prevStart, prevEnd };
-}
-
 export default function AnalyticsPage() {
   const [period, setPeriod] = useState<Period>("today");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [loadedPeriod, setLoadedPeriod] = useState<Period | null>(null);
+  const requestVersion = useRef(0);
   const [revenue, setRevenue] = useState(0);
   const [orderCount, setOrderCount] = useState(0);
   const [prevRevenue, setPrevRevenue] = useState(0);
@@ -105,9 +69,8 @@ export default function AnalyticsPage() {
     hour: number;
     dayName: string;
   } | null>(null);
-  const [selectedBestSeller, setSelectedBestSeller] = useState<string | null>(
-    null,
-  );
+  const [selectedBestSeller, setSelectedBestSeller] =
+    useState<BestSeller | null>(null);
   const [selectedMarginItem, setSelectedMarginItem] = useState<string | null>(
     null,
   );
@@ -119,130 +82,40 @@ export default function AnalyticsPage() {
   } | null>(null);
 
   const fetchAnalytics = useCallback(async () => {
+    const version = ++requestVersion.current;
     setLoading(true);
-    const { start, end, prevStart, prevEnd } = getDateRange(period);
-    setActiveDateRange({ start, end });
-
-    // Current period orders
-    const { data: orders } = await supabase
-      .from("orders")
-      .select("id, total, payment_status, created_at, status")
-      .gte("created_at", start.toISOString())
-      .lte("created_at", end.toISOString());
-
-    // Previous period orders (for comparison)
-    const { data: prevOrders } = await supabase
-      .from("orders")
-      .select("total, payment_status")
-      .gte("created_at", prevStart.toISOString())
-      .lt("created_at", prevEnd.toISOString());
-
-    const paidOrders = (orders || []).filter(
-      (o) => o.payment_status === "paid",
-    );
-    const prevPaid = (prevOrders || []).filter(
-      (o) => o.payment_status === "paid",
-    );
-
-    const totalRev = paidOrders.reduce((s, o) => s + Number(o.total), 0);
-    const prevRev = prevPaid.reduce((s, o) => s + Number(o.total), 0);
-
-    setRevenue(totalRev);
-    setOrderCount(paidOrders.length);
-    setPrevRevenue(prevRev);
-
-    // Chart data
-    const points: Record<string, RevenuePoint> = {};
-    for (const o of paidOrders) {
-      const d = new Date(o.created_at);
-      const label =
-        period === "today"
-          ? `${d.getHours()}:00`
-          : d.toLocaleDateString("en-PH", { month: "short", day: "numeric" });
-      if (!points[label]) points[label] = { label, revenue: 0, orders: 0 };
-      points[label].revenue += Number(o.total);
-      points[label].orders += 1;
-    }
-    setChartData(Object.values(points));
-
-    // Best sellers (exclude cancelled orders)
-    const validOrders = (orders || []).filter((o) => o.status !== "cancelled");
-    const orderIds = validOrders.map((o) => o.id);
-    if (orderIds.length > 0) {
-      const { data: items } = await supabase
-        .from("order_items")
-        .select("name, quantity, subtotal")
-        .in("order_id", orderIds.slice(0, 200));
-
-      const itemMap: Record<string, BestSeller> = {};
-      for (const item of items || []) {
-        // Extract base name by stripping out the customization suffix (e.g., "Latte (Hot, Small)" -> "Latte")
-        const baseName = item.name.split(" (")[0].trim();
-
-        if (!itemMap[baseName])
-          itemMap[baseName] = { name: baseName, qty: 0, revenue: 0 };
-        itemMap[baseName].qty += item.quantity;
-        itemMap[baseName].revenue += Number(item.subtotal);
-      }
-      setBestSellers(
-        Object.values(itemMap)
-          .sort((a, b) => b.qty - a.qty)
-          .slice(0, 10),
+    setError("");
+    try {
+      const { data, error } = await withRequestDeadline((signal) =>
+        supabase
+          .rpc("admin_sales_report", { p_period: period })
+          .abortSignal(signal),
       );
-    } else {
-      setBestSellers([]);
+      if (requestVersion.current !== version) return;
+      if (error || !data)
+        throw new Error("Sales reports could not load. Please try again.");
+      setRevenue(Number(data.revenue));
+      setOrderCount(Number(data.orders));
+      setPrevRevenue(Number(data.previous_revenue));
+      setChartData(data.chart);
+      setBestSellers(data.best_sellers);
+      setHeatmap(data.heatmap);
+      setMargins(data.margins);
+      setActiveDateRange({
+        start: new Date(data.start),
+        end: new Date(data.end),
+      });
+      setLoadedPeriod(period);
+    } catch (failure) {
+      if (requestVersion.current === version)
+        setError(
+          failure instanceof Error
+            ? failure.message
+            : "Sales reports could not load.",
+        );
+    } finally {
+      if (requestVersion.current === version) setLoading(false);
     }
-
-    // Heatmap (7 days × hours 14-22 only — operating hours)
-    const grid: number[][] = Array.from({ length: 7 }, () => Array(9).fill(0)); // 9 hours: 14-22
-    for (const o of validOrders) {
-      const d = new Date(o.created_at);
-      const dayIdx = d.getDay();
-      const hour = d.getHours();
-      if (hour >= 14 && hour <= 22) {
-        grid[dayIdx][hour - 14] += 1;
-      }
-    }
-    setHeatmap(grid);
-
-    // Margins
-    const { data: menuRows } = await supabase
-      .from("menu_items")
-      .select("id, name, price")
-      .eq("is_available", true);
-    const { data: recipeRows } = await supabase
-      .from("menu_item_ingredients")
-      .select(
-        "menu_item_id, quantity_used, ingredient:ingredients(cost_per_unit)",
-      );
-
-    const costMap: Record<string, number> = {};
-    for (const r of recipeRows || []) {
-      const costPerUnit =
-        (r.ingredient as unknown as { cost_per_unit: number })?.cost_per_unit ||
-        0;
-      costMap[r.menu_item_id] =
-        (costMap[r.menu_item_id] || 0) + r.quantity_used * costPerUnit;
-    }
-
-    const marginRows: MarginRow[] = (menuRows || [])
-      .filter((m) => costMap[m.id] !== undefined && costMap[m.id] > 0)
-      .map((m) => {
-        const cost = costMap[m.id] || 0;
-        const profit = Number(m.price) - cost;
-        return {
-          id: m.id,
-          name: m.name,
-          price: Number(m.price),
-          cost,
-          profit,
-          margin: Number(m.price) > 0 ? (profit / Number(m.price)) * 100 : 0,
-        };
-      })
-      .sort((a, b) => b.margin - a.margin);
-    setMargins(marginRows);
-
-    setLoading(false);
   }, [period]);
 
   useEffect(() => {
@@ -269,7 +142,7 @@ export default function AnalyticsPage() {
       }
     }
     return maxVal > 0
-      ? `${days[maxDay]} ${maxHour + 14}:00–${maxHour + 15}:00`
+      ? `${days[maxDay]} ${maxHour + 13}:00–${maxHour + 14}:00`
       : "No data";
   }, [heatmap]);
 
@@ -281,52 +154,89 @@ export default function AnalyticsPage() {
       Item: m.name,
       Price: m.price.toFixed(2),
       Cost: m.cost.toFixed(2),
-      Profit: m.profit.toFixed(2),
+      PriceLessRecipeCost: m.profit.toFixed(2),
       MarginPercent: m.margin.toFixed(1),
     }));
     exportAsCsv(payload, `Item_Margins_${period}`);
   };
 
-  if (loading) {
+  const header = (
+    <PageHeader
+      eyebrow="REPORTS"
+      title="Sales reports"
+      description="Paid orders by date received · Philippine time"
+    >
+      <div className="ops-segmented" aria-label="Reporting period">
+        {(["today", "week", "month", "year"] as Period[]).map((value) => (
+          <button
+            key={value}
+            aria-pressed={period === value}
+            onClick={() => setPeriod(value)}
+          >
+            {value === "today"
+              ? "Today"
+              : value === "week"
+                ? "This week"
+                : value === "month"
+                  ? "This month"
+                  : "This year"}
+          </button>
+        ))}
+      </div>
+      <button
+        className="ops-button"
+        disabled={loading}
+        onClick={() => void fetchAnalytics()}
+      >
+        <Icon name="refresh" />
+        Refresh
+      </button>
+    </PageHeader>
+  );
+  if (loadedPeriod !== period)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
+      <div>
+        {header}
+        <Feedback error={error} />
+        <section className="ops-panel">
+          <div className="ops-empty" role={loading ? "status" : undefined}>
+            {loading ? (
+              <>
+                <div
+                  className="ops-detail-skeleton"
+                  style={{ width: "100%", maxWidth: 500 }}
+                >
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <p>Loading sales…</p>
+              </>
+            ) : (
+              <button
+                className="ops-button"
+                onClick={() => void fetchAnalytics()}
+              >
+                Try again
+              </button>
+            )}
+          </div>
+        </section>
       </div>
     );
-  }
-
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-        <div className="flex gap-2">
-          {(["today", "week", "month", "year"] as Period[]).map((p) => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                period === p
-                  ? "bg-amber-500 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              {p === "today"
-                ? "Today"
-                : p === "week"
-                  ? "This Week"
-                  : p === "month"
-                    ? "This Month"
-                    : "Annual"}
-            </button>
-          ))}
-
-        </div>
-      </div>
-
+      {header}
+      <Feedback error={error} />
+      {loading && (
+        <p role="status" className="ops-muted text-sm mb-3">
+          Refreshing sales…
+        </p>
+      )}
       {/* Revenue Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500">Revenue</p>
+          <p className="text-sm text-gray-500">Sales collected</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">
             ₱{revenue.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
           </p>
@@ -340,7 +250,7 @@ export default function AnalyticsPage() {
           )}
         </div>
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500">Orders</p>
+          <p className="text-sm text-gray-500">Paid orders</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">{orderCount}</p>
         </div>
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
@@ -361,7 +271,7 @@ export default function AnalyticsPage() {
         className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8 relative"
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="font-semibold text-gray-900">Revenue Over Time</h2>
+          <h2 className="font-semibold text-gray-900">Sales over time</h2>
           <button
             onClick={() =>
               exportAsPng("revenue-chart", `Revenue_Chart_${period}`)
@@ -388,6 +298,7 @@ export default function AnalyticsPage() {
                 ]}
               />
               <Line
+                isAnimationActive={false}
                 type="monotone"
                 dataKey="revenue"
                 stroke="#f59e0b"
@@ -399,6 +310,29 @@ export default function AnalyticsPage() {
         )}
       </div>
 
+      <details className="ops-disclosure mb-8">
+        <summary>View sales table</summary>
+        <div className="ops-table-wrap">
+          <table className="ops-table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th className="number">Paid orders</th>
+                <th className="number">Sales collected (PHP)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chartData.map((row) => (
+                <tr key={row.label}>
+                  <td>{row.label}</td>
+                  <td className="number">{row.orders}</td>
+                  <td className="number">{row.revenue.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
       {/* Best Sellers */}
       <div
         id="best-sellers-chart"
@@ -427,7 +361,11 @@ export default function AnalyticsPage() {
                 layout="vertical"
                 onClick={(data) => {
                   if (data?.activeLabel)
-                    setSelectedBestSeller(data.activeLabel as string);
+                    setSelectedBestSeller(
+                      bestSellers.find(
+                        (item) => item.name === data.activeLabel,
+                      ) ?? null,
+                    );
                 }}
                 style={{ cursor: "pointer" }}
               >
@@ -441,7 +379,12 @@ export default function AnalyticsPage() {
                 />
                 {/* @ts-expect-error recharts Formatter type is overly strict */}
                 <Tooltip formatter={(value: number) => [value, "Sold"]} />
-                <Bar dataKey="qty" fill="#f59e0b" radius={[0, 6, 6, 0]} />
+                <Bar
+                  isAnimationActive={false}
+                  dataKey="qty"
+                  fill="#f59e0b"
+                  radius={[0, 6, 6, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -468,20 +411,25 @@ export default function AnalyticsPage() {
                     Sold
                   </th>
                   <th className="py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                    Revenue
+                    Item sales
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {bestSellers.map((item, i) => (
                   <tr
-                    key={item.name}
-                    onClick={() => setSelectedBestSeller(item.name)}
+                    key={item.item_key}
+                    onClick={() => setSelectedBestSeller(item)}
                     className="hover:bg-amber-50 cursor-pointer transition-colors"
                   >
                     <td className="py-2 text-gray-400">{i + 1}</td>
                     <td className="py-2 font-medium text-gray-900">
-                      {item.name}
+                      <button
+                        className="text-left underline-offset-4 hover:underline"
+                        onClick={() => setSelectedBestSeller(item)}
+                      >
+                        {item.name}
+                      </button>
                     </td>
                     <td className="py-2 text-right text-gray-600">
                       {item.qty}
@@ -504,7 +452,7 @@ export default function AnalyticsPage() {
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="font-semibold text-gray-900">
-            Peak Hours Heatmap (14:00–22:00)
+            Peak hours · 1 PM–10 PM
           </h2>
           <button
             onClick={() => exportAsPng("heatmap-chart", `Heatmap_${period}`)}
@@ -522,7 +470,7 @@ export default function AnalyticsPage() {
                   key={h}
                   className="flex-1 text-center text-[10px] text-gray-400"
                 >
-                  {h + 14}:00
+                  {h + 13}:00
                 </div>
               ))}
             </div>
@@ -536,8 +484,10 @@ export default function AnalyticsPage() {
                     const val = heatmap[di]?.[h] || 0;
                     const intensity = val / maxHeat;
                     return (
-                      <div
+                      <button
+                        type="button"
                         key={h}
+                        aria-label={`${day} ${h + 13}:00 · ${val} paid orders`}
                         onClick={() =>
                           setSelectedHeatmap({
                             dayIdx: di,
@@ -545,14 +495,14 @@ export default function AnalyticsPage() {
                             dayName: day,
                           })
                         }
-                        className="flex-1 aspect-square rounded-sm cursor-pointer hover:border-2 hover:border-amber-600 transition-all box-border"
+                        className="flex-1 h-8 rounded-md cursor-pointer hover:ring-2 hover:ring-inset hover:ring-amber-600 transition-colors box-border"
                         style={{
                           backgroundColor:
                             val === 0
                               ? "#f9fafb"
                               : `rgba(245, 158, 11, ${0.15 + intensity * 0.85})`,
                         }}
-                        title={`${day} ${h + 14}:00 — ${val} order${val !== 1 ? "s" : ""}`}
+                        title={`${day} ${h + 13}:00 — ${val} order${val !== 1 ? "s" : ""}`}
                       />
                     );
                   })}
@@ -566,9 +516,7 @@ export default function AnalyticsPage() {
       {/* Profit Margins */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="font-semibold text-gray-900">
-            Profit Margins per Item
-          </h2>
+          <h2 className="font-semibold text-gray-900">Menu pricing guide</h2>
           <button
             onClick={handleExportMarginsCSV}
             className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 font-bold"
@@ -594,7 +542,7 @@ export default function AnalyticsPage() {
                   Ingredient Cost
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                  Profit
+                  Price less recipe cost
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
                   Margin %
@@ -609,7 +557,12 @@ export default function AnalyticsPage() {
                   className="hover:bg-amber-50 cursor-pointer transition-colors"
                 >
                   <td className="px-4 py-3 font-medium text-gray-900">
-                    {m.name}
+                    <button
+                      className="text-left underline-offset-4 hover:underline"
+                      onClick={() => setSelectedMarginItem(m.id)}
+                    >
+                      {m.name}
+                    </button>
                   </td>
                   <td className="px-4 py-3 text-right text-gray-600">
                     ₱{m.price.toFixed(2)}
@@ -640,6 +593,12 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
+      <p className="ops-chart-caption">
+        Recipe costs are estimates for pricing.{" "}
+        <Link href="/finance" className="underline">
+          Open Finance for business profit and tax.
+        </Link>
+      </p>
       {/* Interactive Modals */}
       {selectedHeatmap && activeDateRange && (
         <HeatmapModal
@@ -653,7 +612,8 @@ export default function AnalyticsPage() {
       )}
       {selectedBestSeller && activeDateRange && (
         <BestSellerModal
-          itemName={selectedBestSeller}
+          itemName={selectedBestSeller.name}
+          itemKey={selectedBestSeller.item_key}
           startDate={activeDateRange.start}
           endDate={activeDateRange.end}
           onClose={() => setSelectedBestSeller(null)}

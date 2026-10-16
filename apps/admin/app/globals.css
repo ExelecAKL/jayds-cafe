@@ -1347,3 +1347,6 @@ a.ops-metric:hover, .ops-everyday-links a:hover { box-shadow:0 5px 16px #46321e0
 .ops-export-download progress {width:100%;accent-color:#98623f;}
 @media(max-width:1050px){.ops-export-layout {grid-template-columns:1fr;}.ops-export-download {position:static;}}
 @media(max-width:600px){.ops-export-tables {grid-template-columns:1fr;}.ops-export-group {padding:18px;}.ops-export-group > div {align-items:flex-start;}}
+
+.ops-header-actions {flex-wrap:wrap;max-width:100%;}
+.ops-page-header > div:first-child {min-width:0;}

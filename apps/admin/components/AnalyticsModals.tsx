@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { Feedback } from "./Operations";
+import { Pagination, ADMIN_PAGE_SIZE } from "./Pagination";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { AdminDialog } from "./AdminDialog";
 import { supabase } from "@cafeos/shared/supabase/client";
 import {
@@ -43,44 +46,62 @@ export function HeatmapModal({
   onClose: () => void;
 }) {
   const [orders, setOrders] = useState<TrafficOrder[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true),
+    [error, setError] = useState(""),
+    [attempt, setAttempt] = useState(0),
+    [page, setPage] = useState(1),
+    [total, setTotal] = useState(0),
+    [totalRev, setTotalRev] = useState(0);
 
   useEffect(() => {
-    async function fetchHeatmapData() {
+    let active = true;
+    const timer = setTimeout(() => {
       setLoading(true);
-      const { data } = await supabase
-        .from("orders")
-        .select(
-          `id, order_number, total, created_at, customer:profiles!orders_customer_id_fkey(full_name)`,
-        )
-        .gte("created_at", startDate.toISOString())
-        .lte("created_at", endDate.toISOString())
-        .eq("payment_status", "paid");
-
-      const filtered = (data || []).filter((o) => {
-        const d = new Date(o.created_at);
-        return d.getDay() === dayIdx && d.getHours() === hour + 14;
-      });
-
-      setOrders(filtered as unknown as TrafficOrder[]);
-      setLoading(false);
-    }
-    void fetchHeatmapData();
-  }, [dayIdx, hour, startDate, endDate]);
-
-  const totalRev = orders.reduce((s, o) => s + Number(o.total), 0);
+      setError("");
+      void withRequestDeadline((signal) =>
+        supabase
+          .rpc("admin_sales_orders", {
+            p_start: startDate.toISOString(),
+            p_end: endDate.toISOString(),
+            p_weekday: dayIdx,
+            p_hour: hour + 13,
+            p_page: page - 1,
+          })
+          .abortSignal(signal),
+      )
+        .then(({ data, error }) => {
+          if (!active) return;
+          if (error || !data)
+            throw new Error("Order details could not load. Try again.");
+          setOrders(data.orders);
+          setTotal(Number(data.total));
+          setTotalRev(Number(data.revenue));
+          setLoading(false);
+        })
+        .catch(() => {
+          if (active) {
+            setError("Order details could not load. Try again.");
+            setLoading(false);
+          }
+        });
+    }, 0);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [dayIdx, hour, startDate, endDate, page, attempt]);
 
   return (
     <AdminDialog
-      title="Traffic Breakdown"
+      title="Orders by hour"
       onClose={onClose}
       className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col"
     >
       <div className="px-6 py-4 border-b border-gray-100 flex justify-between bg-amber-50">
         <div>
-          <h3 className="font-bold text-gray-900">Traffic Breakdown</h3>
+          <h3 className="font-bold text-gray-900">Orders by hour</h3>
           <p className="text-sm text-gray-600">
-            {dayName} at {hour + 14}:00 – {hour + 15}:00
+            {dayName} at {hour + 13}:00 – {hour + 14}:00
           </p>
         </div>
         <button
@@ -97,20 +118,28 @@ export function HeatmapModal({
           <div className="py-10 text-center">
             <div className="w-6 h-6 border-2 border-amber-500 border-t-amber-200 rounded-full animate-spin mx-auto" />
           </div>
+        ) : error ? (
+          <div>
+            <Feedback error={error} />
+            <button
+              className="ops-button"
+              onClick={() => setAttempt((value) => value + 1)}
+            >
+              Try again
+            </button>
+          </div>
         ) : (
           <>
             <div className="flex gap-4 mb-6">
               <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
                 <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">
-                  Orders Propelled
+                  Paid orders
                 </p>
-                <p className="text-2xl font-black text-gray-900">
-                  {orders.length}
-                </p>
+                <p className="text-2xl font-black text-gray-900">{total}</p>
               </div>
               <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
                 <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">
-                  Revenue Captured
+                  Collected total
                 </p>
                 <p className="text-2xl font-black text-amber-600">
                   ₱{totalRev.toFixed(0)}
@@ -118,15 +147,13 @@ export function HeatmapModal({
               </div>
             </div>
 
-            <h4 className="font-bold text-gray-900 mb-3 text-sm">
-              Targeted Transactions
-            </h4>
+            <h4 className="font-bold text-gray-900 mb-3 text-sm">Orders</h4>
             {orders.length === 0 ? (
               <p className="text-sm text-gray-400 italic">
                 No transactions captured during this block.
               </p>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2" id="traffic-orders">
                 {orders.map((o) => (
                   <div
                     key={o.id}
@@ -138,7 +165,9 @@ export function HeatmapModal({
                       </p>
                       <p className="text-xs text-gray-500">
                         {o.customer?.full_name || "Walk-in"} •{" "}
-                        {new Date(o.created_at).toLocaleDateString()}
+                        {new Date(o.created_at).toLocaleDateString("en-PH", {
+                          timeZone: "Asia/Manila",
+                        })}
                       </p>
                     </div>
                     <p className="font-bold text-gray-900">
@@ -147,6 +176,17 @@ export function HeatmapModal({
                   </div>
                 ))}
               </div>
+            )}
+            {total > ADMIN_PAGE_SIZE && (
+              <Pagination
+                currentPage={page}
+                totalPages={Math.ceil(total / ADMIN_PAGE_SIZE)}
+                totalItems={total}
+                pageSize={ADMIN_PAGE_SIZE}
+                onPageChange={setPage}
+                controlsId="traffic-orders"
+                label="Hour orders pagination"
+              />
             )}
           </>
         )}
@@ -158,16 +198,20 @@ export function HeatmapModal({
 // ----- BEST SELLER MODAL -----
 export function BestSellerModal({
   itemName,
+  itemKey,
   startDate,
   endDate,
   onClose,
 }: {
   itemName: string;
+  itemKey: string;
   startDate: Date;
   endDate: Date;
   onClose: () => void;
 }) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true),
+    [error, setError] = useState(""),
+    [attempt, setAttempt] = useState(0);
   const [salesByHour, setSalesByHour] = useState<
     { hour: string; qty: number }[]
   >([]);
@@ -176,87 +220,52 @@ export function BestSellerModal({
   const [totalRev, setTotalRev] = useState(0);
 
   useEffect(() => {
-    async function fetchData() {
+    let active = true;
+    const timer = setTimeout(() => {
       setLoading(true);
-
-      const { data: ordersData } = await supabase
-        .from("orders")
-        .select("id, created_at")
-        .gte("created_at", startDate.toISOString())
-        .lte("created_at", endDate.toISOString())
-        .eq("payment_status", "paid");
-
-      const orderIds = (ordersData || []).map((o) => o.id);
-
-      if (orderIds.length > 0) {
-        // Fetch all order items matching this name
-        const { data: itemData } = await supabase
-          .from("order_items")
-          .select("id, order_id, quantity, subtotal")
-          .eq("name", itemName)
-          .in("order_id", orderIds);
-
-        if (itemData) {
-          let totalQ = 0;
-          let totalR = 0;
-          const hourBins: Record<number, number> = {};
-
-          itemData.forEach((item) => {
-            totalQ += item.quantity;
-            totalR += Number(item.subtotal);
-
-            // Find matching order to check time
-            const o = ordersData?.find((ord) => ord.id === item.order_id);
-            if (o) {
-              const h = new Date(o.created_at).getHours();
-              hourBins[h] = (hourBins[h] || 0) + item.quantity;
-            }
-          });
-
-          setTotalSold(totalQ);
-          setTotalRev(totalR);
-
-          const hourlyArray = Object.keys(hourBins)
-            .map((h) => ({ hour: `${h}:00`, qty: hourBins[Number(h)] }))
-            .sort((a, b) => parseInt(a.hour) - parseInt(b.hour));
-          setSalesByHour(hourlyArray);
-
-          // Fetch addons for these specific order items
-          const itemIds = itemData.map((i) => i.id);
-          const { data: addonData } = await supabase
-            .from("order_item_addons")
-            .select("quantity, addon:addons(name)")
-            .in("order_item_id", itemIds);
-
-          const addonBins: Record<string, number> = {};
-          addonData?.forEach((a) => {
-            const relation = a.addon as unknown as { name: string } | null;
-            const name = relation?.name || "Unknown";
-            addonBins[name] = (addonBins[name] || 0) + a.quantity;
-          });
-
-          setAddons(
-            Object.keys(addonBins)
-              .map((name) => ({ name, qty: addonBins[name] }))
-              .sort((a, b) => b.qty - a.qty),
-          );
-        }
-      }
-      setLoading(false);
-    }
-    void fetchData();
-  }, [itemName, startDate, endDate]);
+      setError("");
+      void withRequestDeadline((signal) =>
+        supabase
+          .rpc("admin_sales_item", {
+            p_start: startDate.toISOString(),
+            p_end: endDate.toISOString(),
+            p_item_key: itemKey,
+          })
+          .abortSignal(signal),
+      )
+        .then(({ data, error }) => {
+          if (!active) return;
+          if (error || !data)
+            throw new Error("Product sales could not load. Try again.");
+          setTotalSold(Number(data.total_sold));
+          setTotalRev(Number(data.revenue));
+          setSalesByHour(data.hourly);
+          setAddons(data.addons);
+          setLoading(false);
+        })
+        .catch(() => {
+          if (active) {
+            setError("Product sales could not load. Try again.");
+            setLoading(false);
+          }
+        });
+    }, 0);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [itemKey, startDate, endDate, attempt]);
 
   return (
     <AdminDialog
-      title={`Demographics: ${itemName}`}
+      title={`Product sales: ${itemName}`}
       onClose={onClose}
       className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col"
     >
       <div className="px-6 py-4 border-b border-gray-100 flex justify-between bg-gray-50">
         <div>
           <h3 className="font-bold text-gray-900 border-l-4 border-amber-500 pl-3">
-            Demographics: {itemName}
+            Product sales: {itemName}
           </h3>
         </div>
         <button
@@ -273,18 +282,28 @@ export function BestSellerModal({
           <div className="py-10 text-center">
             <div className="w-8 h-8 border-4 border-amber-500 border-t-amber-200 rounded-full animate-spin mx-auto" />
           </div>
+        ) : error ? (
+          <div>
+            <Feedback error={error} />
+            <button
+              className="ops-button"
+              onClick={() => setAttempt((value) => value + 1)}
+            >
+              Try again
+            </button>
+          </div>
         ) : (
           <>
             <div className="flex gap-4 mb-6">
               <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
                 <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">
-                  Volume Sold
+                  Units sold
                 </p>
                 <p className="text-2xl font-black text-gray-900">{totalSold}</p>
               </div>
               <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
                 <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">
-                  Revenue Driven
+                  Item sales
                 </p>
                 <p className="text-2xl font-black text-amber-600">
                   ₱{totalRev.toFixed(0)}
@@ -292,10 +311,10 @@ export function BestSellerModal({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-bold text-gray-900 text-sm mb-3">
-                  Popular Purchasing Hours
+                  Units by order time
                 </h4>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={salesByHour}>
@@ -307,14 +326,19 @@ export function BestSellerModal({
                     <XAxis dataKey="hour" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
                     <Tooltip formatter={(value) => [value, "Purchased"]} />
-                    <Bar dataKey="qty" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                    <Bar
+                      isAnimationActive={false}
+                      dataKey="qty"
+                      fill="#f59e0b"
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
               <div>
                 <h4 className="font-bold text-gray-900 text-sm mb-3">
-                  Frequently Paired Add-ons
+                  Paid extras
                 </h4>
                 {addons.length === 0 ? (
                   <p className="text-sm text-gray-400 italic bg-gray-50 p-4 rounded-xl text-center">
@@ -337,6 +361,28 @@ export function BestSellerModal({
                 )}
               </div>
             </div>
+            <details className="ops-disclosure mt-5">
+              <summary>View hourly numbers</summary>
+              <table className="ops-table">
+                <thead>
+                  <tr>
+                    <th>Hour (Philippine time)</th>
+                    <th className="number">Units sold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {salesByHour.map((row) => (
+                    <tr key={row.hour}>
+                      <td>{row.hour}</td>
+                      <td className="number">{row.qty}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </details>
+            <p className="ops-muted text-xs mt-3">
+              Item subtotals before order discounts and delivery.
+            </p>
           </>
         )}
       </div>
@@ -364,28 +410,34 @@ export function MarginModal({
       setLoading(true);
       setError("");
       try {
-        const { data: itemData, error: itemError } = await supabase
-          .from("menu_items")
-          .select("name, price")
-          .eq("id", menuItemId)
-          .single();
-
-        const { data: recipeData, error: recipeError } = await supabase
-          .from("menu_item_ingredients")
-          .select(
-            "quantity_used, ingredient:ingredients(name, cost_per_unit, unit)",
-          )
-          .eq("menu_item_id", menuItemId);
+        const [product, requirements] = await withRequestDeadline((signal) =>
+          Promise.all([
+            supabase
+              .from("menu_items")
+              .select("name, price")
+              .eq("id", menuItemId)
+              .abortSignal(signal)
+              .single(),
+            supabase
+              .from("menu_item_ingredients")
+              .select(
+                "quantity_used, ingredient:ingredients(name, cost_per_unit, unit)",
+              )
+              .eq("menu_item_id", menuItemId)
+              .abortSignal(signal),
+          ]),
+        );
+        const { data: itemData, error: itemError } = product,
+          { data: recipeData, error: recipeError } = requirements;
 
         if (itemError || recipeError || !itemData)
-          throw new Error("Financial breakdown could not load. Please retry.");
+          throw new Error("Recipe costs could not load. Please retry.");
         if (active) {
           setItem(itemData);
           setRecipe((recipeData ?? []) as unknown as RecipeRow[]);
         }
       } catch {
-        if (active)
-          setError("Financial breakdown could not load. Please retry.");
+        if (active) setError("Recipe costs could not load. Please retry.");
       } finally {
         if (active) setLoading(false);
       }
@@ -409,19 +461,19 @@ export function MarginModal({
       : 0;
 
   const pieData = [
-    { name: "Cost of Goods", value: rawCost, color: "#ef4444" }, // Red-500
-    { name: "Gross Profit", value: Math.max(0, profit), color: "#10b981" }, // Green-500
+    { name: "Recipe cost", value: rawCost, color: "#ef4444" }, // Red-500
+    { name: "Price remainder", value: Math.max(0, profit), color: "#10b981" }, // Green-500
   ];
 
   return (
     <AdminDialog
-      title="Financial Breakdown"
+      title="Recipe cost estimate"
       onClose={onClose}
       className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col"
     >
       <div className="px-6 py-4 border-b border-gray-100 flex justify-between bg-gray-50">
         <div>
-          <h3 className="font-bold text-gray-900">Financial Breakdown</h3>
+          <h3 className="font-bold text-gray-900">Recipe cost estimate</h3>
           <p className="text-sm text-gray-500">{item?.name}</p>
         </div>
         <button
@@ -450,11 +502,12 @@ export function MarginModal({
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-6 mb-6">
+            <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
               <div className="w-40 h-40 flex-shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
+                      isAnimationActive={false}
                       data={pieData}
                       cx="50%"
                       cy="50%"
@@ -485,7 +538,7 @@ export function MarginModal({
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-0.5 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-red-500"></span>{" "}
-                    Cost of Goods
+                    Recipe cost
                   </p>
                   <p className="text-lg font-bold text-gray-700">
                     ₱{rawCost.toFixed(2)}
@@ -494,7 +547,7 @@ export function MarginModal({
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-0.5 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-500"></span>{" "}
-                    Gross Profit
+                    Price remainder
                     <span
                       className={`px-1.5 py-0.5 rounded text-[10px] ${marginPct >= 60 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
                     >
@@ -509,7 +562,7 @@ export function MarginModal({
             </div>
 
             <h4 className="font-bold text-gray-900 text-sm mb-3">
-              COGS Composition (Ingredients Used)
+              Estimated ingredient costs
             </h4>
             <div className="space-y-2 border border-gray-100 rounded-xl bg-gray-50 p-2">
               {recipe.map((r, i) => {
