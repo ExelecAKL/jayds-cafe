@@ -1,0 +1,212 @@
+{
+  "testedCommit": "e712e2cb54b47fd3ba4303bd6035e81638dd45a8",
+  "checkedAt": "2026-10-16T05:41:47.010552+00:00",
+  "scope": "Local production builds with isolated data and provider responses; no hosted business writes",
+  "backend": {
+    "tests": 151,
+    "pass": 151,
+    "fail": 0,
+    "skipped": 0
+  },
+  "deepAdmin": {
+    "tests": 21,
+    "pass": 21,
+    "results": [
+      {
+        "feature": "Categories: create with description, reject case-insensitive duplicate without extra row",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 723ms"
+      },
+      {
+        "feature": "Categories: rename + description, disable and re-enable persist after reload",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1216ms"
+      },
+      {
+        "feature": "Menu: create product with all four tabs, recipe multiplier, option and confirmation cancellation",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 2734ms"
+      },
+      {
+        "feature": "Menu editor: copy option library once, add-on fields, duplicate recipe validation and saved option/multiplier persistence",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1783ms"
+      },
+      {
+        "feature": "Menu: archive removes published catalog, restore preserves recipe/options and re-publishes",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1791ms"
+      },
+      {
+        "feature": "Categories: positive permanent deletion keeps linked product and removes its category",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 983ms"
+      },
+      {
+        "feature": "Option recipe editor: save replacement, size multiplier, injected failure/retry, remove mapping",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 3068ms"
+      },
+      {
+        "feature": "Supplier: all fields create, edit, deactivate/reactivate and server-error input retention",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 3389ms"
+      },
+      {
+        "feature": "Purchase: positive create with pack conversion, retained failed save, edit and no premature stock movement",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 12231ms"
+      },
+      {
+        "feature": "Purchase: positive cancellation, failed transition retention and final cancelled history",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1160ms"
+      },
+      {
+        "feature": "Receiving: blank reference/over-receipt cannot post; failure/retry posts full receipt exactly once",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1482ms"
+      },
+      {
+        "feature": "Voucher edit: selected-item requirement, percentage cap/tier/date/uses, failed save retention and confirmed retry",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 28159ms"
+      },
+      {
+        "feature": "Scheduling: UI production gate rejects uncounted stock and retains verification record",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 457ms"
+      },
+      {
+        "feature": "Scheduling: counted fixture verification, seven days/hours/closures/capacities save, real SQL slots",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 1214ms"
+      },
+      {
+        "feature": "Provider reconciliation UI: maya blank gate, failed read retains ID, trimmed retry and verified association notice",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 476ms"
+      },
+      {
+        "feature": "Provider reconciliation UI: lalamove blank gate, failed read retains ID, trimmed retry and verified association notice",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 423ms"
+      },
+      {
+        "feature": "Order history details: all six order states, paid/failed/refunded, app/POS and pickup/delivery/legacy data render",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 5099ms"
+      },
+      {
+        "feature": "Order Details: accessible labelled dialog semantics",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 25ms"
+      },
+      {
+        "feature": "Order Details: Escape dismissal",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 64ms"
+      },
+      {
+        "feature": "Admin toasts: incomplete voucher form announces its first invalid field and preserves focus/input",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 851ms"
+      },
+      {
+        "feature": "Admin toasts: duplicate announcements collapse; focused toast pauses dismissal on a phone viewport",
+        "status": "PASS",
+        "detail": "Hosted/local UI with isolated SQL or explicit provider-response fixtures; 6752ms"
+      }
+    ]
+  },
+  "adminUx": {
+    "status": "PASS",
+    "isolated": true,
+    "checks": [
+      "Overview: key figures, compact actions, one active navigation item; 3 widths",
+      "Movement/count details, connected order and return; 7/14/30-day chart drawer; reviewed purchase drafts",
+      "Photo selection, preview, 5 MB validation, upload failure retention and confirmed retry",
+      "Grouped CSV ZIP and all-table JSON downloads reconcile to their manifest; empty selection and failed read/retry preserve selection",
+      "Reduced motion removes drawer animation; Escape and focus recovery remain usable"
+    ],
+    "errors": []
+  },
+  "loadingRecovery": [
+    "profile",
+    "catalog",
+    "audit",
+    "product form"
+  ],
+  "builds": [
+    "Customer PASS",
+    "POS PASS",
+    "Admin PASS"
+  ],
+  "typecheck": "PASS",
+  "lint": "PASS",
+  "sourceSha256": {
+    "apps/admin/app/(admin)/analytics/page.tsx": "733bb8f74f874009eb3714ddb1bd9b4ca858a7ff95e2cd86c241374e6220e45c",
+    "apps/admin/app/(admin)/audit/page.tsx": "6c611a003fd3894019f9dbd6c587c8ee71b22d0503771b813f4f770e6b6f369c",
+    "apps/admin/app/(admin)/customer-care/page.tsx": "3f2781c198bb09e6f837437f812e6e0c3860330a4f0358e35254417fbae63a34",
+    "apps/admin/app/(admin)/export/page.tsx": "e777811a1f0628911994380f818a9e5714a013b9fd8b622a32d65c7330434e48",
+    "apps/admin/app/(admin)/layout.tsx": "e0a42a06f4e18c8a0e3b1e6f60e78265f3a3ffd4d343bc06adf870436640683d",
+    "apps/admin/app/(admin)/menu/page.tsx": "52dd68ff638e026221d0044e1f1cb515f33796931bd425f74e3537dfeea821fb",
+    "apps/admin/app/(admin)/vouchers/page.tsx": "8cf6c6085ea5ac1c0ab6357b39475d47e290780119fe3b894dc1929d910c41d4",
+    "apps/admin/app/api/menu/images/route.ts": "43ed8a9a1e3817240eecd75f59b79e1c7415a45aa8159c2cf9e2bdd4d8f9441f",
+    "apps/admin/app/globals.css": "dfbf1f5b71421b2120319fc4e6ff75d9db3adb0536393d337bb9139fb5e387fc",
+    "apps/admin/components/AdminDialog.tsx": "eb8baf8019f1409986607d2d6ca1aefb4e152bebc8178ed6916b025d917a9200",
+    "apps/admin/components/AdminToasts.tsx": "06ad39d430790b5d374dcde0b88185b2811d0b6fc33fd25c943b06d71e62c419",
+    "apps/admin/components/InventoryWorkspace.tsx": "620ebc1b592f36d573dc6cef8d9d27fb4b6848fd7d416537191520c6e38e3d39",
+    "apps/admin/components/MenuItemForm.tsx": "23b1754263a3bf7b847dd73da8c196276fc779a0900c535e8291ed10c61602ae",
+    "apps/admin/components/Operations.tsx": "08c49f5240d1d346a371e8f8d8cd81141724b7bf1467cf8d9c180b69d8f8f8d9",
+    "apps/admin/components/Overview.tsx": "bb0637ad613f43865512b3b8b7a9ec6e92bee58ac2ae7dc3eab214c29b0c1d47",
+    "apps/admin/components/PurchasingWorkspace.tsx": "3ea666612a4fab9d165ea1c371ea86fbd27f87b79c8b439fedbff130866a1190",
+    "apps/admin/components/SchedulingWorkspace.tsx": "7fd5b22dc09dccd866ca9bcbb3ae2a46833b18e86043f6bb9c9b0d6afae66985",
+    "apps/admin/components/Sidebar.tsx": "01ed66a37273a4035856349a634e2fc369c43c930d5adc78ebfc5fc6d000f37c",
+    "apps/admin/components/StockInsights.tsx": "0c1a54630b6e1ef3612f73833f45b54c4349303eeeb82b66d655d1ead3dc667b",
+    "apps/admin/components/Topbar.tsx": "5792f1d6725eaab7e60a8f40aa8525b924c49fd9eb6dbe2c4ebb635066498376",
+    "apps/admin/components/adminNav.ts": "17daf990a00c39cc9f1254f02113d8242222145507ab3a760503064b8daed36b",
+    "apps/admin/lib/menu-image.ts": "f920c6a21d54a99cc80846bf9b4ec8a19242733d08a2d62378ca124b857eb3f8",
+    "apps/admin/package.json": "d6224783de8d4a48d627b1d175862aa17584c4ec2f2ab1fa303b4adbab0b9c4b",
+    "apps/admin/utils/exportData.ts": "d2b583c062aedc9ce9dc0eed0c39b242d99629956141757da996d3c56214955c",
+    "apps/customer/app/(shop)/help/page.tsx": "97417c83f580ccd1816656d0bf16bce9a6f96adbbeb907e82bdcfc5ef4ca9845",
+    "apps/customer/app/globals.css": "0430321fca7b98b80a5c71d0a88889ae64c8dd4c688bf9447eea589f954d01e2",
+    "docs/admin-improvements-design-decisions.md": "59cca47f8697781b7dd28b14e33966a0e210808a8f320a076d26e4746540956a",
+    "docs/discrepancy-implementation-progress.md": "4947e5fb4502ac76f144954a4d497926ad4583e42209dfb03ff77320a4e05079",
+    "eslint.config.ts": "033f09eef8e39a5b3694fdf7976c0b4a2590943a20e2afb87a86a51309603a49",
+    "package-lock.json": "8b0369a9bc1a4df5f69eceb2c232a6153d5dfabdcfbf66b794135dbe6b35c3b2",
+    "packages/shared/package.json": "887f98cb54229d8cd3917715e1dd59457b6ff34535cc1edd49ee36ea2b9840e6",
+    "packages/shared/src/hooks/useAuth.tsx": "b20edfae9631bc0f6b31237e07d7a6e017f7d15f65c33f3a1349cd2fede3f050",
+    "packages/shared/src/hooks/useMenu.ts": "d011c42b37a0c3274514de116bbbd72e65ac002c7cda9fde404aa71ab5372605",
+    "packages/shared/src/supabase/client.ts": "bf4964c908ff417d85515123522d8fad986e774931dda5f1d95b1dba28dd3add",
+    "packages/shared/src/utils/request.ts": "cdb266864a5e012ac8ba3f867abc507db4c5126acf401053b2679a871e30fcc4",
+    "supabase/migrations/20261016000100_stock_planning_details.sql": "ee5b15a04677436a8bd6a1c21427fd1a28b18f5b48b5c032914593801a4924d8",
+    "supabase/migrations/20261016000200_menu_photo_bucket.sql": "222dea0d72c4f28d562fe37eb83f0e63d4d095e097f227a73383ca98a87f521e",
+    "supabase/migrations/20261016000300_admin_exports.sql": "3e137e9df6dc2ee82a9ca6c51a09e46ea8ae959c5d6c7beffeed0f6d7d2f6665",
+    "tests/admin-exports.test.ts": "1cfa67ac0594e8d94490803dda6b09268652032a4781beec28cdbd821982f408",
+    "tests/admin-ux-browser-journeys.ts": "dcdba89721051e037cd6f4010f7ef8fb0cb104e3b864df59a25239520c8c6da4",
+    "tests/browser-operations.ts": "f0251e783c390a14919e0644ac97371c0d8638fb2ac431d6229bf79d3916da9a",
+    "tests/category-delete.test.ts": "d99e3e6c6edb84f395803746776c924cb9d0bc78b3471e465b42cdea675cc126",
+    "tests/customer-browser.ts": "f22cefe096803153b5dfc0dc4997e254b142dbecc577b1abe4b79c0ac8ef32ed",
+    "tests/customer-features.test.ts": "4578a81bd59fc1af061acdb0e894a157a80d4ad735fa2d38b652588239d49213",
+    "tests/demo-ledger.test.ts": "b11bb947e7233e46325b20e5ffa35357cd1b8439028f7d87c04aae4097f230eb",
+    "tests/menu-image-api.test.ts": "fbe7bba41a4b6108dd35af233283bf690c674833d7ac100f44f1acb95e61d01f",
+    "tests/menu-image.test.ts": "968ccc06bb6786f6fc951590d5b3ec5e0eb6723ae3273b742e7f11419c013cea",
+    "tests/migrations.test.ts": "83a821d2f7f9e7b247d5a539a9e4469b1ad7a43f27085788bf21d531ee74869b",
+    "tests/request-deadline.test.ts": "b5a3a836dd0d595e83c86a81f0a11ce66c9397a2316f8585d824bb3dcc55e381",
+    "tests/stock-planning-details.test.ts": "bcac029e68cf81ebe3d0cceb4bb9e80a4e884c1d33aa8fa736d9c1e8754b6189",
+    "tests/system-audit-admin-complete.ts": "ea38ae632e98749e72a31ee1ebbaa36b4aee70df18babd6bc0762577924f8644"
+  },
+  "localLogSha256": {
+    "admin-ux-backend.log": "5357c764f652cafb8563b9d236b256ed98f306559dd6d6bfaf7f7a9ceb52a0fd",
+    "admin-loading-browser.log": "3994468d8f57465d22468b1e35f7629da5b6edff746aab4fd5c9f181287330f7",
+    "admin-ux-browser.log": "c6beea99e514976f7bdf211bb430b28acc606d7081e99e9da6afd619381dfc15",
+    "admin-ux-deep-admin.log": "7f9b74790f4a5984570648bdb9b253c383bc4c37b2be1717feca397a66f70d80",
+    "admin-ux-combined-browser.log": "1998c192b9a21dcb30647df52653399ae8daba5f9a026ecabbed1ccee8c16c36",
+    "admin-ux-customer-browser.log": "3f9fbb13f3ff268d993b3c8227bb53af3844841a8ad5d2530e9efe55d38a625d",
+    "admin-ux-pwa.log": "8d805d9a52f46239016c1259924ddda08f315eb1514a9bcc67bf5a2c7adb7732",
+    "admin-ux-motion.log": "8ddec6ae942902dfc62ebb73e7a3c9d3609f6dd16918e150eaabfe956c8d56fe"
+  },
+  "hostedRelease": false,
+  "finalDefenseSignoff": false
+}
