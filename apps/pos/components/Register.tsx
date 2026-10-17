@@ -1,7 +1,10 @@
 "use client";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { createUuid } from "@cafeos/shared/utils/uuid";
-import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
+import {
+  menuProductImageUrl,
+  menuProductImageSrcSet,
+} from "@cafeos/shared/utils/product-images";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -513,6 +516,11 @@ export function Register({ parkedId }: { parkedId?: string }) {
                         {menuProductImageUrl(item.id, item.image_url) ? (
                           <img
                             src={menuProductImageUrl(item.id, item.image_url)!}
+                            srcSet={menuProductImageSrcSet(
+                              menuProductImageUrl(item.id, item.image_url),
+                            )}
+                            sizes="160px"
+                            decoding="async"
                             alt=""
                             loading="lazy"
                             width={320}

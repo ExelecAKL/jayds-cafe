@@ -2,7 +2,10 @@
 import { useState } from "react";
 import Link from "./OfflineMenuLink";
 import type { MenuItem, SelectedVariant } from "@cafeos/shared/types";
-import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
+import {
+  menuProductImageUrl,
+  menuProductImageSrcSet,
+} from "@cafeos/shared/utils/product-images";
 import Icon from "./Icon";
 import { categoryIcon } from "../utils/menuArtwork";
 function defaultConfiguration(item: MenuItem): SelectedVariant[] | null {
@@ -55,7 +58,9 @@ export default function MenuCard({
     Number(item.price) +
       (defaults?.reduce((sum, v) => sum + v.price_modifier, 0) ?? 0);
   return (
-    <article className={`product-card${item.is_available ? "" : " is-sold-out"} ${className}`}>
+    <article
+      className={`product-card${item.is_available ? "" : " is-sold-out"} ${className}`}
+    >
       <div className="product-art">
         <Link
           href={`/menu/browse/${item.id}`}
@@ -65,8 +70,11 @@ export default function MenuCard({
           {imageUrl && imageUrl !== failedImage ? (
             <img
               src={imageUrl}
+              srcSet={menuProductImageSrcSet(imageUrl)}
+              sizes="(max-width: 600px) 45vw, (max-width: 1024px) 28vw, 230px"
               alt={item.name}
               loading="lazy"
+              decoding="async"
               onError={() => setFailedImage(imageUrl)}
               width={320}
               height={320}

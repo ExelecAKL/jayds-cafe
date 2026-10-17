@@ -14,6 +14,19 @@ import type { MenuItem } from "@cafeos/shared/types";
 export async function GET(req: Request) {
   try {
     const { db, userId } = await requireCustomer(req);
+    // Home already holds the public catalog. Return only private history so its
+    // first paint does not wait for a second full availability calculation.
+    if (new URL(req.url).searchParams.get("history") === "1") {
+      const history = await db.rpc("get_customer_recommendation_history", {
+        p_customer: userId,
+      });
+      if (history.error || !history.data)
+        throw new ApiAccessError(
+          "Your previous orders could not load. Please retry.",
+          503,
+        );
+      return NextResponse.json(history.data, { headers: PRIVATE_HEADERS });
+    }
     const [history, catalog] = await Promise.all([
       db.rpc("get_customer_recommendation_history", { p_customer: userId }),
       db.rpc("get_published_catalog"),

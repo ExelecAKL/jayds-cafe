@@ -1,103 +1,148 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { supabase } from "@cafeos/shared/supabase/client";
+import type { MenuItem } from "@cafeos/shared/types";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { customerHeaders } from "../context/CustomerFeatures";
 import {
+  buildHomeRecommendations,
   emptyRecommendations,
-  type HomeRecommendations,
+  type RecommendationHistory,
 } from "../utils/recommendations";
 
-export function useHomeRecommendations(catalogKey: string) {
+// Memory only: private history never enters browser storage or service-worker caches.
+const recent = new Map<
+  string,
+  { at: number; history: RecommendationHistory }
+>();
+const freshFor = 30_000;
+export function useHomeRecommendations(catalog: MenuItem[]) {
   const { user, initialized } = useAuth();
   const owner = user?.id ?? null;
-  const request = useRef(0),
-    controller = useRef<AbortController | null>(null);
+  const epoch = useRef(0),
+    controller = useRef<AbortController | null>(null),
+    activeRead = useRef<Promise<RecommendationHistory | null> | null>(null);
   const [state, setState] = useState<{
     owner: string | null;
-    data: HomeRecommendations;
+    history: RecommendationHistory | null;
     loading: boolean;
     error: string;
-  }>({
-    owner: null,
-    data: emptyRecommendations,
-    loading: false,
+  }>(() => ({
+    owner,
+    history: owner ? (recent.get(owner)?.history ?? null) : null,
+    loading: !!owner,
     error: "",
-  });
-  const refresh = useCallback(async () => {
-    const epoch = ++request.current;
-    controller.current?.abort();
-    controller.current = new AbortController();
-    if (!initialized || !owner) return null;
-    if (!navigator.onLine) {
-      setState({
-        owner,
-        data: emptyRecommendations,
-        loading: false,
-        error: "Connect to load your personal picks.",
-      });
-      return null;
-    }
-    setState((previous) => ({
-      owner,
-      data: previous.owner === owner ? previous.data : emptyRecommendations,
-      loading: true,
-      error: "",
-    }));
-    try {
-      const headers = await customerHeaders(owner);
-      if (epoch !== request.current) return null;
-      const response = await fetch("/api/customer/recommendations", {
-        headers,
-        cache: "no-store",
-        signal: controller.current.signal,
-      });
-      const data = await response.json();
-      await customerHeaders(owner);
-      if (epoch !== request.current) return null;
-      if (!response.ok)
-        throw new Error(
-          data.error || "Your suggestions could not load. Please retry.",
-        );
-      if (
-        typeof data.hasOrderHistory !== "boolean" ||
-        !Array.isArray(data.orderAgain) ||
-        !Array.isArray(data.suggestions)
-      )
-        throw new Error("Your suggestions could not load. Please retry.");
-      setState({ owner, data, loading: false, error: "" });
-      return data as HomeRecommendations;
-    } catch (error) {
-      if (epoch === request.current)
+  }));
+  const read = useCallback(
+    (force = true): Promise<RecommendationHistory | null> => {
+      if (!initialized || !owner) return Promise.resolve(null);
+      if (!navigator.onLine) {
+        ++epoch.current;
+        controller.current?.abort();
+        activeRead.current = null;
+        recent.delete(owner);
         setState({
           owner,
-          data: emptyRecommendations,
+          history: null,
           loading: false,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Your suggestions could not load. Please retry.",
+          error: "Connect to load your personal picks.",
         });
-      return null;
-    }
-  }, [owner, initialized]);
+        return Promise.resolve(null);
+      }
+      const saved = recent.get(owner);
+      if (!force && saved && Date.now() - saved.at < freshFor) {
+        setState({ owner, history: saved.history, loading: false, error: "" });
+        return Promise.resolve(saved.history);
+      }
+      if (activeRead.current) return activeRead.current;
+      const version = epoch.current;
+      const abort = new AbortController();
+      controller.current = abort;
+      const timer = setTimeout(() => abort.abort(), 12_000);
+      setState((previous) => ({
+        owner,
+        history: previous.owner === owner ? previous.history : null,
+        loading: true,
+        error: "",
+      }));
+      const work = async () => {
+        try {
+          const headers = await customerHeaders(owner);
+          if (epoch.current !== version) return null;
+          const response = await fetch(
+            "/api/customer/recommendations?history=1",
+            { headers, cache: "no-store", signal: abort.signal },
+          );
+          const history = await response.json();
+          await customerHeaders(owner);
+          if (epoch.current !== version) return null;
+          if (
+            !response.ok ||
+            typeof history.hasOrderHistory !== "boolean" ||
+            !Array.isArray(history.products)
+          )
+            throw Error(
+              history.error ||
+                "Your previous orders could not load. Please retry.",
+            );
+          recent.set(owner, { at: Date.now(), history });
+          if (recent.size > 3) recent.delete(recent.keys().next().value!);
+          setState({ owner, history, loading: false, error: "" });
+          return history as RecommendationHistory;
+        } catch (error) {
+          if (epoch.current === version) {
+            recent.delete(owner);
+            setState({
+              owner,
+              history: null,
+              loading: false,
+              error:
+                error instanceof Error && error.name !== "AbortError"
+                  ? error.message
+                  : "Your previous orders could not load. Please retry.",
+            });
+          }
+          return null;
+        } finally {
+          clearTimeout(timer);
+          if (epoch.current === version) activeRead.current = null;
+        }
+      };
+      const pending = work();
+      activeRead.current = pending;
+      return pending;
+    },
+    [owner, initialized],
+  );
+  const refresh = useCallback(async () => {
+    if (!initialized || !owner || !navigator.onLine) return null;
+    // A deliberate reorder still verifies today's complete price/options. This
+    // expensive read is excluded from initial display and return navigation.
+    const [history, menu] = await Promise.all([
+      read(true),
+      supabase
+        .rpc("get_published_catalog")
+        .abortSignal(AbortSignal.timeout(12000)),
+    ]);
+    return history && !menu.error && Array.isArray(menu.data?.menuItems)
+      ? buildHomeRecommendations(history, menu.data.menuItems)
+      : null;
+  }, [read, initialized, owner]);
   useEffect(() => {
     if (!initialized || !owner) return;
-    let active = true;
+    let alive = true;
     queueMicrotask(() => {
-      if (active) void refresh();
+      if (alive) void read(false);
     });
-    const update = () => {
-      void refresh();
+    const background = () => {
+      if (!document.hidden) void read(true);
     };
-    const visible = () => {
-      if (!document.hidden) update();
-    };
-    window.addEventListener("focus", update);
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
-    document.addEventListener("visibilitychange", visible);
+    const changed = () => void read(true);
+    window.addEventListener("focus", background);
+    window.addEventListener("online", changed);
+    window.addEventListener("offline", changed);
+    document.addEventListener("visibilitychange", background);
     const channel = supabase
       .channel(`home-recommendations-${createUuid()}`)
       .on(
@@ -108,24 +153,40 @@ export function useHomeRecommendations(catalogKey: string) {
           table: "orders",
           filter: `customer_id=eq.${owner}`,
         },
-        update,
+        changed,
       )
       .subscribe();
     return () => {
-      active = false;
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- Invalidate pending responses at cleanup; this is a counter, not a DOM ref.
-      ++request.current;
+      alive = false;
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- Monotonic request generation, not a DOM ref.
+      ++epoch.current;
       controller.current?.abort();
-      window.removeEventListener("focus", update);
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
-      document.removeEventListener("visibilitychange", visible);
+      activeRead.current = null;
+      window.removeEventListener("focus", background);
+      window.removeEventListener("online", changed);
+      window.removeEventListener("offline", changed);
+      document.removeEventListener("visibilitychange", background);
       void supabase.removeChannel(channel);
     };
-  }, [owner, initialized, catalogKey, refresh]);
+  }, [owner, initialized, read]);
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") recent.clear();
+    });
+    return () => subscription.unsubscribe();
+  }, []);
   const visible = initialized && !!owner && state.owner === owner;
+  const data = useMemo(
+    () =>
+      visible && state.history
+        ? buildHomeRecommendations(state.history, catalog)
+        : emptyRecommendations,
+    [visible, state.history, catalog],
+  );
   return {
-    data: visible ? state.data : emptyRecommendations,
+    data,
     loading: visible && state.loading,
     error: visible ? state.error : "",
     refresh,

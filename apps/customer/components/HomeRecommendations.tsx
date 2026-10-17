@@ -44,17 +44,7 @@ export default function HomeRecommendations({
     owner = user!.id;
   const cart = useCart(),
     router = useRouter();
-  const catalogKey = JSON.stringify(
-    catalog.map((item) => [
-      item.id,
-      item.updated_at,
-      item.is_available,
-      item.price,
-      item.tags,
-      item.variants,
-    ]),
-  );
-  const { data, loading, error, refresh } = useHomeRecommendations(catalogKey);
+  const { data, loading, error, refresh } = useHomeRecommendations(catalog);
   const [heading, setHeading] = useState("Just for You");
   const [preview, setPreview] = useState<Preview | null>(null),
     [busy, setBusy] = useState(false),
@@ -209,6 +199,21 @@ export default function HomeRecommendations({
     suggestions = data.suggestions.filter(available);
   return (
     <>
+      {loading && !data.hasOrderHistory && !error && (
+        <section
+          className="home-personal-section mb-8"
+          aria-label="Loading previous picks"
+          aria-busy="true"
+        >
+          <div className="section-heading">
+            <h2 className="section-title">Your usuals</h2>
+          </div>
+          <div className="home-reorder-placeholder" aria-hidden="true">
+            <div className="skeleton" />
+            <div className="skeleton" />
+          </div>
+        </section>
+      )}
       {error && (
         <InlineNotice>
           {error}
@@ -237,7 +242,10 @@ export default function HomeRecommendations({
               Your previous picks
             </span>
           </div>
-          <div className="product-grid">
+          <div
+            className="product-grid home-reorder-rail"
+            aria-label="Previous orders"
+          >
             {orderAgain.map((entry) => {
               const line = draftFor(entry).items[0];
               return (

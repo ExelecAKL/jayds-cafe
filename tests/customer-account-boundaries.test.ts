@@ -5,7 +5,11 @@ import { createRequire } from "node:module";
 import test from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
-import { emptyRecommendations } from "../apps/customer/utils/recommendations.ts";
+import {
+  emptyRecommendations,
+  buildHomeRecommendations,
+} from "../apps/customer/utils/recommendations.ts";
+import type { MenuItem } from "../packages/shared/src/types/index.ts";
 
 // Exercise the actual client components with isolated hook/session/network doubles.
 // No .env, Supabase account, browser storage, or provider is touched.
@@ -72,6 +76,9 @@ function hooks() {
       )
         slots[position] = { dependencies, fn };
       return slots[position].fn;
+    },
+    useMemo(fn: () => unknown, dependencies: unknown[]) {
+      return (react.useCallback(fn, dependencies) as () => unknown)();
     },
     useEffect(effect: () => (() => void) | void, dependencies: unknown[]) {
       const position = index++,
@@ -159,6 +166,9 @@ function load<T>(
         },
       },
       AbortController,
+      AbortSignal,
+      setTimeout,
+      clearTimeout,
       Date,
       queueMicrotask,
       window: { dispatchEvent() {} },
@@ -215,16 +225,54 @@ for (const fails of [false, true])
       },
       subscribe: () => channel,
     };
-    const client = load<{ useHomeRecommendations: (key: string) => any }>(
+    const catalog = ["a-product", "b-product"].map((id) => ({
+      id,
+      name: id,
+      status: "active",
+      is_available: true,
+      variants: [],
+      price: 100,
+      tags: [],
+      sort_order: 0,
+    })) as unknown as MenuItem[];
+    const history = (id: string) => ({
+      hasOrderHistory: true,
+      products: [
+        {
+          menu_item_id: id,
+          name: id,
+          price: 100,
+          variants: [],
+          last_order_at: "2026-10-18",
+          purchase_count: 1,
+          weight: 1,
+        },
+      ],
+    });
+    const client = load<{
+      useHomeRecommendations: (catalog: MenuItem[]) => any;
+    }>(
       "apps/customer/hooks/useHomeRecommendations.ts",
       {
         react: lifecycle.react,
         "@cafeos/shared/hooks/useAuth": { useAuth: () => current },
         "@cafeos/shared/supabase/client": {
-          supabase: { channel: () => channel, removeChannel: async () => {} },
+          supabase: {
+            channel: () => channel,
+            removeChannel: async () => {},
+            auth: {
+              onAuthStateChange: () => ({
+                data: { subscription: { unsubscribe() {} } },
+              }),
+            },
+            rpc: async () => ({ data: { menuItems: catalog } }),
+          },
         },
         "@cafeos/shared/utils/uuid": { createUuid: () => "isolated" },
-        "../utils/recommendations": { emptyRecommendations },
+        "../utils/recommendations": {
+          emptyRecommendations,
+          buildHomeRecommendations,
+        },
         "../context/CustomerFeatures": {
           customerHeaders: async (expected: string) => {
             if (expected !== current.user?.id) throw Error("Account changed");
@@ -255,18 +303,14 @@ for (const fails of [false, true])
           if (token.endsWith(accountA.id)) return delayed.promise;
           return {
             ok: true,
-            json: async () => ({
-              hasOrderHistory: true,
-              orderAgain: [{ product: { id: "b-product" } }],
-              suggestions: [],
-            }),
+            json: async () => history("b-product"),
           };
         },
       },
     );
     lifecycle.setComponent(() => ({
       type: "recommendations",
-      props: { value: client.useHomeRecommendations("catalog") },
+      props: { value: client.useHomeRecommendations(catalog) },
     }));
     await lifecycle.flush();
     current = authFor(accountB);
@@ -289,14 +333,7 @@ for (const fails of [false, true])
     );
     delayed.resolve({
       ok: !fails,
-      json: async () =>
-        fails
-          ? { error: "A failed" }
-          : {
-              hasOrderHistory: true,
-              orderAgain: [{ product: { id: "a-product" } }],
-              suggestions: [],
-            },
+      json: async () => (fails ? { error: "A failed" } : history("a-product")),
     });
     await lifecycle.flush();
     assert.equal(

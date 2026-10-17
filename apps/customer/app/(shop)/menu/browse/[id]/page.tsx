@@ -5,7 +5,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "../../../../../components/OfflineMenuLink";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
-import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
+import {
+  menuProductImageUrl,
+  menuProductImageSrcSet,
+} from "@cafeos/shared/utils/product-images";
 import { useAvailability } from "@cafeos/shared/hooks/useAvailability";
 import type { ItemVariant, SelectedVariant } from "@cafeos/shared/types";
 import { useCart } from "../../../../../context/CartContext";
@@ -44,7 +47,7 @@ export default function BrowseMenuItemPage() {
     [notes, setNotes] = useState(""),
     [added, setAdded] = useState(false),
     [online, setOnline] = useState(true);
-  const groups = useMemo(() => {
+  const groups = (() => {
     const result: Record<string, ItemVariant[]> = {};
     for (const v of item?.variants ?? []) {
       if (v.applicable_items && !v.applicable_items.includes(item!.id))
@@ -54,7 +57,7 @@ export default function BrowseMenuItemPage() {
     for (const values of Object.values(result))
       values.sort((a, b) => a.sort_order - b.sort_order);
     return result;
-  }, [item]);
+  })();
   useEffect(() => {
     if (!added) return;
     // Let the cart provider persist this commit before an offline document navigation.
@@ -246,19 +249,44 @@ export default function BrowseMenuItemPage() {
         </InlineNotice>
       )}
       {!item.is_available && (
-        <InlineNotice>
-          {item.availability_reason ||
-            "This product is sold out. You can still view its options."}
-        </InlineNotice>
+        <div className="product-availability-panel" role="status">
+          <Icon name="clock" size={20} />
+          <div>
+            <strong>Sold out for now</strong>
+            <p>You can view the details or choose something else.</p>
+          </div>
+          <Link href="/menu/browse" className="text-link">
+            View menu
+          </Link>
+        </div>
       )}
-      {online && availability?.reason && (
-        <InlineNotice>{availability.reason}</InlineNotice>
-      )}
+      {item.is_available &&
+        online &&
+        !checking &&
+        availability &&
+        !availability.available && (
+          <div className="product-availability-panel" role="status">
+            <Icon name="clock" size={20} />
+            <div>
+              <strong>These options are unavailable</strong>
+              <p>Try another size or option below.</p>
+            </div>
+          </div>
+        )}
       <div className="detail-layout">
         <section className="detail-image-section">
           <div className="detail-art">
             {imageUrl ? (
-              <img src={imageUrl} alt={item.name} width={640} height={640} />
+              <img
+                src={imageUrl}
+                srcSet={menuProductImageSrcSet(imageUrl)}
+                sizes="(max-width: 767px) 90vw, 520px"
+                decoding="async"
+                fetchPriority="high"
+                alt={item.name}
+                width={640}
+                height={640}
+              />
             ) : (
               <div className="product-placeholder">
                 <Icon

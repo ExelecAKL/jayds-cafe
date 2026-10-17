@@ -265,6 +265,7 @@ test("recommendation route derives owner from authentication, returns private re
     Vary: "Cookie, Authorization",
   };
   vm.runInNewContext(source, {
+    URL,
     module: loadedModule,
     exports: loadedModule.exports,
     require: (name: string) =>
@@ -321,6 +322,24 @@ test("recommendation route derives owner from authentication, returns private re
   );
   const body = await response.json();
   assert.equal(body.suggestions[0].product.id, "new");
+  calls.length = 0;
+  const fast = await route.GET(
+    new Request(
+      "https://jayds.test/api/customer/recommendations?history=1&customer_id=someone-else",
+    ),
+  );
+  assert.equal(fast.status, 200);
+  assert.equal(fast.headers.get("cache-control"), "private, no-store");
+  assert.equal((await fast.json()).products[0].menu_item_id, "usual");
+  assert.deepEqual(
+    calls.map((c) => c.name),
+    ["get_customer_recommendation_history"],
+    "Fast Home request never repeats the catalog query",
+  );
+  assert.equal(
+    JSON.stringify(calls[0].args),
+    JSON.stringify({ p_customer: "verified-owner" }),
+  );
   unavailable = true;
   assert.equal(
     (

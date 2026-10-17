@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "./OfflineMenuLink";
 import type { MenuItem } from "@cafeos/shared/types";
-import { menuProductImageUrl } from "@cafeos/shared/utils/product-images";
+import {
+  menuProductImageUrl,
+  menuProductImageSrcSet,
+} from "@cafeos/shared/utils/product-images";
 import Icon from "./Icon";
 import LogoArtwork from "./LogoArtwork";
 export default function HomeCarousel({ products }: { products: MenuItem[] }) {
@@ -170,11 +172,13 @@ export default function HomeCarousel({ products }: { products: MenuItem[] }) {
           className={`home-carousel-art ${imageUrl ? "is-product" : "is-welcome"}`}
         >
           {item && imageUrl ? (
-            <Image
+            <img
               src={imageUrl}
+              srcSet={menuProductImageSrcSet(imageUrl)}
               alt={item.name}
-              fill
-              unoptimized
+              width={195}
+              height={210}
+              decoding="async"
               sizes="(max-width: 767px) 150px, 195px"
             />
           ) : (

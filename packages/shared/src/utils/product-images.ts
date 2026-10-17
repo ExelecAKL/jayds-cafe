@@ -71,3 +71,17 @@ export function menuProductImageUrl(
   const generated = id ? generatedImages[id] : undefined;
   return generated ? appPath(generated) : null;
 }
+
+/** Only generated, content-addressed image families have these published sizes. */
+export function menuProductImageSrcSet(
+  url?: string | null,
+): string | undefined {
+  if (
+    !url ||
+    !/\/generated\/[a-f0-9-]{36}\/[a-z0-9-]+-[a-f0-9]{12}-640\.webp$/.test(url)
+  )
+    return undefined;
+  return [320, 640]
+    .map((width) => `${url.replace(/-640\.webp$/, `-${width}.webp`)} ${width}w`)
+    .join(", ");
+}

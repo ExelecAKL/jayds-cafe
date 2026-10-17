@@ -351,44 +351,47 @@ await context.route(base + "/api/**", async (route) => {
       req.headers().authorization?.startsWith("Bearer "),
       "Personal picks require an account session",
     );
+    const history = {
+      hasOrderHistory: recommendationHistory,
+      products: recommendationHistory
+        ? [
+            {
+              menu_item_id: products[0].id,
+              name: products[0].name,
+              price: 145,
+              variants: [
+                {
+                  variant_group: "size",
+                  label: "16oz",
+                  price_modifier: 0,
+                },
+              ],
+              last_order_at: "2026-10-08T00:00:00Z",
+              weight: 2,
+              purchase_count: 2,
+            },
+            {
+              menu_item_id: products[1].id,
+              name: products[1].name,
+              price: 145,
+              variants: [],
+              last_order_at: "2026-10-07T00:00:00Z",
+              weight: 1,
+              purchase_count: 1,
+            },
+          ]
+        : [],
+    };
     await route.fulfill({
       status: recommendationFailure ? 503 : 200,
       json: recommendationFailure
         ? { error: "Personal picks are temporarily unavailable." }
-        : buildHomeRecommendations(
-            {
-              hasOrderHistory: recommendationHistory,
-              products: recommendationHistory
-                ? [
-                    {
-                      menu_item_id: products[0].id,
-                      name: products[0].name,
-                      price: 145,
-                      variants: [
-                        {
-                          variant_group: "size",
-                          label: "16oz",
-                          price_modifier: 0,
-                        },
-                      ],
-                      last_order_at: "2026-10-08T00:00:00Z",
-                      weight: 2,
-                      purchase_count: 2,
-                    },
-                    {
-                      menu_item_id: products[1].id,
-                      name: products[1].name,
-                      price: 145,
-                      variants: [],
-                      last_order_at: "2026-10-07T00:00:00Z",
-                      weight: 1,
-                      purchase_count: 1,
-                    },
-                  ]
-                : [],
-            },
-            products as unknown as MenuItem[],
-          ),
+        : new URL(req.url()).searchParams.get("history") === "1"
+          ? history
+          : buildHomeRecommendations(
+              history,
+              products as unknown as MenuItem[],
+            ),
     });
     return;
   }
@@ -859,8 +862,13 @@ try {
     });
     await expect(soldOutCard.locator(".product-price")).toHaveText("₱145.00");
     await expect(soldOutCard).toHaveClass(/is-sold-out/);
-    await expect(soldOutCard.locator('.product-image, .product-placeholder').first()).toHaveCSS('filter','grayscale(1)');
-    await expect(soldOutCard.locator('.product-select')).toHaveCSS('background-color','rgb(231, 229, 228)');
+    await expect(
+      soldOutCard.locator(".product-image, .product-placeholder").first(),
+    ).toHaveCSS("filter", "grayscale(1)");
+    await expect(soldOutCard.locator(".product-select")).toHaveCSS(
+      "background-color",
+      "rgb(231, 229, 228)",
+    );
     await expect(soldOutCard.locator(".product-price")).toHaveCSS(
       "color",
       "rgb(115, 115, 115)",
@@ -878,6 +886,13 @@ try {
     await expect(
       page.locator(".detail-introduction .price-unavailable"),
     ).toContainText("₱145.00");
+    await expect(page.locator(".product-availability-panel")).toHaveCount(1);
+    await expect(
+      page.getByText("Sold out for now", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Insufficient stock", { exact: true }),
+    ).toHaveCount(0);
     await expect(
       page.getByRole("button", {
         name: "Save Sold-out Matcha to favorites",
@@ -1248,6 +1263,18 @@ try {
       "Heading stays stable during refresh",
     );
     assert.equal(await page.locator(".home-personal-section").count(), 2);
+    const readsBeforeReturn = recommendationReads;
+    await page.getByRole("link", { name: "Menu", exact: true }).click();
+    await page.getByRole("link", { name: "Home", exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: "Order Again", exact: true }),
+    ).toBeVisible({ timeout: 1500 });
+    await page.waitForLoadState("networkidle");
+    assert.equal(
+      recommendationReads,
+      readsBeforeReturn,
+      "Returning Home reuses fresh account history without a network wait",
+    );
     assert.equal(
       await page
         .locator('[aria-labelledby="home-order-again-title"] .product-card')

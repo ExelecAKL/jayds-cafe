@@ -4,7 +4,6 @@ import {
   NetworkFirst,
   NetworkOnly,
   Serwist,
-  StaleWhileRevalidate,
   type PrecacheEntry,
   type SerwistGlobalConfig,
 } from "serwist";
@@ -47,15 +46,15 @@ const serwist = new Serwist({
       matcher: ({ url, request }) =>
         request.destination === "image" &&
         ((url.origin === self.location.origin &&
-          /^\/products\/[a-z0-9-]+\.png$/.test(url.pathname)) ||
+          /^\/products\/[a-z0-9-]+\.(?:png|webp)$/.test(url.pathname)) ||
           (url.origin === publicImageOrigin &&
-            /^\/storage\/v1\/object\/public\/jayds-menu-images\/generated\/[a-f0-9-]+\/[a-z0-9-]+\.png$/.test(
+            /^\/storage\/v1\/object\/public\/jayds-menu-images\/generated\/[a-f0-9-]+\/[a-z0-9-]+\.(?:png|webp)$/.test(
               url.pathname,
             ))),
-      handler: new StaleWhileRevalidate({
+      handler: new CacheFirst({
         cacheName: "jayds-public-products-v1",
         plugins: [
-          new ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 604800 }),
+          new ExpirationPlugin({ maxEntries: 180, maxAgeSeconds: 2592000 }),
         ],
       }),
     },
