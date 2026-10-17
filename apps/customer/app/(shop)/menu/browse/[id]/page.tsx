@@ -465,7 +465,7 @@ export default function BrowseMenuItemPage() {
               {notes.length}/60
             </p>
           </section>
-          {missing.length > 0 && (
+          {item.is_available && missing.length > 0 && (
             <InlineNotice>
               Choose{" "}
               {missing
@@ -523,10 +523,10 @@ export default function BrowseMenuItemPage() {
           >
             {added ? (
               "Adding…"
-            ) : checking && online && !availability ? (
-              "Checking stock…"
             ) : !item.is_available ? (
               "Sold out"
+            ) : checking && online && !availability ? (
+              "Checking stock…"
             ) : (
               <>
                 Add to bag

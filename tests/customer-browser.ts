@@ -901,6 +901,7 @@ try {
     await expect(
       page.getByText("Insufficient stock", { exact: true }),
     ).toHaveCount(0);
+    await expect(page.getByText(/before adding\.$/)).toHaveCount(0);
     await expect(
       page.getByRole("button", {
         name: "Save Sold-out Matcha to favorites",
