@@ -154,6 +154,7 @@ let recommendationHistory = false,
   unavailableReorder = false;
 let recommendationReads = 0;
 let recoverRecommendationsOnNextRead = false;
+let availabilityFails = false;
 const fixtureProfile = {
   id: fixtureAccount.id,
   email: fixtureAccount.email,
@@ -298,6 +299,13 @@ await context.route(/https:\/\/[^/]+\.supabase\.co\/.*/, async (route) => {
     return;
   }
   if (name === "get_configuration_availability") {
+    if (availabilityFails) {
+      await route.fulfill({
+        status: 503,
+        json: { message: "Temporary stock lookup failure" },
+      });
+      return;
+    }
     await route.fulfill({
       json: { available: !unavailableReorder, reason: null },
     });
@@ -902,10 +910,20 @@ try {
     await expect(
       page.getByRole("button", { name: "Sold out", exact: true }),
     ).toBeDisabled();
+    availabilityFails = true;
     await page.goto(base + "/menu/browse");
     await page
       .getByRole("link", { name: "Select Spanish Latte", exact: true })
       .click();
+    await expect(
+      page.getByText("Stock could not be checked", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("These options are unavailable", { exact: true }),
+    ).toHaveCount(0);
+    availabilityFails = false;
+    await page.getByRole("button", { name: "Retry", exact: true }).click();
+    await expect(page.locator(".product-availability-panel")).toHaveCount(0);
     await page
       .getByRole("button", { name: "Save Spanish Latte to favorites" })
       .click();
@@ -1294,13 +1312,16 @@ try {
         .count(),
       0,
     );
+    const previousVisitHeading = await page
+      .locator("#home-discovery-title")
+      .innerText();
     await page.goto(base + "/menu/browse");
     assert.equal(await page.locator(".home-personal-section").count(), 0);
     await page.getByRole("link", { name: "Home", exact: true }).click();
     await page.locator("#home-discovery-title").waitFor();
     assert.notEqual(
       await page.locator("#home-discovery-title").innerText(),
-      discoveryTitle,
+      previousVisitHeading,
       "Heading alternates on the next Home visit",
     );
     for (const [width, height] of [

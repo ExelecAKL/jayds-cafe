@@ -2,11 +2,29 @@ import { createRequire } from "node:module";
 // Real service worker, isolated public fixture; no customer/provider writes.
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { writeFileSync, rmSync } from "node:fs";
+import sharp from "sharp";
 import path from "node:path";
 import { chromium } from "@playwright/test";
 const root = process.cwd(),
   base = "http://127.0.0.1:4323";
+const webpFixture = path.join(
+  root,
+  "apps/customer/public/products/pwa-cache-fixture.webp",
+);
+writeFileSync(
+  webpFixture,
+  await sharp({
+    create: {
+      width: 4,
+      height: 4,
+      channels: 4,
+      background: { r: 120, g: 80, b: 40, alpha: 0.5 },
+    },
+  })
+    .webp()
+    .toBuffer(),
+);
 const server = spawn(
   process.execPath,
   [
@@ -176,6 +194,12 @@ try {
   await page
     .getByRole("heading", { name: "Offline fixture coffee", exact: true })
     .waitFor();
+  await page.evaluate(async () => {
+    const image = new Image();
+    image.src = "/products/pwa-cache-fixture.webp";
+    await image.decode();
+  });
+  await page.waitForFunction(async()=>!!await caches.match('/products/pwa-cache-fixture.webp'));
   const cachedPaths = await page.evaluate(async () => {
     const paths: string[] = [];
     for (const key of await caches.keys())
@@ -192,13 +216,13 @@ try {
     "Jayds vector artwork remains available offline",
   );
   assert.deepEqual(
-    cachedPaths.filter((p) => p.startsWith("/products/")),
-    ["/products/americano.png"],
+    cachedPaths.filter((p) => p.startsWith("/products/")).sort(),
+    ["/products/americano.png", "/products/pwa-cache-fixture.webp"],
     "Only viewed product images are downloaded and cached",
   );
   const unexpectedPaths = cachedPaths.filter(
     (p) =>
-      !/^\/(?:_next\/static\/|products\/[a-z0-9-]+\.png$|brand\/(?:jayds|icon)-[\w-]+\.svg$|maplibre\/maplibre-[\w-]+\.mjs$|icons\/|startup\/|fonts\/|favicon|menu(?:\/|$)|illustrations\/jayds-(?:pickup|delivery)\.svg$)/.test(
+      !/^\/(?:_next\/static\/|products\/[a-z0-9-]+\.(?:png|webp)$|brand\/(?:jayds|icon)-[\w-]+\.svg$|maplibre\/maplibre-[\w-]+\.mjs$|icons\/|startup\/|fonts\/|favicon|menu(?:\/|$)|illustrations\/jayds-(?:pickup|delivery)\.svg$)/.test(
         p,
       ),
   );
@@ -206,7 +230,7 @@ try {
     console.log(JSON.stringify({ unexpectedCachedPaths: unexpectedPaths }));
   assert.ok(
     cachedPaths.every((p) =>
-      /^\/(?:_next\/static\/|products\/[a-z0-9-]+\.png$|brand\/(?:jayds|icon)-[\w-]+\.svg$|maplibre\/maplibre-[\w-]+\.mjs$|icons\/|startup\/|fonts\/|favicon|menu(?:\/|$)|illustrations\/jayds-(?:pickup|delivery)\.svg$)/.test(
+      /^\/(?:_next\/static\/|products\/[a-z0-9-]+\.(?:png|webp)$|brand\/(?:jayds|icon)-[\w-]+\.svg$|maplibre\/maplibre-[\w-]+\.mjs$|icons\/|startup\/|fonts\/|favicon|menu(?:\/|$)|illustrations\/jayds-(?:pickup|delivery)\.svg$)/.test(
         p,
       ),
     ),
@@ -363,6 +387,7 @@ try {
     "Offline hydration must complete without runtime errors",
   );
 } finally {
+  rmSync(webpFixture, { force: true });
   // Release the isolated server even if Chromium takes time to close an
   // offline worker. A retained server could serve stale chunk references on
   // the next run after a new production build.

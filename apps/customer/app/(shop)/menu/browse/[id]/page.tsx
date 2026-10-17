@@ -139,11 +139,11 @@ export default function BrowseMenuItemPage() {
     label: v.label,
     price_modifier: Number(v.price_modifier),
   }));
-  const { availability, checking } = useAvailability(
-    item?.id,
-    variants,
-    quantity,
-  );
+  const {
+    availability,
+    checking,
+    retry: retryAvailability,
+  } = useAvailability(item?.id, variants, quantity);
   const missing = Object.keys(groups).filter(
     (group) => group !== "add_on" && !selected[group],
   );
@@ -268,9 +268,26 @@ export default function BrowseMenuItemPage() {
           <div className="product-availability-panel" role="status">
             <Icon name="clock" size={20} />
             <div>
-              <strong>These options are unavailable</strong>
-              <p>Try another size or option below.</p>
+              <strong>
+                {availability.reason === "Availability could not be verified"
+                  ? "Stock could not be checked"
+                  : "These options are unavailable"}
+              </strong>
+              <p>
+                {availability.reason === "Availability could not be verified"
+                  ? "Check your connection and try again."
+                  : "Try another size or option below."}
+              </p>
             </div>
+            {availability.reason === "Availability could not be verified" && (
+              <button
+                type="button"
+                className="text-link"
+                onClick={retryAvailability}
+              >
+                Retry
+              </button>
+            )}
           </div>
         )}
       <div className="detail-layout">

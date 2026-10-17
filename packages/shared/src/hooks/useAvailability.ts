@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../supabase/client";
 import type { Availability } from "../inventory/types";
 import { createUuid } from "../utils/uuid";
+import { withRequestDeadline } from "../utils/request";
 
 export function useAvailability(
   itemId: string | undefined,
@@ -11,6 +12,8 @@ export function useAvailability(
 ) {
   const signature = JSON.stringify(variants);
   const key = `${itemId}:${quantity}:${signature}`;
+  const [attempt, setAttempt] = useState(0);
+  const retry = useCallback(() => setAttempt((value) => value + 1), []);
   const [result, setResult] = useState<{
     key: string;
     availability: Availability | null;
@@ -42,13 +45,14 @@ export function useAvailability(
         checking: true,
       }));
       try {
-        const { data, error } = await supabase.rpc(
-          "get_configuration_availability",
-          {
-            p_item: itemId,
-            p_variants: JSON.parse(signature),
-            p_quantity: quantity,
-          },
+        const { data, error } = await withRequestDeadline((signal) =>
+          supabase
+            .rpc("get_configuration_availability", {
+              p_item: itemId,
+              p_variants: JSON.parse(signature),
+              p_quantity: quantity,
+            })
+            .abortSignal(signal),
         );
         if (error) throw error;
         if (active && request === latestRequest)
@@ -93,10 +97,10 @@ export function useAvailability(
       window.removeEventListener("offline", refresh);
       void supabase.removeChannel(channel);
     };
-  }, [itemId, signature, quantity, key]);
+  }, [itemId, signature, quantity, key, attempt]);
   // A prior configuration cannot authorize a newly selected size or quantity,
   // including during the debounce before its first request starts.
   return result.key === key
-    ? { availability: result.availability, checking: result.checking }
-    : { availability: null, checking: !!itemId };
+    ? { availability: result.availability, checking: result.checking, retry }
+    : { availability: null, checking: !!itemId, retry };
 }

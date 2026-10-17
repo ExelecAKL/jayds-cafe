@@ -4,6 +4,7 @@ import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { supabase } from "@cafeos/shared/supabase/client";
 import type { MenuItem } from "@cafeos/shared/types";
 import { createUuid } from "@cafeos/shared/utils/uuid";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { customerHeaders } from "../context/CustomerFeatures";
 import {
   buildHomeRecommendations,
@@ -117,17 +118,21 @@ export function useHomeRecommendations(catalog: MenuItem[]) {
   );
   const refresh = useCallback(async () => {
     if (!initialized || !owner || !navigator.onLine) return null;
-    // A deliberate reorder still verifies today's complete price/options. This
-    // expensive read is excluded from initial display and return navigation.
-    const [history, menu] = await Promise.all([
-      read(true),
-      supabase
-        .rpc("get_published_catalog")
-        .abortSignal(AbortSignal.timeout(12000)),
-    ]);
-    return history && !menu.error && Array.isArray(menu.data?.menuItems)
-      ? buildHomeRecommendations(history, menu.data.menuItems)
-      : null;
+    try {
+      // A deliberate reorder still verifies today's complete price/options. This
+      // expensive read is excluded from initial display and return navigation.
+      const [history, menu] = await Promise.all([
+        read(true),
+        withRequestDeadline((signal) =>
+          supabase.rpc("get_published_catalog").abortSignal(signal),
+        ),
+      ]);
+      return history && !menu.error && Array.isArray(menu.data?.menuItems)
+        ? buildHomeRecommendations(history, menu.data.menuItems)
+        : null;
+    } catch {
+      return null;
+    }
   }, [read, initialized, owner]);
   useEffect(() => {
     if (!initialized || !owner) return;
