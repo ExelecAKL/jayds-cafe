@@ -101,7 +101,11 @@ export default function AppShell({
           )}
         </div>
       </header>
-      <main id="main-content" className="app-content app-page-enter">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="app-content app-page-enter"
+      >
         {children}
       </main>
       {cart && <FloatingCartBar />}

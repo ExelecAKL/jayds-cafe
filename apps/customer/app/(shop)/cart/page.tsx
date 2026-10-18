@@ -162,7 +162,8 @@ export default function CartPage() {
             <div className="min-w-0 space-y-4">
               <div className="section-heading">
                 <h2 className="section-title">
-                  {cart.itemCount} items for you
+                  {cart.itemCount} {cart.itemCount === 1 ? "item" : "items"} for
+                  you
                 </h2>
                 <Link href="/menu/browse" className="text-link">
                   Add more

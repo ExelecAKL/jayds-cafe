@@ -656,7 +656,7 @@ textarea {
   padding: 16px;
   border-radius: 12px;
 }
-.skip-link:focus {
+.skip-link:focus-visible {
   top: 12px;
 }
 .app-nav {

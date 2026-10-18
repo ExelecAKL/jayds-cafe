@@ -22,6 +22,43 @@ export async function surveyUxAudit({
   fixtureProfile: { points: number };
 }) {
   const passed: string[] = [];
+  async function auditScreen(name: string) {
+    await page.addScriptTag({
+      path: path.join(process.cwd(), "node_modules/axe-core/axe.min.js"),
+    });
+    const violations = await page.evaluate(async () => {
+      const axe = (
+        window as unknown as {
+          axe: {
+            run: (options: unknown) => Promise<{
+              violations: {
+                id: string;
+                impact: string;
+                nodes: { target: string[] }[];
+              }[];
+            }>;
+          };
+        }
+      ).axe;
+      return (
+        await axe.run({
+          runOnly: {
+            type: "tag",
+            values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"],
+          },
+        })
+      ).violations;
+    });
+    assert.deepEqual(
+      violations.map((v) => ({
+        id: v.id,
+        impact: v.impact,
+        nodes: v.nodes.map((n) => n.target),
+      })),
+      [],
+      name + " accessibility audit",
+    );
+  }
   const shot = async (name: string) => {
     await page.locator(".startup-overlay").waitFor({ state: "detached" });
     await page.screenshot({
@@ -158,9 +195,12 @@ export async function surveyUxAudit({
   await page.locator("#reg-confirm").fill("Abcdefgh1234");
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: /Create account/i }).click();
-  await expect(page.getByRole("alert")).toContainText("11-digit Philippine");
+  await expect(page.locator(".inline-notice[role=alert]")).toContainText(
+    "11-digit Philippine",
+  );
   assert.equal(signupCalls, 0);
   await checkWidth();
+  await auditScreen("registration");
   passed.push(
     "Phone input hard cap, country-code paste, strict mobile validation and exact red/yellow/green meter colors",
   );
@@ -205,6 +245,7 @@ export async function surveyUxAudit({
     assert.ok(note && note.height <= 58, "Folded note is compact");
     await checkWidth();
     await shot(`bag-${width}`);
+    if (width === 390) await auditScreen("bag");
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#bag-voucher").fill("DEMO10");
@@ -233,6 +274,7 @@ export async function surveyUxAudit({
     .getByRole("button", { name: "Confirm review", exact: true })
     .click();
   await shot("checkout");
+  await auditScreen("checkout");
   await page.getByRole("button", { name: /Review order/ }).click();
   await expect(
     page.getByRole("button", { name: "Place order", exact: true }),
@@ -285,7 +327,12 @@ export async function surveyUxAudit({
     })
     .click();
   await expect(use).toBeEnabled();
-  await map.locator("summary").click();
+  if (
+    (await map
+      .locator(".delivery-map-details details")
+      .getAttribute("open")) === null
+  )
+    await map.getByText("Adjust coordinates manually", { exact: true }).click();
   await expect(map.getByLabel(/^Latitude/)).toHaveValue("14.35");
   await expect(map.getByLabel(/^Longitude/)).toHaveValue("120.985");
   await map.getByLabel(/^Latitude/).fill("14.352");
@@ -338,11 +385,32 @@ export async function surveyUxAudit({
   await page.goto(base + "/login");
   await page.locator("#login-email").fill(fixtureAccount.email);
   await page.locator("#login-password").fill("FixturePassword1");
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await page.getByRole("button", { name: "Sign In", exact: true }).click();
   await page.waitForURL(base + "/menu");
   await expect(
     page.getByRole("link", { name: "My orders", exact: true }),
   ).toHaveCount(0);
+  await page.evaluate(
+    ({ bag, id }) =>
+      localStorage.setItem("cafeos-cart:" + id, JSON.stringify(bag)),
+    { bag, id: fixtureAccount.id },
+  );
+  await page.goto(base + "/cart");
+  await page.getByLabel(/Use rewards points/).fill("10");
+  await page.locator("#bag-voucher").fill("DEMO10");
+  await page.getByRole("button", { name: "Apply", exact: true }).click();
+  await expect(page.locator(".cart-mobile-checkout strong")).toHaveText(
+    "₱134.00",
+  );
+  await page.locator('a[href="/checkout"]:visible').click();
+  await expect(page.getByText("10 points", { exact: true })).toBeVisible();
+  await expect(page.locator(".checkout-action-total strong")).toHaveText(
+    "₱134.00",
+  );
+  assert.equal(await page.getByLabel(/Use rewards points/).count(), 0);
+  passed.push(
+    "Account-scoped voucher and points selections survive navigation to read-only checkout with matching totals",
+  );
   await page.goto(base + "/menu/browse");
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.locator(".product-name").first().waitFor();
@@ -364,7 +432,10 @@ export async function surveyUxAudit({
   );
   await shot("menu-desktop");
   closed = true;
-  await page.reload();
+  await Promise.all([
+    page.waitForResponse((response) => response.url() === base + "/api/branch"),
+    page.reload(),
+  ]);
   await page
     .getByRole("link", { name: `Select ${products[0].name}`, exact: true })
     .click();
@@ -386,6 +457,15 @@ export async function surveyUxAudit({
     name: "Are you sure you want to sign out?",
   });
   await expect(confirm).toBeVisible();
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.press("Tab");
+    assert.ok(
+      await page.evaluate(
+        () => !!document.activeElement?.closest("dialog[open]"),
+      ),
+      "Signout focus stays in dialog",
+    );
+  }
   assert.equal(logoutCalls, 0);
   await confirm.getByRole("button", { name: "Stay signed in" }).click();
   assert.equal(logoutCalls, 0);

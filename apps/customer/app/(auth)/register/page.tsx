@@ -262,17 +262,17 @@ export default function RegisterPage() {
                 <PasswordStrength password={password} />
                 <div className="space-y-0.5">
                   <p
-                    className={`text-[11px] ${password.length >= 8 ? "text-emerald-600" : "text-text-faint"}`}
+                    className={`text-[11px] ${password.length >= 8 ? "text-emerald-800" : "text-text-faint"}`}
                   >
                     {password.length >= 8 ? "✓" : "○"} At least 8 characters
                   </p>
                   <p
-                    className={`text-[11px] ${/[A-Z]/.test(password) ? "text-emerald-600" : "text-text-faint"}`}
+                    className={`text-[11px] ${/[A-Z]/.test(password) ? "text-emerald-800" : "text-text-faint"}`}
                   >
                     {/[A-Z]/.test(password) ? "✓" : "○"} One uppercase letter
                   </p>
                   <p
-                    className={`text-[11px] ${/[0-9]/.test(password) ? "text-emerald-600" : "text-text-faint"}`}
+                    className={`text-[11px] ${/[0-9]/.test(password) ? "text-emerald-800" : "text-text-faint"}`}
                   >
                     {/[0-9]/.test(password) ? "✓" : "○"} One number
                   </p>
