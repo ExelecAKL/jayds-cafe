@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useId, type ReactNode } from "react";
+import { keepDialogFocus } from "./dialogFocus";
 export default function ConfirmDialog({
   open,
   title,
@@ -31,6 +32,8 @@ export default function ConfirmDialog({
   return (
     <dialog
       ref={ref}
+      tabIndex={-1}
+      onKeyDown={keepDialogFocus}
       className="native-dialog"
       aria-labelledby={titleId}
       onCancel={(event) => {

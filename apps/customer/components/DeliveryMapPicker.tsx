@@ -10,6 +10,7 @@ import {
 } from "../hooks/useDeliveryAddress";
 import { InlineNotice } from "./AppShell";
 import Icon from "./Icon";
+import { keepDialogFocus } from "./dialogFocus";
 import "./delivery-map.css";
 interface Props {
   lat: number;
@@ -210,6 +211,8 @@ export default function DeliveryMapPicker({
   return (
     <dialog
       ref={dialog}
+      tabIndex={-1}
+      onKeyDown={keepDialogFocus}
       aria-labelledby="delivery-map-title"
       onCancel={onClose}
       className="delivery-map-dialog w-[min(94vw,760px)] max-h-[94dvh] rounded-3xl border border-border bg-bg-card p-0 shadow-xl backdrop:bg-black/50"

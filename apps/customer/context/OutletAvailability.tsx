@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { CustomerBranch } from "@cafeos/shared/customer/types";
 import { outletIsOpen } from "../utils/outletHours";
 import Icon from "../components/Icon";
+import { keepDialogFocus } from "../components/dialogFocus";
 
 const OutletContext = createContext<{ canSelect: () => boolean }>({
   canSelect: () => true,
@@ -51,6 +52,8 @@ export function OutletAvailabilityProvider({
       {children}
       <dialog
         ref={dialog}
+        tabIndex={-1}
+        onKeyDown={keepDialogFocus}
         className="native-dialog outlet-closed-dialog"
         aria-labelledby="outlet-closed-title"
         onCancel={() => setOpen(false)}

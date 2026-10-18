@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon";
+import { keepDialogFocus } from "./dialogFocus";
 
 export default function OrderCountdown({
   onComplete,
@@ -53,6 +54,8 @@ export default function OrderCountdown({
   return (
     <dialog
       ref={dialog}
+      tabIndex={-1}
+      onKeyDown={keepDialogFocus}
       className="order-countdown"
       aria-labelledby="countdown-title"
       onCancel={(e) => {
