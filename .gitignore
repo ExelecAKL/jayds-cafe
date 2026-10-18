@@ -49,6 +49,8 @@ apps/*/public/swe-worker-*.js.map
 .tmp.*
 supabase/.temp/
 supabase/.branches/
+supabase/hosted-auth/supabase/.temp/
+supabase/hosted-auth/supabase/.branches/
 screenshots/
 *.tsbuildinfo
 playwright-report/
