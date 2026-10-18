@@ -51,6 +51,8 @@ supabase/.temp/
 supabase/.branches/
 supabase/hosted-auth/supabase/.temp/
 supabase/hosted-auth/supabase/.branches/
+supabase/hosted-mail/supabase/.temp/
+supabase/hosted-mail/supabase/.branches/
 screenshots/
 *.tsbuildinfo
 playwright-report/

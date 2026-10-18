@@ -32,6 +32,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting || authLoading) return;
     setError("");
     setNotice("");
     if (!fullName.trim()) {
@@ -84,7 +85,7 @@ export default function RegisterPage() {
     );
     setIsSubmitting(false);
     if (signUpError) {
-      setError(getCustomerAuthErrorMessage(signUpError.message));
+      setError(getCustomerAuthErrorMessage(signUpError));
       return;
     }
     if (needsEmailConfirmation) {

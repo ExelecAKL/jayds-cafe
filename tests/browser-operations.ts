@@ -857,6 +857,7 @@ try {
     "20261016000700_purchase_vat.sql",
     "20261016000800_export_file_privacy.sql",
     "20261016001300_admin_history_reads.sql",
+    "20261018000200_invoice_email_delivery.sql",
   ])
     {
       if (file === "20261016000600_finance_documents.sql") await db.exec("CREATE SCHEMA IF NOT EXISTS storage; CREATE TABLE IF NOT EXISTS storage.buckets(id text PRIMARY KEY,name text,public boolean,file_size_limit bigint,allowed_mime_types text[])");

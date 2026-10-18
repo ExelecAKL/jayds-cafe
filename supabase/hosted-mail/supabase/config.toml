@@ -1,0 +1,33 @@
+# Prepared for activation ONLY after the sender is verified with the provider.
+# Read docs/email-delivery.md before applying. Missing SMTP env values fail closed.
+project_id = "jayds-hosted-mail"
+[auth.email]
+enable_confirmations = true
+[auth.rate_limit]
+email_sent = 60
+[auth.email.smtp]
+enabled = true
+host = "env(JAYDS_SMTP_HOST)"
+port = 465
+user = "env(JAYDS_SMTP_USER)"
+pass = "env(JAYDS_SMTP_PASSWORD)"
+admin_email = "env(JAYDS_SMTP_FROM_ADDRESS)"
+sender_name = "Jayds Café"
+[auth.email.template.confirmation]
+subject = "Confirm your Jayds Café account"
+content_path = "../email-templates/confirmation.html"
+[auth.email.template.recovery]
+subject = "Reset your Jayds Café password"
+content_path = "../email-templates/recovery.html"
+[auth.email.template.magic_link]
+subject = "Your Jayds Café sign-in link"
+content_path = "../email-templates/magic_link.html"
+[auth.email.template.invite]
+subject = "You're invited to Jayds Café"
+content_path = "../email-templates/invite.html"
+[auth.email.template.email_change]
+subject = "Confirm your Jayds Café email change"
+content_path = "../email-templates/email_change.html"
+[auth.email.template.reauthentication]
+subject = "Your Jayds Café verification code"
+content_path = "../email-templates/reauthentication.html"

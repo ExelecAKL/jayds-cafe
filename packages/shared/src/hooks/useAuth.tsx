@@ -122,6 +122,17 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+function accountError(
+  error: { message: string; code?: string; status?: number } | null,
+) {
+  return error
+    ? Object.assign(new Error(error.message), {
+        code: error.code,
+        status: error.status,
+      })
+    : null;
+}
+
 // ── Provider ────────────────────────────────────────────────
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -288,7 +299,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           void fetchProfile(data.user.id);
         }
 
-        return { error: error ? new Error(error.message) : null };
+        return { error: accountError(error) };
       } finally {
         dispatch({ type: "SET_LOADING", payload: false });
       }
@@ -316,28 +327,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
       }
       dispatch({ type: "SET_LOADING", payload: true });
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          ...(typeof window !== "undefined"
-            ? { emailRedirectTo: window.location.origin + appPath("/login") }
-            : {}),
-          data: {
-            full_name: fullName,
-            phone: contactPhone || null,
-            role,
-            ...(role === "customer" && legalVersion
-              ? { jayds_legal_version: legalVersion }
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            ...(typeof window !== "undefined"
+              ? { emailRedirectTo: window.location.origin + appPath("/login") }
               : {}),
+            data: {
+              full_name: fullName,
+              phone: contactPhone || null,
+              role,
+              ...(role === "customer" && legalVersion
+                ? { jayds_legal_version: legalVersion }
+                : {}),
+            },
           },
-        },
-      });
-      dispatch({ type: "SET_LOADING", payload: false });
-      return {
-        error: error ? new Error(error.message) : null,
-        needsEmailConfirmation: !data.session,
-      };
+        });
+        return {
+          error: accountError(error),
+          needsEmailConfirmation: !data.session,
+        };
+      } catch {
+        return {
+          error: new Error(
+            "Account creation could not connect. Please try again; your entries are saved.",
+          ),
+          needsEmailConfirmation: false,
+        };
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: false });
+      }
     },
     [],
   );
@@ -384,7 +405,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ? { redirectTo: window.location.origin + appPath("/reset-password") }
         : undefined,
     );
-    return { error: error ? new Error(error.message) : null };
+    return { error: accountError(error) };
   }, []);
 
   // ── Role Helpers ──────────────────────────────────────────

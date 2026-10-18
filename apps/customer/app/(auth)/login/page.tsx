@@ -26,6 +26,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting || authLoading) return;
     setError("");
     if (!email.trim()) {
       setError("Email is required");
@@ -58,7 +59,7 @@ export default function LoginPage() {
       } else if (msg.includes("email not confirmed")) {
         setError("Your email is not confirmed yet. Please check your inbox.");
       } else {
-        setError(getCustomerAuthErrorMessage(signInError.message));
+        setError(getCustomerAuthErrorMessage(signInError));
       }
       return;
     }

@@ -5,6 +5,9 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
+    "./finance/types": "./src/finance/types.ts",
+    "./email/templates": "./src/email/templates.ts",
+    "./email/delivery": "./src/email/delivery.ts",
     "./finance/quote": "./src/finance/quote.ts",
     "./finance/invoice": "./src/finance/invoice.tsx",
     "./finance/calculations": "./src/finance/calculations.ts",

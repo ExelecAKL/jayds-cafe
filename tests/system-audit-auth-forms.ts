@@ -23,7 +23,13 @@ try {
     const emailRedirects: (string | null)[] = [];
     const exchanges: { auth_code?: string; code_verifier?: string }[] = [];
     let confirmedSession = false;
+    let surveySignup = false;
     const fixtureUser = { id: "90000000-0000-4000-8000-000000000088", email: "forms@example.test", app_metadata: {}, user_metadata: {}, aud: "authenticated", created_at: new Date().toISOString() };
+    function fixtureSession() {
+      const expires=Math.floor(Date.now()/1000)+3600;
+      const jwt=[Buffer.from(JSON.stringify({alg:"HS256",typ:"JWT"})).toString("base64url"),Buffer.from(JSON.stringify({sub:fixtureUser.id,exp:expires,aud:"authenticated",role:"authenticated"})).toString("base64url"),"fixture-signature"].join(".");
+      return {access_token:jwt,refresh_token:"fixture-refresh",token_type:"bearer",expires_in:3600,user:fixtureUser};
+    }
     const p = await context.newPage();
     await context.routeWebSocket("**", socket => socket.close());
     await context.route("**/*", route => {
@@ -41,10 +47,11 @@ try {
         if (action === "signup") {
           signupRequests++;
           signupRedirects.push(url.searchParams.get("redirect_to"));
-          if (signupFail) { signupFail = false; return route.fulfill({ status: 503, json: { message: "Test signup unavailable", code: "unexpected_failure" } }); }
+          if (signupFail) { signupFail = false; return prefix ? route.fulfill({ status: 503, json: { message: "Test signup unavailable", code: "unexpected_failure" } }) : route.fulfill({status:429,json:{message:"Email rate limit exceeded",code:"over_email_send_rate_limit"}}); }
           const body = request.postDataJSON();
           assert.equal(body.data.role, prefix ? "staff" : "customer");
           if (!prefix) assert.equal(body.data.phone, "09123456789");
+          if(surveySignup){confirmedSession=true;return route.fulfill({json:fixtureSession()});}
           return route.fulfill({ json: { id: "90000000-0000-4000-8000-000000000088", email: "forms@example.test", identities: [{ id: "fixture" }], user_metadata: body.data, app_metadata: {}, aud: "authenticated", created_at: new Date().toISOString() } });
         }
         if (action === "recover" || action === "resend") {
@@ -92,7 +99,8 @@ try {
       await p.locator(prefix ? "#staff-confirm" : "#reg-confirm").fill("FixturePass1");
       await check(scope + ": registration failure retains fields", async () => {
         await p.locator("form button[type=submit], form button:not([type])").click();
-        await expect(p.getByText(/Test signup unavailable|try again|could not/i).first()).toBeVisible();
+        await expect(p.getByText(/Test signup unavailable|try again|could not|Email requests/i).first()).toBeVisible();
+        if(!prefix)await expect(p.getByText("Email requests are temporarily unavailable. Please try later or contact the café.",{exact:true})).toBeVisible();
         await expect(p.locator("input[type=email]")).toHaveValue("forms@example.test");
         assert.equal(signupRequests, 1);
       }, p);
@@ -146,6 +154,14 @@ try {
         assert.equal(recoverRequests, before);
         await expect(p.getByText(/wait a minute/i)).toBeVisible();
       }, p);
+      if(!prefix)await check("Customer: survey signup enters Home immediately without a verification email",async()=>{
+        surveySignup=true;
+        await p.goto(base+"/register");
+        await p.locator("#reg-name").fill("Survey Fixture Member");await p.locator("#reg-email").fill("forms@example.test");await p.locator("#reg-phone").fill("09123456789");
+        await p.locator("#reg-password").fill("FixturePass1");await p.locator("#reg-confirm").fill("FixturePass1");await p.getByRole("checkbox").check();
+        await p.locator("form button[type=submit], form button:not([type])").click();await p.waitForURL(base+"/menu");
+        assert.equal(signupRequests,3);
+      },p);
     } finally { await context.close(); }
   }
 } finally { await browser.close(); }

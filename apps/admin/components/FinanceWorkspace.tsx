@@ -11,6 +11,7 @@ import { estimateOsdIncomeTax } from "@cafeos/shared/finance/calculations";
 import { manilaDate } from "@cafeos/shared/customer/scheduling";
 import { PageHeader, Drawer, Feedback, LoadingRows, peso } from "./Operations";
 import { notifyAdmin } from "./AdminToasts";
+import { InvoiceEmailStatus } from "./InvoiceEmailStatus";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import {
   uploadFinanceDocument,
@@ -520,6 +521,7 @@ function FinanceSession() {
       {report && tab === "invoices" && (
         <section className="ops-panel" style={{ padding: 20 }}>
           <h2>Invoices & credit notes</h2>
+          <InvoiceEmailStatus />
           <p>
             {settings?.invoices_enabled
               ? "Invoice generation is enabled."

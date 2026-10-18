@@ -16,3 +16,8 @@ additional_redirect_urls = [
   "https://jaydscafe-admin.vercel.app/admin/login",
   "https://jaydscafe-admin.vercel.app/admin/reset-password",
 ]
+
+# Owner-approved temporary survey mode, 18 October 2026.
+# Restore true after custom SMTP has been verified; no historical accounts are bulk-updated.
+[auth.email]
+enable_confirmations = false

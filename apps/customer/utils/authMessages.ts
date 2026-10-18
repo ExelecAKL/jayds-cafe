@@ -1,8 +1,20 @@
 export const EMAIL_CONFIRMATION_NOTICE =
   "Account created. Please check your email and confirm your account before signing in.";
 
-export function getCustomerAuthErrorMessage(message: string) {
+export function getCustomerAuthErrorMessage(
+  error: string | { message: string; code?: string; status?: number },
+) {
+  const message = typeof error === "string" ? error : error.message;
+  const code = typeof error === "string" ? undefined : error.code;
   const normalized = message.toLowerCase();
+
+  if (
+    code === "over_email_send_rate_limit" ||
+    normalized.includes("email rate limit")
+  )
+    return "Email requests are temporarily unavailable. Please try later or contact the café.";
+  if (code === "over_request_rate_limit")
+    return "This connection has made too many requests. Wait a few minutes, then try again.";
 
   if (normalized.includes("invalid login credentials")) {
     return "Incorrect email or password. Please check your details and try again.";

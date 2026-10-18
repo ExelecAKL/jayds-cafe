@@ -161,6 +161,31 @@ export async function financeJourneys({
   );
   await page.getByRole("button", { name: "Refresh", exact: true }).click();
   await page.getByRole("button", { name: "Invoices", exact: true }).click();
+  const emailStatus = page.getByRole("complementary", {
+    name: "Invoice email delivery",
+  });
+  await expect(emailStatus).toContainText("Sender not connected");
+  await expect(
+    emailStatus.getByRole("button", { name: "Email new invoices" }),
+  ).toBeDisabled();
+  await db.exec(
+    "SELECT set_config('request.jwt.claim.role','service_role',false);SELECT invoice_email_provider_ready(true)",
+  );
+  await page.getByRole("button", { name: "Overview", exact: true }).click();
+  await page.getByRole("button", { name: "Invoices", exact: true }).click();
+  await emailStatus.getByRole("button", { name: "Email new invoices" }).click();
+  await expect(emailStatus).toContainText(
+    "New invoices are emailed automatically",
+  );
+  assert.equal(
+    (await db.query("SELECT * FROM invoice_email_outbox")).rows.length,
+    0,
+    "Enabling mail must not backfill existing invoices",
+  );
+  await emailStatus.getByRole("button", { name: "Pause emails" }).click();
+  await expect(emailStatus).toContainText(
+    "Automatic invoice emails are paused",
+  );
   const invoiceNumber = (
     await db.query<{ number: string }>(
       "SELECT number FROM finance_invoices WHERE order_id=$1 AND kind='invoice'",
@@ -208,13 +233,11 @@ export async function financeJourneys({
     .getByLabel("Supporting invoice/document reference")
     .fill("FIXTURE-001");
   await expense.getByLabel("I reviewed the supporting invoice").check();
-  await expense
-    .getByLabel("Invoice photo", { exact: false })
-    .setInputFiles({
-      name: "invoice.png",
-      mimeType: "image/png",
-      buffer: photo,
-    });
+  await expense.getByLabel("Invoice photo", { exact: false }).setInputFiles({
+    name: "invoice.png",
+    mimeType: "image/png",
+    buffer: photo,
+  });
   await expense.getByRole("button", { name: "Post expense" }).click();
   await expect(expense).toContainText("Fixture upload unavailable");
   assert.equal(
@@ -293,13 +316,11 @@ export async function financeJourneys({
   const vatForm = page.getByRole("dialog", { name: "Review supplier invoice" });
   await vatForm.getByLabel("Creditable input VAT (PHP)").fill("12");
   await vatForm.getByLabel("Supplier invoice reference").fill("SUPPLIER-112");
-  await vatForm
-    .getByLabel("Invoice photo")
-    .setInputFiles({
-      name: "supplier.png",
-      mimeType: "image/png",
-      buffer: photo,
-    });
+  await vatForm.getByLabel("Invoice photo").setInputFiles({
+    name: "supplier.png",
+    mimeType: "image/png",
+    buffer: photo,
+  });
   await vatForm.getByLabel("I reviewed this supplier invoice").check();
   await vatForm.getByRole("button", { name: "Post VAT review" }).click();
   await expect(vatForm).toBeHidden();

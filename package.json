@@ -8,6 +8,7 @@
     "apps/*"
   ],
   "scripts": {
+    "prepare:emails": "tsx scripts/prepare-email-templates.ts",
     "dev": "tsx scripts/run-workspaces.ts dev",
     "dev:local": "tsx scripts/run-local-supabase.ts dev",
     "build:start:local": "tsx scripts/run-local-supabase.ts build:start",
