@@ -117,5 +117,15 @@
       "path": ".codex-logs/2026-10-18-ticket-live-data.json",
       "sha256": "6ad892f49cf5b2d8e663698de571874bd04ac2b60ce54fa893622c284b2ede17"
     }
-  ]
+  ],
+  "publication": {
+    "checkedAt": "2026-10-18T09:42:32.349Z",
+    "status": "PASS",
+    "domain": "https://jaydscafe.vercel.app",
+    "pageStatus": 200,
+    "liveTicketVatAndPhotoCode": true,
+    "unauthorizedOrderStatus": 404,
+    "deploymentId": "dpl_7S9a7mTGfAkPMaLiUBQF1ECi3MeM",
+    "databaseWrites": false
+  }
 }
