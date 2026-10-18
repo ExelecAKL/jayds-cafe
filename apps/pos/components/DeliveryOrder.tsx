@@ -93,7 +93,7 @@ export function DeliveryOrder({
           !(await confirm({
             title: `Book a rider for ${order.order_number}?`,
             description:
-              "Check that this paid delivery order is ready to hand to the rider. The server checks payment, readiness, and the quote again before booking.",
+              "Book a Lalamove motorcycle to collect this order. Check the address and have the order ready to hand to the rider.",
             details: [
               order.delivery_address || "Check delivery address on the ticket",
               `Delivery fee on ticket: ${pesos(order.delivery_fee ?? 0)}`,
@@ -135,7 +135,7 @@ export function DeliveryOrder({
       locked={busy}
     >
       <div className="pos-dialog-body">
-        <span className="order-badge">Delivery</span>
+        <span className="order-badge">Motorcycle · Lalamove</span>
         <h3 style={{ marginTop: 16 }}>
           {linked
             ? statuses[status.status] || "Checking courier status"
@@ -151,7 +151,7 @@ export function DeliveryOrder({
         <p className="pos-muted" style={{ marginTop: 16 }}>
           {linked
             ? "Courier updates confirm collection and delivery. Refresh after handing the order to the rider."
-            : "Book a Lalamove rider for this paid order. The delivery fee is checked again before booking."}
+            : "Book a Lalamove motorcycle for this order. The delivery fee is checked again before booking."}
         </p>
         {status.driver && (
           <p className="pos-notice" style={{ marginTop: 12 }}>

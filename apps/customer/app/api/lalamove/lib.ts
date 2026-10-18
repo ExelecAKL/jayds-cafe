@@ -2,6 +2,7 @@
 // Lalamove HMAC SHA256 authentication helper — server-side only
 
 import crypto from "crypto";
+import { lalamoveFailure } from "./policy";
 
 const API_KEY = process.env.LALAMOVE_API_KEY!;
 const API_SECRET = process.env.LALAMOVE_API_SECRET!;
@@ -50,7 +51,7 @@ export async function lalamoveRequest<T = unknown>(
   path: string,
   body?: Record<string, unknown>,
   requestId?: string,
-): Promise<{ data?: T; error?: string; status: number }> {
+): Promise<{ data?: T; error?: string; errorCode?: string; status: number }> {
   const bodyStr = body ? JSON.stringify(body) : undefined;
   const headers = generateLalamoveHeaders(method, path, bodyStr);
   if (requestId) headers["Request-ID"] = requestId;
@@ -67,8 +68,14 @@ export async function lalamoveRequest<T = unknown>(
     const json = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      const message = `Courier service returned ${res.status}. Please retry or contact the café.`;
-      return { error: message, status: res.status };
+      return {
+        ...lalamoveFailure(
+          res.status,
+          json,
+          BASE_URL === "https://rest.sandbox.lalamove.com",
+        ),
+        status: res.status,
+      };
     }
 
     return { data: json as T, status: res.status };

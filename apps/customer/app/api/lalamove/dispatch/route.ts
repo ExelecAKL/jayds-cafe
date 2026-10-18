@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readJsonBody } from "@cafeos/shared/server/request-body";
 import { lalamoveRequest, PICKUP } from "../lib";
+import { LALAMOVE_SERVICE_TYPE } from "../policy";
 import { readCustomerBranch } from "../../branch/lib";
 import { withinCoverage } from "../../../../lib/location";
 import {
@@ -20,6 +21,7 @@ import {
 interface QuoteResponse {
   data: {
     quotationId: string;
+    serviceType: string;
     stops: { stopId: string }[];
     priceBreakdown: { total: string; currency: string };
   };
@@ -177,7 +179,7 @@ export async function POST(req: NextRequest) {
       "/v3/quotations",
       {
         data: {
-          serviceType: "MOTORCYCLE",
+          serviceType: LALAMOVE_SERVICE_TYPE,
           language: "en_PH",
           stops: [
             {
@@ -199,8 +201,32 @@ export async function POST(req: NextRequest) {
       },
     );
     const q = quote.data?.data;
+    if (quote.error) {
+      await finishProviderAttempt(
+        db,
+        attempt,
+        "failed",
+        null,
+        null,
+        quote.errorCode || `QUOTE_HTTP_${quote.status}`,
+      );
+      throw new ApiAccessError(quote.error, 503);
+    }
+    if (q && q.serviceType !== LALAMOVE_SERVICE_TYPE) {
+      await finishProviderAttempt(
+        db,
+        attempt,
+        "failed",
+        null,
+        null,
+        "MOTORCYCLE_QUOTE_REQUIRED",
+      );
+      throw new ApiAccessError(
+        "Lalamove did not return a Motorcycle quote. No rider was booked. Refresh the delivery quote before retrying.",
+        409,
+      );
+    }
     if (
-      quote.error ||
       !q?.quotationId ||
       !q.stops?.[0]?.stopId ||
       !q.stops?.[1]?.stopId ||
@@ -265,12 +291,12 @@ export async function POST(req: NextRequest) {
           "failed",
           null,
           null,
-          "PROVIDER_DECLINED",
+          result.errorCode || `PROVIDER_DECLINED_HTTP_${result.status}`,
         );
       throw new ApiAccessError(
         uncertain
           ? "The delivery response needs reconciliation. Contact the cafe before booking again."
-          : "The provider declined this delivery booking.",
+          : result.error || "The provider declined this delivery booking.",
         503,
       );
     }

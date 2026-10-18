@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readJsonBody } from "@cafeos/shared/server/request-body";
 import { lalamoveRequest } from "../lib";
+import { LALAMOVE_SERVICE_TYPE } from "../policy";
 import { createQuoteToken } from "../quote-token";
 import { readCustomerBranch } from "../../branch/lib";
 import { withinCoverage, coordinates } from "../../../../lib/location";
@@ -16,6 +17,7 @@ import {
 interface QuotationResponse {
   data: {
     quotationId: string;
+    serviceType: string;
     expiresAt: string;
     priceBreakdown: {
       base: string;
@@ -60,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     const body = {
       data: {
-        serviceType: "MOTORCYCLE",
+        serviceType: LALAMOVE_SERVICE_TYPE,
         language: "en_PH",
         stops: [
           {
@@ -100,6 +102,7 @@ export async function POST(request: NextRequest) {
     const qData = result.data?.data;
     if (
       !qData ||
+      qData.serviceType !== LALAMOVE_SERVICE_TYPE ||
       qData.priceBreakdown.currency !== "PHP" ||
       !Number.isFinite(Number(qData.priceBreakdown.total)) ||
       Number(qData.priceBreakdown.total) < 0 ||
