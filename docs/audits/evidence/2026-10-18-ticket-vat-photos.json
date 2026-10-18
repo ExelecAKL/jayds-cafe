@@ -1,0 +1,121 @@
+{
+  "checkedAt": "2026-10-18T09:40:33.647Z",
+  "implementationCommit": "5e87155cd93ff3164a3b924ec8c64bff31b68b36",
+  "deployment": {
+    "id": "dpl_7S9a7mTGfAkPMaLiUBQF1ECi3MeM",
+    "url": "https://jaydscafe-ctoohq2k1-aaron-martinezs-projects-ea1c41f7.vercel.app",
+    "build": "PASS",
+    "builtWithProductionPwa": true
+  },
+  "checks": {
+    "focusedBackend": {
+      "status": "PASS",
+      "passed": 12,
+      "failed": 0
+    },
+    "customerTypecheck": "PASS",
+    "scriptsTypecheck": "PASS",
+    "changedFileLint": "PASS",
+    "browser": {
+      "status": "PASS",
+      "base": "https://jaydscafe-ctoohq2k1-aaron-martinezs-projects-ea1c41f7.vercel.app",
+      "isolated": true,
+      "scope": "accepted-ticket-only",
+      "acceptedTicketPhotosAndIncludedVat": true,
+      "acceptedTicketWidths": [
+        320,
+        390,
+        768,
+        1280
+      ],
+      "acceptedTicketPrintVat": true,
+      "itemPhotoLoaded": true,
+      "photoFailureFallback": true,
+      "missingTaxSnapshotUnknown": true,
+      "configuredDeliveryVatSeparate": true,
+      "longNotesFit": true,
+      "acceptedTotalsUnchanged": true,
+      "errors": []
+    },
+    "hostedReadOnlyData": {
+      "checkedAt": "2026-10-18T09:24:00.798Z",
+      "status": "PASS",
+      "databaseWrites": false,
+      "photoJoinAccepted": true,
+      "itemCount": 1,
+      "itemsWithPhotos": 1,
+      "savedVatCentavos": 964,
+      "snapshotMatchesTotal": true
+    },
+    "visualReview": "320px accepted ticket screenshot inspected",
+    "accountRetry": {
+      "status": "PASS",
+      "errors": []
+    },
+    "extendedCustomerRun": {
+      "status": "FAIL",
+      "reason": "Later sign-in timeout with browser displaying offline; ticket assertions completed, fresh isolated sign-in/account retry passed"
+    }
+  },
+  "blockedAttempts": [
+    {
+      "check": "Local build",
+      "reason": "Host process exhausted memory; Vercel production build passed"
+    },
+    {
+      "check": "First staged browser run",
+      "reason": "Vercel SSO protection; successful rerun used existing private automation access without changing protection"
+    }
+  ],
+  "notTested": [
+    "Physical printer",
+    "Physical phone installation",
+    "Full backend and PWA suites not rerun for this ticket display change"
+  ],
+  "rollback": {
+    "tag": "pre-ticket-vat-photos-2026-10-18",
+    "commit": "def0062e4673f6da52c6b730872b9a82f9b6c0a7"
+  },
+  "evidenceHashes": [
+    {
+      "path": ".codex-logs/2026-10-18-ticket-focused.log",
+      "sha256": "fb6091141efb93eadcd95514dac0fc6cb7ab94b2e6ef05ea2a0bb1cc3a3684eb"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-scripts-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-local-build.log",
+      "sha256": "3479776e2aa3569354bb047abc09570931aa669bd1f04e676bc662de7f3dea6c"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-vercel-build.log",
+      "sha256": "0fc825b5f434e37df414c1fda23489c0a5ac5ead9af5ecd3e77e99db430dcc9d"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-browser-focused.log",
+      "sha256": "f3efcf4db93085f8f008cc85f002f997372daf2b0de0ff0760d7e077694a6eb9"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-browser-final.log",
+      "sha256": "4360381fc2a445117f5217faa0df012ef1663f5e54a8f84dbbfd901622450a46"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-account-check.log",
+      "sha256": "54971effc7c64dc92f71f7dd692bc59e7d6d428108e3563b26e550fceb5fabfd"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-ticket-live-data.json",
+      "sha256": "6ad892f49cf5b2d8e663698de571874bd04ac2b60ce54fa893622c284b2ede17"
+    }
+  ]
+}

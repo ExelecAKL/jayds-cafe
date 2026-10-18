@@ -593,7 +593,141 @@ try {
     } catch {}
     await new Promise((r) => setTimeout(r, 200));
   }
-  if (process.env.JAYDS_ACCOUNT_ONLY === "1") {
+  if (process.env.JAYDS_TICKET_ONLY === "1") {
+    const id = "30000000-0000-4000-8000-000000000071";
+    const item = {
+      id: "ticket-line",
+      menu_item_id: "e5000000-0000-4000-a000-000000000001",
+      name: "Strawberry Soda",
+      price: 90,
+      quantity: 1,
+      subtotal: 90,
+      variants: [
+        { label: "Medium 16oz" },
+        { label: "Iced" },
+        { label: "Extra Strawberry Puree" },
+      ],
+      image_url: "/products/strawberry-soda.png",
+      notes: null as string | null,
+    };
+    const order = {
+      id,
+      order_number: "ORD-0071",
+      status: "preparing",
+      payment_status: "paid",
+      payment_method: "maya",
+      order_type: "delivery",
+      order_source: "app",
+      items: [item],
+      subtotal: 90,
+      discount: 0,
+      delivery_fee: 97,
+      total: 187,
+      delivery_address: "Fixture delivery address",
+      created_at: "2026-10-18T08:51:00Z",
+      tax_summary: {
+        item_vat_centavos: 964,
+        delivery_vat_centavos: null as number | null,
+      } as {
+        item_vat_centavos: number;
+        delivery_vat_centavos: number | null;
+      } | null,
+    };
+    orders.set(id, order);
+    await page.goto(base + "/orders/" + id);
+    await page.locator(".startup-overlay").waitFor({ state: "detached" });
+    const ticket = page.locator("section").filter({
+      has: page.getByRole("heading", {
+        name: "Your accepted ticket",
+        exact: true,
+      }),
+    });
+    const amount = (label: RegExp) =>
+      ticket
+        .locator("dt")
+        .filter({ hasText: label })
+        .locator("..")
+        .locator("dd");
+    await expect(amount(/^Item VAT/)).toHaveText("₱9.64");
+    await expect(amount(/^Total$/)).toHaveText("₱187.00");
+    await ticket.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        ticket
+          .locator("img")
+          .first()
+          .evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      )
+      .toBeGreaterThan(0);
+    for (const width of [320, 390, 768, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await ticket.scrollIntoViewIfNeeded();
+      assert.ok(
+        await ticket.evaluate(
+          (element) => element.scrollWidth <= element.clientWidth + 1,
+        ),
+      );
+      await ticket.screenshot({
+        path: path.join(output, `accepted-ticket-${width}.png`),
+        animations: "disabled",
+      });
+    }
+    await page.emulateMedia({ media: "print" });
+    await expect(amount(/^Item VAT/)).toHaveText("₱9.64");
+    await expect(
+      ticket.getByRole("button", { name: "Print accepted order", exact: true }),
+    ).toBeHidden();
+    await ticket.screenshot({
+      path: path.join(output, "accepted-ticket-print.png"),
+      animations: "disabled",
+    });
+    await page.emulateMedia({ media: "screen" });
+    order.delivery_fee = 112;
+    order.total = 202;
+    order.tax_summary!.delivery_vat_centavos = 1200;
+    await page.reload();
+    await expect(amount(/^Delivery VAT/)).toHaveText("₱12.00");
+    await expect(amount(/^Total$/)).toHaveText("₱202.00");
+    order.tax_summary = null;
+    item.image_url = "/missing-ticket-photo.webp";
+    item.notes = "Keep this accepted note. ".repeat(12);
+    await page.setViewportSize({ width: 320, height: 900 });
+    await page.reload();
+    await expect(amount(/^Item VAT/)).toHaveText("Unavailable");
+    await expect(
+      ticket.getByRole("img", {
+        name: "No photo for Strawberry Soda",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(amount(/^Total$/)).toHaveText("₱202.00");
+    assert.ok(
+      await ticket.evaluate(
+        (element) => element.scrollWidth <= element.clientWidth + 1,
+      ),
+    );
+    assert.deepEqual(errors, []);
+    const report = {
+      base,
+      isolated: true,
+      scope: "accepted-ticket-only",
+      acceptedTicketPhotosAndIncludedVat: true,
+      acceptedTicketWidths: [320, 390, 768, 1280],
+      acceptedTicketPrintVat: true,
+      itemPhotoLoaded: true,
+      photoFailureFallback: true,
+      missingTaxSnapshotUnknown: true,
+      configuredDeliveryVatSeparate: true,
+      longNotesFit: true,
+      acceptedTotalsUnchanged: true,
+      errors,
+    };
+    writeFileSync(
+      path.join(root, ".codex-logs/customer-browser-verification.json"),
+      JSON.stringify(report, null, 2),
+    );
+    console.log(JSON.stringify(report));
+  } else if (process.env.JAYDS_ACCOUNT_ONLY === "1") {
     currentLegalAccepted = true;
     await page.goto(base + "/login");
     await page
