@@ -14,6 +14,7 @@ import AppShell, {
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import Icon from "../../../components/Icon";
 import BagRewards from "../../../components/BagRewards";
+import OrderPoints from "../../../components/OrderPoints";
 import { cartFinancialPreview } from "../../../utils/cartFinancialPreview";
 export default function CartPage() {
   const cart = useCart(),
@@ -337,6 +338,11 @@ export default function CartPage() {
                     </dd>
                   </div>
                 </dl>
+                <OrderPoints
+                  total={draftTotal}
+                  member={!!user}
+                  tier={profile?.loyalty_tier}
+                />
                 <Link
                   className="bag-desktop-checkout btn-primary mt-5 w-full"
                   href="/checkout"

@@ -404,10 +404,18 @@ export async function surveyUxAudit({
   );
   await page.locator('a[href="/checkout"]:visible').click();
   await expect(page.getByText("10 points", { exact: true })).toBeVisible();
+  await expect(page.locator(".order-points-preview")).toContainText("+13 pts");
   await expect(page.locator(".checkout-action-total strong")).toHaveText(
     "₱134.00",
   );
   assert.equal(await page.getByLabel(/Use rewards points/).count(), 0);
+  await auditScreen("member checkout");
+  await page.getByRole("checkbox", { name: /I agree to the/ }).check();
+  await page
+    .getByRole("button", { name: "Confirm review", exact: true })
+    .click();
+  await page.getByRole("button", { name: /Review order/ }).click();
+  await expect(page.locator(".order-points-preview")).toContainText("+13 pts");
   passed.push(
     "Account-scoped voucher and points selections survive navigation to read-only checkout with matching totals",
   );

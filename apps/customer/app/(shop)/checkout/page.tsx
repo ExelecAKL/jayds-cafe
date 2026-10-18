@@ -24,6 +24,7 @@ import { LEGAL_VERSION } from "../../../lib/legal";
 import type { PaymentQuote } from "@cafeos/shared/finance/quote";
 import Icon from "../../../components/Icon";
 import TicketItemImage from "../../../components/TicketItemImage";
+import OrderPoints from "../../../components/OrderPoints";
 import { cartFinancialPreview } from "../../../utils/cartFinancialPreview";
 interface Destination {
   lat: number;
@@ -611,6 +612,13 @@ export default function CheckoutPage() {
                 <span>{php(total)}</span>
               </p>
             </div>
+            {cart.items.length > 0 && (
+              <OrderPoints
+                total={total}
+                member={!!user}
+                tier={profile?.loyalty_tier}
+              />
+            )}
           </section>
           <div className="checkout-action">
             {error && <InlineNotice tone="error">{error}</InlineNotice>}

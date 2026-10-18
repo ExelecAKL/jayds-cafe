@@ -18,6 +18,7 @@ import { safeMayaCheckoutUrl } from "@cafeos/shared/maya-urls";
 import type { PaymentQuote } from "@cafeos/shared/finance/quote";
 import TicketItemImage from "../../../../components/TicketItemImage";
 import OrderCountdown from "../../../../components/OrderCountdown";
+import OrderPoints from "../../../../components/OrderPoints";
 interface Review {
   owner: string;
   paymentMethod: string;
@@ -34,7 +35,7 @@ interface Review {
   financialQuote?: PaymentQuote;
 }
 export default function ConfirmOrderPage() {
-  const { user, initialized } = useAuth(),
+  const { user, profile, initialized } = useAuth(),
     cart = useCart(),
     router = useRouter(),
     lock = useRef(false),
@@ -258,6 +259,13 @@ export default function ConfirmOrderPage() {
       <div className="mx-auto grid max-w-4xl gap-6 lg:grid-cols-[1fr_320px]">
         <section className="surface-card space-y-4 p-5">
           <h2 className="text-xl font-semibold">Your order</h2>
+          {(lines?.length || cart.items.length) > 0 && (
+            <OrderPoints
+              total={Math.max(0, total)}
+              member={!!user}
+              tier={profile?.loyalty_tier}
+            />
+          )}
           {(lines ?? cart.items).map((i, index) => (
             <div
               key={index}

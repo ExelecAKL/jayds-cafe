@@ -7,6 +7,18 @@ import {
 } from "../packages/shared/src/customer/phone.ts";
 import { passwordStrength } from "../apps/customer/utils/passwordStrength.ts";
 import { outletIsOpen } from "../apps/customer/utils/outletHours.ts";
+import { estimateOrderPoints } from "../apps/customer/utils/orderPoints.ts";
+
+test("order points preview follows paid-completion tiers and never promises guest rewards", () => {
+  assert.equal(estimateOrderPoints(134, "Bronze", true), 13);
+  assert.equal(estimateOrderPoints(134, "Silver", true), 15);
+  assert.equal(estimateOrderPoints(134, "Gold", true), 19);
+  assert.equal(estimateOrderPoints(187, "Bronze", true), 18);
+  assert.equal(estimateOrderPoints(9.99, "Bronze", true), 1);
+  assert.equal(estimateOrderPoints(0, "Bronze", true), 1);
+  assert.equal(estimateOrderPoints(100, "Gold", false), 0);
+  assert.equal(estimateOrderPoints(NaN, "Bronze", true), 0);
+});
 
 test("registration caps digits at eleven and normalizes a formatted Philippine country-code paste", () => {
   assert.equal(registrationPhoneInput("091234567890123"), "09123456789");
