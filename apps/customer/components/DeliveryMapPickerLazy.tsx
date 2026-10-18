@@ -12,6 +12,7 @@ const DeliveryMapPicker = dynamic(() => import("./DeliveryMapPicker"), {
 interface Props {
   lat: number;
   lng: number;
+  initialAddress?: string;
   onLocationChange: (lat: number, lng: number, address: string) => void;
   onClose: () => void;
 }

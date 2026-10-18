@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import BottomNav from "./BottomNav";
 import FloatingCartBar from "./FloatingCartBar";
 import Icon, { type IconName } from "./Icon";
+import { useCart } from "../context/CartContext";
 const portraitTitles: Record<string, string> = {
   "/cart": "Your bag",
   "/rewards": "Rewards",
@@ -37,6 +38,11 @@ export default function AppShell({
   cart?: boolean;
 }) {
   const pathname = usePathname();
+  const { itemCount } = useCart();
+  const showBag =
+    !pathname?.startsWith("/cart") &&
+    !pathname?.startsWith("/checkout") &&
+    (!cart || itemCount === 0);
   const portraitTitle = mobileTitle ?? portraitTitles[pathname || ""];
   const screen = pathname?.startsWith("/checkout")
     ? "checkout-screen"
@@ -77,6 +83,19 @@ export default function AppShell({
               <p className="mt-1 text-sm text-text-secondary">{description}</p>
             )}
           </div>
+          {showBag && (
+            <Link
+              href="/cart"
+              className="header-bag-link"
+              aria-label={`View your bag${itemCount ? `, ${itemCount} items` : ""}`}
+            >
+              <Icon name="bag" size={20} />
+              <span className="header-bag-label">Your bag</span>
+              {itemCount > 0 && (
+                <span className="header-bag-count">{itemCount}</span>
+              )}
+            </Link>
+          )}
           {actions && (
             <div className="flex shrink-0 items-center gap-2">{actions}</div>
           )}
@@ -119,14 +138,26 @@ export function InlineNotice({
   tone = "info",
 }: {
   children: ReactNode;
-  tone?: "info" | "error" | "success";
+  tone?: "info" | "error" | "success" | "warning";
 }) {
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
       className={`inline-notice notice-${tone}`}
     >
-      {children}
+      <span className="notice-icon" aria-hidden="true">
+        <Icon
+          name={
+            tone === "error" || tone === "warning"
+              ? "warning"
+              : tone === "success"
+                ? "check"
+                : "bell"
+          }
+          size={20}
+        />
+      </span>
+      <div className="notice-content">{children}</div>
     </div>
   );
 }

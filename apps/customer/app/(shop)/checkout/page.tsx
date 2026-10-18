@@ -22,6 +22,9 @@ import DeliveryMapPickerLazy from "../../../components/DeliveryMapPickerLazy";
 import LegalReview from "../../../components/LegalReview";
 import { LEGAL_VERSION } from "../../../lib/legal";
 import type { PaymentQuote } from "@cafeos/shared/finance/quote";
+import Icon from "../../../components/Icon";
+import TicketItemImage from "../../../components/TicketItemImage";
+import { cartFinancialPreview } from "../../../utils/cartFinancialPreview";
 interface Destination {
   lat: number;
   lng: number;
@@ -47,8 +50,6 @@ export default function CheckoutPage() {
   const [addresses, setAddresses] = useState<Destination[]>([]),
     [name, setName] = useState(""),
     [phone, setPhone] = useState(""),
-    [points, setPoints] = useState(""),
-    [voucherCode, setVoucherCode] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [legalReady, setLegalReady] = useState(false);
@@ -69,10 +70,8 @@ export default function CheckoutPage() {
   const [formOwner, setFormOwner] = useState<string | null>(null);
   const delivery = cart.orderType === "delivery",
     maxPoints = Math.min(profile?.points ?? 0, Math.floor(cart.total * 10)),
-    redeemed = Math.min(
-      maxPoints,
-      Math.max(0, Math.floor(Number(points) || 0)),
-    );
+    redeemed = Math.min(maxPoints, user ? cart.pointsToRedeem : 0);
+  const financial = cartFinancialPreview(cart, redeemed);
   const total =
     Math.round(
       (Math.max(0, cart.total - redeemed / 10) +
@@ -119,7 +118,6 @@ export default function CheckoutPage() {
           ? dest
           : null,
       );
-      setPoints(typeof saved.points === "string" ? saved.points : "");
       setPayment(saved.paymentMethod === "maya" ? "maya" : "cash");
       setSchedule(saved.schedule === true);
       setFormOwner(owner);
@@ -154,22 +152,12 @@ export default function CheckoutPage() {
           name,
           phone,
           destination,
-          points,
           paymentMethod,
           schedule,
         }),
       );
     } catch {}
-  }, [
-    formOwner,
-    owner,
-    name,
-    phone,
-    destination,
-    points,
-    paymentMethod,
-    schedule,
-  ]);
+  }, [formOwner, owner, name, phone, destination, paymentMethod, schedule]);
   useEffect(() => {
     queueMicrotask(() => {
       if (delivery || schedule) setPayment("maya");
@@ -241,29 +229,6 @@ export default function CheckoutPage() {
     });
     return () => controller.abort();
   }, [destination, delivery, user]);
-  async function applyVoucher() {
-    setBusy(true);
-    setError("");
-    try {
-      const r = await fetch("/api/vouchers/validate", {
-        method: "POST",
-        headers: await customerHeaders(user?.id ?? null),
-        body: JSON.stringify({
-          code: voucherCode.trim(),
-          subtotal: cart.subtotal,
-          itemIds: cart.items.map((i) => i.menu_item_id),
-        }),
-      });
-      const d = await r.json();
-      if (!r.ok || d.error) throw new Error(d.error || "Voucher unavailable.");
-      cart.applyVoucher(d);
-      setVoucherCode("");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Voucher could not apply.");
-    } finally {
-      setBusy(false);
-    }
-  }
   async function review() {
     setError("");
     if (!navigator.onLine) {
@@ -377,27 +342,29 @@ export default function CheckoutPage() {
     >
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="space-y-5">
+          {!user && (
+            <div className="guest-checkout-note">
+              <Icon name="user" size={20} />
+              <div>
+                <strong>Guest checkout</strong>
+                <p>
+                  No account needed. You can track this order on this device.
+                </p>
+              </div>
+            </div>
+          )}
           <section className="surface-card p-5">
-            <h2 className="text-xl font-semibold">
-              How would you like your order?
-              <FieldRequirement required={true} />
-            </h2>
-            <p className="mb-4 text-sm text-text-muted">
-              {branch.name} · Pickup is available wherever you are.
-            </p>
-            <div className="segmented-control">
-              <button
-                className={!delivery ? "is-selected" : ""}
-                onClick={() => cart.setOrderType("pickup")}
-              >
-                Pickup
-              </button>
-              <button
-                className={delivery ? "is-selected" : ""}
-                onClick={() => cart.setOrderType("delivery")}
-              >
-                Delivery
-              </button>
+            <div className="checkout-fulfillment-review">
+              <Icon name={delivery ? "truck" : "bag"} size={24} />
+              <div>
+                <h2 className="text-xl font-semibold">
+                  {delivery ? "Delivery" : "Pickup"}
+                </h2>
+                <p className="text-sm text-text-secondary">{branch.name}</p>
+              </div>
+              <Link href="/cart" className="text-link">
+                Change
+              </Link>
             </div>
             {!delivery && (
               <div className="mt-4 space-y-3">
@@ -568,71 +535,6 @@ export default function CheckoutPage() {
               </button>
             </div>
           </section>
-          <section className="surface-card space-y-3 p-5">
-            <h2 className="text-xl font-semibold">Make it yours</h2>
-            <label className="block text-sm">
-              Order notes
-              <FieldRequirement required={false} />
-              <textarea
-                className="input-field mt-1 w-full"
-                rows={2}
-                maxLength={1000}
-                value={cart.orderNote}
-                onChange={(e) => cart.setOrderNote(e.target.value)}
-              />
-            </label>
-            <details>
-              <summary className="min-h-12 cursor-pointer py-3 font-medium">
-                Voucher and rewards
-              </summary>
-              <div className="flex gap-2">
-                <label className="block min-w-0 flex-1 text-sm">
-                  Voucher code
-                  <FieldRequirement required={false} />
-                  <input
-                    aria-label="Voucher code"
-                    className="input-field min-w-0 flex-1"
-                    value={voucherCode}
-                    onChange={(e) => setVoucherCode(e.target.value)}
-                    placeholder="Voucher code"
-                  />
-                </label>
-                <button
-                  className="btn-secondary"
-                  disabled={!voucherCode || busy}
-                  onClick={applyVoucher}
-                >
-                  Apply
-                </button>
-              </div>
-              {cart.voucher && (
-                <p className="mt-2 text-sm">
-                  {cart.voucher.code} applied{" "}
-                  <button
-                    className="ml-2 min-h-12 px-2 underline"
-                    onClick={cart.removeVoucher}
-                  >
-                    Remove
-                  </button>
-                </p>
-              )}
-              {user && (
-                <label className="mt-3 block text-sm">
-                  Use points · up to {maxPoints}
-                  <FieldRequirement required={false} />
-                  <input
-                    type="number"
-                    min={0}
-                    max={maxPoints}
-                    step={1}
-                    className="input-field mt-1 w-full"
-                    value={points}
-                    onChange={(e) => setPoints(e.target.value)}
-                  />
-                </label>
-              )}
-            </details>
-          </section>
           <LegalReview onReady={legalCallback} />
         </div>
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
@@ -641,7 +543,12 @@ export default function CheckoutPage() {
             <div className="max-h-[40dvh] space-y-4 overflow-auto">
               {cart.items.map((i) => (
                 <div key={i.id} className="flex justify-between gap-3">
-                  <div>
+                  <TicketItemImage
+                    menuItemId={i.menu_item_id}
+                    imageUrl={i.image_url}
+                    name={i.name}
+                  />
+                  <div className="min-w-0 flex-1">
                     <strong>
                       {i.quantity} × {i.name}
                     </strong>
@@ -654,15 +561,45 @@ export default function CheckoutPage() {
                 </div>
               ))}
             </div>
+            {(cart.orderNote || cart.voucher || redeemed > 0) && (
+              <div className="checkout-selected-details">
+                {cart.orderNote && (
+                  <p>
+                    <strong>Order note</strong>
+                    <span>{cart.orderNote}</span>
+                  </p>
+                )}
+                {cart.voucher && (
+                  <p>
+                    <strong>Voucher</strong>
+                    <span>{cart.voucher.code}</span>
+                  </p>
+                )}
+                {redeemed > 0 && (
+                  <p>
+                    <strong>Rewards</strong>
+                    <span>{redeemed} points</span>
+                  </p>
+                )}
+              </div>
+            )}
             <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
               <p className="flex justify-between">
                 <span>Subtotal</span>
                 <span>{php(cart.subtotal)}</span>
               </p>
-              <p className="flex justify-between">
-                <span>Discounts and points</span>
-                <span>−{php(cart.discount + redeemed / 10)}</span>
-              </p>
+              {cart.discount + redeemed / 10 > 0 && (
+                <p className="flex justify-between">
+                  <span>Discounts and points</span>
+                  <span>−{php(cart.discount + redeemed / 10)}</span>
+                </p>
+              )}
+              {financial && (
+                <p className="flex justify-between text-text-secondary">
+                  <span>VAT included · estimate</span>
+                  <span>{php(financial.vat / 100)}</span>
+                </p>
+              )}
               {delivery && (
                 <p className="flex justify-between">
                   <span>Delivery</span>
@@ -708,6 +645,7 @@ export default function CheckoutPage() {
         <DeliveryMapPickerLazy
           lat={destination?.lat ?? branch.latitude}
           lng={destination?.lng ?? branch.longitude}
+          initialAddress={destination?.address}
           onClose={() => setMapOpen(false)}
           onLocationChange={(lat, lng, address) => {
             setDestination({ lat, lng, address });

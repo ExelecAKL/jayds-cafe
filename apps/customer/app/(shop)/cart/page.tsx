@@ -13,11 +13,22 @@ import AppShell, {
 } from "../../../components/AppShell";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import Icon from "../../../components/Icon";
+import BagRewards from "../../../components/BagRewards";
+import { cartFinancialPreview } from "../../../utils/cartFinancialPreview";
 export default function CartPage() {
   const cart = useCart(),
-    { user } = useAuth(),
+    { user, profile } = useAuth(),
     owner = user?.id ?? "guest";
   const { menuItems, loading, error } = useMenu();
+  const redeemed = user
+    ? Math.min(
+        cart.pointsToRedeem,
+        profile?.points ?? 0,
+        Math.floor(cart.total * 10),
+      )
+    : 0;
+  const draftTotal = Math.max(0, cart.total - redeemed / 10);
+  const financial = cartFinancialPreview(cart, redeemed);
   const [removed, setRemoved] = useState<{
     item: CartItem;
     owner: string;
@@ -250,8 +261,8 @@ export default function CartPage() {
                   </div>
                 </article>
               ))}
-              <details className="rounded-3xl border border-border bg-bg-card p-5">
-                <summary className="min-h-12 cursor-pointer font-semibold">
+              <details className="bag-order-note rounded-3xl border border-border bg-bg-card">
+                <summary className="cursor-pointer font-semibold">
                   A note for the whole order
                 </summary>
                 <label className="sr-only" htmlFor="cart-order-note">
@@ -293,6 +304,7 @@ export default function CartPage() {
                     : "Choose available pickup timing at checkout. Pickup is available from anywhere."}
                 </p>
               </section>
+              <BagRewards />
               <section className="surface-card p-5">
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -305,23 +317,27 @@ export default function CartPage() {
                       <dd>−₱{cart.discount.toFixed(2)}</dd>
                     </div>
                   )}
+                  {redeemed > 0 && (
+                    <div className="flex justify-between">
+                      <dt>Rewards points</dt>
+                      <dd>−₱{(redeemed / 10).toFixed(2)}</dd>
+                    </div>
+                  )}
+                  {financial && (
+                    <div className="flex justify-between text-text-secondary">
+                      <dt>VAT included · estimate</dt>
+                      <dd>₱{(financial.vat / 100).toFixed(2)}</dd>
+                    </div>
+                  )}
                   <div className="flex justify-between border-t border-border pt-4">
                     <dt>Draft total</dt>
                     <dd className="text-2xl font-semibold">
-                      ₱{cart.total.toFixed(2)}
+                      ₱{draftTotal.toFixed(2)}
                     </dd>
                   </div>
                 </dl>
-                <Link className="text-link mt-4" href="/vouchers">
-                  Browse vouchers
-                </Link>
-                {cart.voucher && (
-                  <p className="mt-2 text-xs">
-                    Voucher {cart.voucher.code} will be validated online.
-                  </p>
-                )}
                 <Link
-                  className="btn-primary mt-5 hidden w-full lg:inline-flex"
+                  className="bag-desktop-checkout btn-primary mt-5 w-full"
                   href="/checkout"
                 >
                   Review checkout
@@ -340,7 +356,7 @@ export default function CartPage() {
                 Draft total
                 {cart.orderType === "delivery" ? " · delivery extra" : ""}
               </p>
-              <strong className="text-xl">₱{cart.total.toFixed(2)}</strong>
+              <strong className="text-xl">₱{draftTotal.toFixed(2)}</strong>
             </div>
             <Link className="btn-primary" href="/checkout">
               Checkout

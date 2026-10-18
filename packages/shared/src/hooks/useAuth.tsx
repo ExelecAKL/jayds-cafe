@@ -12,7 +12,10 @@ import React, {
   useRef,
 } from "react";
 import { supabase } from "../supabase/client";
-import { normalizeContactPhone, isValidContactPhone } from "../customer/phone";
+import {
+  normalizeContactPhone,
+  isValidRegistrationPhone,
+} from "../customer/phone";
 import { appPath } from "../utils/app-path";
 import type { Profile, UserRole } from "../types/index";
 import type { User, Session } from "@supabase/supabase-js";
@@ -318,10 +321,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ) => {
       const contactPhone =
         role === "customer" ? normalizeContactPhone(phone ?? "") : phone;
-      if (role === "customer" && !isValidContactPhone(contactPhone ?? "")) {
+      if (
+        role === "customer" &&
+        !isValidRegistrationPhone(contactPhone ?? "")
+      ) {
         return {
           error: new Error(
-            "A valid phone number is required for customer registration.",
+            "Enter an 11-digit Philippine mobile number starting with 09.",
           ),
           needsEmailConfirmation: false,
         };

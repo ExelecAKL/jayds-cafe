@@ -10,6 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        error: "#942f25",
+        warning: "#82450f",
         "bg-primary": "#fbf5ee",
         "bg-surface": "#fffaf4",
         "bg-elevated": "#f3e4d1",

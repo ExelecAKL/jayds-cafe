@@ -8,6 +8,7 @@ import {
 } from "@cafeos/shared/utils/product-images";
 import Icon from "./Icon";
 import { categoryIcon } from "../utils/menuArtwork";
+import { useOutletAvailability } from "../context/OutletAvailability";
 function defaultConfiguration(item: MenuItem): SelectedVariant[] | null {
   const variants = (item.variants ?? []).filter(
     (v) => !v.applicable_items || v.applicable_items.includes(item.id),
@@ -50,6 +51,10 @@ export default function MenuCard({
   displayPrice?: number;
   reason?: string;
 }) {
+  const { canSelect } = useOutletAvailability();
+  function guard(event: React.MouseEvent) {
+    if (!canSelect()) event.preventDefault();
+  }
   const defaults = configuration ?? defaultConfiguration(item);
   const imageUrl = menuProductImageUrl(item.id, item.image_url);
   const [failedImage, setFailedImage] = useState<string | null>(null);
@@ -66,6 +71,7 @@ export default function MenuCard({
           href={`/menu/browse/${item.id}`}
           className="product-image-link"
           aria-label={`View ${item.name}`}
+          onClick={guard}
         >
           {imageUrl && imageUrl !== failedImage ? (
             <img
@@ -93,7 +99,7 @@ export default function MenuCard({
         {!item.is_available && <span className="sold-out-label">Sold out</span>}
       </div>
       <div className="product-copy">
-        <Link href={`/menu/browse/${item.id}`}>
+        <Link href={`/menu/browse/${item.id}`} onClick={guard}>
           <h3 className="product-name">{item.name}</h3>
         </Link>
         {item.description && (
@@ -116,7 +122,9 @@ export default function MenuCard({
             <button
               type="button"
               className="product-select"
-              onClick={action.onClick}
+              onClick={() => {
+                if (canSelect()) action.onClick();
+              }}
               disabled={action.disabled}
               aria-label={`${action.label} ${item.name}`}
             >
@@ -128,6 +136,7 @@ export default function MenuCard({
               href={`/menu/browse/${item.id}`}
               className="product-select"
               aria-label={`${item.is_available ? "Select" : "View details for"} ${item.name}`}
+              onClick={guard}
             >
               {item.is_available ? "Select" : "Details"}
               <Icon name="chevronRight" size={16} />

@@ -36,6 +36,7 @@ export interface CartState {
   orderNote: string;
   specialRemarks: string;
   voucher: AppliedVoucher | null;
+  pointsToRedeem: number;
 }
 
 export interface CartComputed {
@@ -56,6 +57,7 @@ type CartAction =
   | { type: "SET_SPECIAL_REMARKS"; payload: string }
   | { type: "APPLY_VOUCHER"; payload: AppliedVoucher }
   | { type: "REMOVE_VOUCHER" }
+  | { type: "SET_POINTS"; payload: number }
   | { type: "CLEAR_CART" }
   | { type: "HYDRATE"; payload: CartState };
 
@@ -71,6 +73,7 @@ interface CartContextValue extends CartState, CartComputed {
   setSpecialRemarks: (remarks: string) => void;
   applyVoucher: (voucher: AppliedVoucher) => void;
   removeVoucher: () => void;
+  setPointsToRedeem: (points: number) => void;
   clearCart: () => void;
 }
 
@@ -83,6 +86,7 @@ const initialState: CartState = {
   orderNote: "",
   specialRemarks: "",
   voucher: null,
+  pointsToRedeem: 0,
 };
 
 function cartReducer(state: CartState, action: CartAction): CartState {
@@ -148,6 +152,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return { ...state, voucher: action.payload };
     case "REMOVE_VOUCHER":
       return { ...state, voucher: null };
+    case "SET_POINTS":
+      return {
+        ...state,
+        pointsToRedeem: Number.isFinite(action.payload)
+          ? Math.max(0, Math.floor(action.payload))
+          : 0,
+      };
     case "CLEAR_CART":
       return {
         ...initialState,
@@ -157,6 +168,11 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         ...initialState,
         ...action.payload,
+        pointsToRedeem:
+          Number.isSafeInteger(action.payload.pointsToRedeem) &&
+          action.payload.pointsToRedeem >= 0
+            ? action.payload.pointsToRedeem
+            : 0,
         items: validCartLines(action.payload.items),
       };
     default:
@@ -356,6 +372,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = useCallback(() => {
     dispatch({ type: "CLEAR_CART" });
   }, [dispatch]);
+  const setPointsToRedeem = useCallback(
+    (points: number) => {
+      dispatch({ type: "SET_POINTS", payload: points });
+    },
+    [dispatch],
+  );
 
   const activeState = storageOwner === owner ? state : initialState;
   const computed = computeCart(activeState);
@@ -374,6 +396,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setSpecialRemarks,
     applyVoucher,
     removeVoucher,
+    setPointsToRedeem,
     clearCart,
   };
 

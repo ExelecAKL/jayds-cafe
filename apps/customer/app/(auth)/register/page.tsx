@@ -10,15 +10,20 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import PasswordInput from "../../../components/PasswordInput";
+import PasswordStrength from "../../../components/PasswordStrength";
+import { InlineNotice } from "../../../components/AppShell";
+import { useCustomerToast } from "../../../context/CustomerToast";
 import { getCustomerAuthErrorMessage } from "../../../utils/authMessages";
 import { LEGAL_VERSION } from "../../../lib/legal";
 import {
   normalizeContactPhone,
-  isValidContactPhone,
+  isValidRegistrationPhone,
+  registrationPhoneInput,
 } from "@cafeos/shared/customer/phone";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const notify = useCustomerToast();
   const { signUp, loading: authLoading } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -44,10 +49,8 @@ export default function RegisterPage() {
       return;
     }
     const contactPhone = normalizeContactPhone(phone);
-    if (!isValidContactPhone(contactPhone)) {
-      setError(
-        "Enter a valid phone number so the delivery rider can contact you.",
-      );
+    if (!isValidRegistrationPhone(contactPhone)) {
+      setError("Enter an 11-digit Philippine mobile number starting with 09.");
       return;
     }
     if (!legalAccepted) {
@@ -94,6 +97,7 @@ export default function RegisterPage() {
       );
       return;
     }
+    notify("Your account is ready.");
     router.push("/menu");
   };
 
@@ -118,11 +122,7 @@ export default function RegisterPage() {
         className="w-full max-w-sm animate-fade-in-up"
       >
         <div className="rounded-3xl border border-border bg-bg-card p-6 shadow-elevated space-y-3.5">
-          {error && (
-            <div className="rounded-2xl border border-error/30 bg-red-50 px-4 py-3 text-sm text-error animate-fade-in">
-              {error}
-            </div>
-          )}
+          {error && <InlineNotice tone="error">{error}</InlineNotice>}
           {notice && (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 animate-fade-in">
               {notice}
@@ -209,13 +209,36 @@ export default function RegisterPage() {
                 type="tel"
                 required
                 autoComplete="tel"
-                maxLength={25}
+                inputMode="numeric"
+                maxLength={11}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="09XX XXX XXXX"
+                onChange={(e) =>
+                  setPhone(registrationPhoneInput(e.target.value))
+                }
+                onPaste={(e) => {
+                  e.preventDefault();
+                  setPhone(
+                    registrationPhoneInput(e.clipboardData.getData("text")),
+                  );
+                }}
+                onInvalid={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.focus();
+                  setError(
+                    "Enter an 11-digit Philippine mobile number starting with 09.",
+                  );
+                }}
+                placeholder="09XXXXXXXXX"
+                aria-describedby="reg-phone-help"
                 className="w-full rounded-2xl border border-border bg-bg-input pl-10 pr-4 py-3 text-sm text-text-primary placeholder:text-text-faint"
               />
             </div>
+            <p
+              id="reg-phone-help"
+              className="mt-1.5 text-xs text-text-secondary"
+            >
+              11 digits, starting with 09
+            </p>
           </div>
 
           <div>
@@ -236,18 +259,7 @@ export default function RegisterPage() {
             {/* Live password strength indicator */}
             {password.length > 0 && (
               <div className="mt-2 space-y-1.5">
-                <div className="flex gap-1">
-                  {[
-                    password.length >= 8,
-                    /[A-Z]/.test(password),
-                    /[0-9]/.test(password),
-                  ].map((met, i) => (
-                    <div
-                      key={i}
-                      className={`h-1 flex-1 rounded-full transition-colors ${met ? "bg-emerald-400" : "bg-gray-200"}`}
-                    />
-                  ))}
-                </div>
+                <PasswordStrength password={password} />
                 <div className="space-y-0.5">
                   <p
                     className={`text-[11px] ${password.length >= 8 ? "text-emerald-600" : "text-text-faint"}`}

@@ -8,6 +8,8 @@ import { Fragment } from "react";
 import { CartProvider } from "../context/CartContext";
 import { StartupLoadingProvider } from "../context/StartupLoadingContext";
 import { CustomerFeaturesProvider } from "../context/CustomerFeatures";
+import { CustomerToastProvider } from "../context/CustomerToast";
+import { OutletAvailabilityProvider } from "../context/OutletAvailability";
 
 // Remount page-local private forms and requests when an account changes.
 // Persistent draft providers remain outside this boundary and own their cleanup.
@@ -19,13 +21,17 @@ function AccountContent({ children }: { children: React.ReactNode }) {
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <CartProvider>
-        <CustomerFeaturesProvider>
-          <StartupLoadingProvider>
-            <AccountContent>{children}</AccountContent>
-          </StartupLoadingProvider>
-        </CustomerFeaturesProvider>
-      </CartProvider>
+      <CustomerToastProvider>
+        <CartProvider>
+          <CustomerFeaturesProvider>
+            <StartupLoadingProvider>
+              <OutletAvailabilityProvider>
+                <AccountContent>{children}</AccountContent>
+              </OutletAvailabilityProvider>
+            </StartupLoadingProvider>
+          </CustomerFeaturesProvider>
+        </CartProvider>
+      </CustomerToastProvider>
     </AuthProvider>
   );
 }

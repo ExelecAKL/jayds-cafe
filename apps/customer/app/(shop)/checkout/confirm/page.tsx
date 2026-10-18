@@ -16,6 +16,8 @@ import { LEGAL_VERSION } from "../../../../lib/legal";
 import { createUuid } from "@cafeos/shared/utils/uuid";
 import { safeMayaCheckoutUrl } from "@cafeos/shared/maya-urls";
 import type { PaymentQuote } from "@cafeos/shared/finance/quote";
+import TicketItemImage from "../../../../components/TicketItemImage";
+import OrderCountdown from "../../../../components/OrderCountdown";
 interface Review {
   owner: string;
   paymentMethod: string;
@@ -48,6 +50,7 @@ export default function ConfirmOrderPage() {
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [conflict, setConflict] = useState(false);
+  const [countdown, setCountdown] = useState(false);
   const owner = user?.id ?? "guest";
   useEffect(() => {
     if (!initialized) return;
@@ -237,6 +240,8 @@ export default function ConfirmOrderPage() {
   }
   const lines = attempt?.payload.items as
     | {
+        menu_item_id: string;
+        image_url?: string | null;
         name: string;
         quantity: number;
         price: number;
@@ -258,7 +263,17 @@ export default function ConfirmOrderPage() {
               key={index}
               className="flex justify-between gap-4 border-b border-border pb-4"
             >
-              <div>
+              <TicketItemImage
+                menuItemId={i.menu_item_id}
+                imageUrl={
+                  i.image_url ??
+                  cart.items.find(
+                    (line) => line.menu_item_id === i.menu_item_id,
+                  )?.image_url
+                }
+                name={i.name}
+              />
+              <div className="min-w-0 flex-1">
                 <strong>
                   {i.quantity} × {i.name}
                 </strong>
@@ -270,6 +285,12 @@ export default function ConfirmOrderPage() {
               <span>₱{(i.price * i.quantity).toFixed(2)}</span>
             </div>
           ))}
+          {(attempt?.payload.notes ?? cart.orderNote) && (
+            <p className="checkout-order-note">
+              <strong>Order note</strong>
+              <span>{String(attempt?.payload.notes ?? cart.orderNote)}</span>
+            </p>
+          )}
           <p className="text-sm">
             {String(
               attempt?.payload.order_type ?? cart.orderType,
@@ -354,7 +375,10 @@ export default function ConfirmOrderPage() {
                 (!review && !attempt) ||
                 (!cart.items.length && !attempt)
               }
-              onClick={place}
+              onClick={() => {
+                if (attempt) void place();
+                else setCountdown(true);
+              }}
             >
               {busy
                 ? "Confirming…"
@@ -371,6 +395,15 @@ export default function ConfirmOrderPage() {
           </p>
         </aside>
       </div>
+      {countdown && (
+        <OrderCountdown
+          onCancel={() => setCountdown(false)}
+          onComplete={() => {
+            setCountdown(false);
+            void place();
+          }}
+        />
+      )}
     </AppShell>
   );
 }

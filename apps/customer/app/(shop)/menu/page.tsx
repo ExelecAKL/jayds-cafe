@@ -192,13 +192,6 @@ export default function HomePage() {
               <Icon name="heart" size={18} />
               Favorites
             </Link>
-            <Link
-              href="/orders"
-              className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-border bg-bg-card text-sm"
-            >
-              <Icon name="orders" size={18} />
-              My orders
-            </Link>
           </div>
         </div>
       </div>

@@ -18,6 +18,7 @@ import AppShell, {
 } from "../../../../../components/AppShell";
 import Icon from "../../../../../components/Icon";
 import FavoriteButton from "../../../../../components/FavoriteButton";
+import { useOutletAvailability } from "../../../../../context/OutletAvailability";
 import { categoryIcon } from "../../../../../utils/menuArtwork";
 
 const labels: Record<string, string> = {
@@ -38,6 +39,7 @@ export default function BrowseMenuItemPage() {
   const params = useParams();
   const router = useRouter();
   const adding = useRef(false);
+  const { canSelect } = useOutletAvailability();
   const { menuItems, loading, error, refetch } = useMenu();
   const { addItem, hydrated } = useCart();
   const item = menuItems.find((product) => product.id === params.id);
@@ -183,7 +185,7 @@ export default function BrowseMenuItemPage() {
     !added &&
     (!online || !!availability?.available);
   const add = () => {
-    if (!item || !canAdd || adding.current) return;
+    if (!item || !canAdd || adding.current || !canSelect()) return;
     adding.current = true;
     addItem({
       id: item.id,

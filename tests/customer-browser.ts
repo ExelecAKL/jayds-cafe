@@ -12,6 +12,7 @@ import type { MenuItem } from "../packages/shared/src/types/index.ts";
 import { extraCustomerAudit } from "./system-audit-extra-customer.ts";
 import { scheduledCustomerAudit } from "./system-audit-customer-scheduling.ts";
 import { walletAudit } from "./system-audit-wallet.ts";
+import { surveyUxAudit } from "./customer-survey-browser.ts";
 const root = process.cwd(),
   base =
     process.env.JAYDS_AUDIT_CUSTOMER_URL ||
@@ -593,7 +594,17 @@ try {
     } catch {}
     await new Promise((r) => setTimeout(r, 200));
   }
-  if (process.env.JAYDS_TICKET_ONLY === "1") {
+  if (process.env.JAYDS_SURVEY_UX_ONLY === "1") {
+    await surveyUxAudit({
+      page,
+      context,
+      base,
+      output,
+      products,
+      fixtureAccount,
+      fixtureProfile,
+    });
+  } else if (process.env.JAYDS_TICKET_ONLY === "1") {
     const id = "30000000-0000-4000-8000-000000000071";
     const item = {
       id: "ticket-line",
@@ -1168,11 +1179,13 @@ try {
       .click();
     await page.getByText("Admin must configure hours and capacity.").waitFor();
     await page.getByRole("button", { name: "As soon as possible" }).click();
+    await page.goto(base + "/cart");
     await page.getByRole("button", { name: "Delivery", exact: true }).click();
+    await page.goto(base + "/checkout");
     await page
       .getByRole("button", { name: "Choose destination on map" })
       .click();
-    const map = page.getByRole("dialog");
+    const map = page.getByRole("dialog", { name: "Delivery address" });
     const secureGpsContext = await page.evaluate(() => window.isSecureContext);
     await map.getByRole("button", { name: "Use my location" }).click();
     await map
@@ -1187,20 +1200,17 @@ try {
     );
     assert.equal(gpsCalls, secureGpsContext ? 1 : 0);
     await map.getByRole("button", { name: "Close map", exact: true }).click();
+    await page.goto(base + "/cart");
     await page.getByRole("button", { name: "Pickup", exact: true }).click();
-    await page.getByText("Voucher and rewards", { exact: true }).click();
-    await page
-      .getByLabel(/^Voucher code(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
-      .fill("EXPIRED");
+    await page.locator("#bag-voucher").fill("EXPIRED");
     await page.getByRole("button", { name: "Apply", exact: true }).click();
     await page
       .getByText("This demo voucher has expired.", { exact: true })
       .waitFor();
-    await page
-      .getByLabel(/^Voucher code(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
-      .fill("DEMO10");
+    await page.locator("#bag-voucher").fill("DEMO10");
     await page.getByRole("button", { name: "Apply", exact: true }).click();
     await page.getByText("DEMO10 applied", { exact: false }).waitFor();
+    await page.goto(base + "/checkout");
     await page
       .locator(".checkout-action-total strong")
       .filter({ hasText: "₱280.00" })
@@ -1793,13 +1803,12 @@ try {
       currentLegalAccepted,
       "Historical account must separately acknowledge the current version",
     );
-    await page.getByText("Voucher and rewards", { exact: true }).click();
-    await page
-      .getByLabel(/^Voucher code(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
-      .fill("DEMO10");
+    await page.goto(base + "/cart");
+    await page.locator("#bag-voucher").fill("DEMO10");
     await page.getByRole("button", { name: "Apply", exact: true }).click();
     await page.getByText("DEMO10 applied", { exact: false }).waitFor();
-    await page.getByLabel(/Use points · up to/).fill("10");
+    await page.getByLabel(/Use rewards points/).fill("10");
+    await page.goto(base + "/checkout");
     await page
       .locator(".checkout-action-total strong")
       .filter({ hasText: "₱134.00" })
@@ -1827,6 +1836,10 @@ try {
     await page.goto(base + "/account");
     await checkAccountLayout();
     await page.getByRole("button", { name: /Sign out/ }).click();
+    await page
+      .getByRole("dialog", { name: "Are you sure you want to sign out?" })
+      .getByRole("button", { name: "Sign out", exact: true })
+      .click();
     await page.waitForURL(base + "/menu");
     await page.goto(base + "/account");
     await page

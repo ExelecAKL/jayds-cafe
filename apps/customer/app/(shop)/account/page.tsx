@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -9,6 +9,8 @@ import AppShell, {
   InlineNotice,
 } from "../../../components/AppShell";
 import Icon, { type IconName } from "../../../components/Icon";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import { useCustomerToast } from "../../../context/CustomerToast";
 
 function AccountLink({
   href,
@@ -35,6 +37,9 @@ function AccountLink({
 export default function AccountPage() {
   const { user, profile, initialized, loading, signOut } = useAuth();
   const router = useRouter();
+  const notify = useCustomerToast();
+  const logoutBusy = useRef(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const [qr, setQr] = useState(""),
     [signingOut, setSigningOut] = useState(false),
     [error, setError] = useState("");
@@ -58,15 +63,19 @@ export default function AccountPage() {
     };
   }, [profile?.account_qr_hash]);
   const logout = async () => {
+    if (logoutBusy.current || !logoutOpen || !user) return;
+    logoutBusy.current = true;
     setSigningOut(true);
     setError("");
     try {
       await signOut();
+      notify("You’re signed out.");
       router.replace("/menu");
     } catch {
       setError("Could not sign out. Please try again.");
     } finally {
       setSigningOut(false);
+      logoutBusy.current = false;
     }
   };
   return (
@@ -82,7 +91,9 @@ export default function AccountPage() {
         </div>
       ) : (
         <>
-          {error && <InlineNotice tone="error">{error}</InlineNotice>}
+          {error && !logoutOpen && (
+            <InlineNotice tone="error">{error}</InlineNotice>
+          )}
           <div className="account-grid">
             <div className="space-y-5">
               {user ? (
@@ -227,16 +238,17 @@ export default function AccountPage() {
                       type="button"
                       disabled={signingOut}
                       className="account-row"
-                      onClick={() => void logout()}
+                      onClick={() => {
+                        setError("");
+                        setLogoutOpen(true);
+                      }}
                     >
                       <Icon name="logout" />
                       <span>
                         <strong>
                           {signingOut ? "Signing out…" : "Sign out"}
                         </strong>
-                        <small>
-                          Sign out of your account on this device
-                        </small>
+                        <small>Sign out of your account on this device</small>
                       </span>
                     </button>
                   )}
@@ -246,6 +258,18 @@ export default function AccountPage() {
           </div>
         </>
       )}
+      <ConfirmDialog
+        open={logoutOpen && !!user}
+        title="Are you sure you want to sign out?"
+        confirmLabel="Sign out"
+        cancelLabel="Stay signed in"
+        busy={signingOut}
+        onConfirm={() => void logout()}
+        onCancel={() => setLogoutOpen(false)}
+      >
+        <p>You’ll need to sign in again to access your account.</p>
+        {error && <InlineNotice tone="error">{error}</InlineNotice>}
+      </ConfirmDialog>
     </AppShell>
   );
 }

@@ -185,12 +185,8 @@ export default function Addresses() {
                   <input
                     className="input-field w-full"
                     value={destination.address}
-                    onChange={(e) =>
-                      setDestination({
-                        ...destination,
-                        address: e.target.value,
-                      })
-                    }
+                    readOnly
+                    onClick={() => setMapOpen(true)}
                     maxLength={500}
                     required
                   />
@@ -224,6 +220,7 @@ export default function Addresses() {
             <DeliveryMapPickerLazy
               lat={destination?.lat ?? 14.346621}
               lng={destination?.lng ?? 120.981057}
+              initialAddress={destination?.address}
               onClose={() => setMapOpen(false)}
               onLocationChange={(lat, lng, address) => {
                 setDestination({ lat, lng, address });
