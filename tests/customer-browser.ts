@@ -505,6 +505,22 @@ await context.route(base + "/api/**", async (route) => {
       submissions.set(key, id);
       orders.set(id, {
         ...body,
+        items: body.items.map(
+          (item: Record<string, unknown>, index: number) => ({
+            ...item,
+            id: `accepted-line-${index}`,
+            image_url:
+              products.find((product) => product.id === item.menu_item_id)
+                ?.image_url ?? null,
+          }),
+        ),
+        tax_summary: {
+          item_vat_centavos: calculateFinancials({
+            items: body.items,
+            promotion: { kind: "fixed", value: 10 },
+          }).vat,
+          delivery_vat_centavos: 0,
+        },
         id,
         order_number: "ORD-10000",
         status: "pending",
@@ -1102,6 +1118,73 @@ try {
       .waitFor();
     assert.equal(submissions.size, 1);
     assert.equal(createRequests, 3);
+    const ticket = page.locator("section").filter({
+      has: page.getByRole("heading", {
+        name: "Your accepted ticket",
+        exact: true,
+      }),
+    });
+    await expect(
+      ticket.getByText("Item VAT (12%, included)", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      ticket
+        .locator("dt")
+        .filter({ hasText: /^Item VAT/ })
+        .locator("..")
+        .locator("dd"),
+    ).toHaveText("₱30.00");
+    await expect(
+      ticket
+        .locator("dt")
+        .filter({ hasText: /^Total$/ })
+        .locator("..")
+        .locator("dd"),
+    ).toHaveText("₱280.00");
+    await ticket.scrollIntoViewIfNeeded();
+    await expect(ticket.locator("img").first()).toBeVisible();
+    await page.waitForFunction(() =>
+      [...document.querySelectorAll<HTMLImageElement>("section img")].some(
+        (img) => img.naturalWidth > 0,
+      ),
+    );
+    for (const width of [320, 390, 768, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await ticket.scrollIntoViewIfNeeded();
+      assert.ok(
+        await ticket.evaluate(
+          (element) => element.scrollWidth <= element.clientWidth + 1,
+        ),
+        "Ticket stays within its card",
+      );
+      await ticket.screenshot({
+        path: path.join(output, `accepted-ticket-${width}.png`),
+        animations: "disabled",
+      });
+    }
+    await ticket
+      .locator("img")
+      .first()
+      .evaluate((image) => image.dispatchEvent(new Event("error")));
+    await expect(
+      ticket.getByRole("img", { name: /^No photo for / }),
+    ).toBeVisible();
+    await expect(
+      ticket
+        .locator("dt")
+        .filter({ hasText: /^Total$/ })
+        .locator("..")
+        .locator("dd"),
+    ).toHaveText("₱280.00");
+    await page.emulateMedia({ media: "print" });
+    await expect(
+      ticket.getByText("Item VAT (12%, included)", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      ticket.getByRole("button", { name: "Print accepted order", exact: true }),
+    ).toBeHidden();
+    await page.emulateMedia({ media: "screen" });
+    await page.setViewportSize({ width: 390, height: 844 });
     assert.equal(
       await page.evaluate(
         () =>
@@ -1644,6 +1727,9 @@ try {
       gpsOnlyAfterTap: gpsCalls,
       checkoutRequests: createRequests,
       canonicalSales: orders.size,
+      acceptedTicketPhotosAndIncludedVat: true,
+      acceptedTicketWidths: [320, 390, 768, 1280],
+      acceptedTicketPrintVat: true,
       voucherValidations,
       voucherAndPointsReview: true,
       includedWholeMilkDefault: true,

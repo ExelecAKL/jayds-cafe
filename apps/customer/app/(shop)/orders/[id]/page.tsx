@@ -6,7 +6,14 @@ import QRCode from "qrcode";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
 import { supabase } from "@cafeos/shared/supabase/client";
-import type { Order, OrderStatus, CartItem } from "@cafeos/shared/types";
+import type {
+  Order,
+  OrderItem,
+  OrderStatus,
+  CartItem,
+} from "@cafeos/shared/types";
+import type { TicketTaxSummary } from "../../../../lib/accepted-ticket";
+import TicketItemImage from "../../../../components/TicketItemImage";
 import { useCart } from "../../../../context/CartContext";
 import { customerHeaders } from "../../../../context/CustomerFeatures";
 import { buildReorderDraft } from "../../../../utils/orderReorder";
@@ -23,7 +30,9 @@ import {
 import { cartLineId } from "../../../../utils/cartDraft";
 import { cashAtPickup } from "@cafeos/shared/pos/fulfillment";
 
-type CustomerOrder = Order & {
+type CustomerOrder = Omit<Order, "items"> & {
+  items?: (OrderItem & { image_url?: string | null })[];
+  tax_summary?: TicketTaxSummary | null;
   pickup_qr?: string;
   cash_confirmation_qr?: string;
   pickup_window_start?: string | null;
@@ -714,11 +723,21 @@ export default function OrderTrackingPage() {
             <p className="mb-4 text-sm font-semibold">{order.order_number}</p>
             <div className="space-y-5">
               {order.items?.map((item) => (
-                <div key={item.id} className="flex justify-between gap-4">
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-semibold">
-                      {item.quantity} × {item.name}
-                    </h3>
+                <div key={item.id} className="flex items-start gap-3">
+                  <TicketItemImage
+                    menuItemId={item.menu_item_id}
+                    imageUrl={item.image_url}
+                    name={item.name}
+                  />
+                  <div className="min-w-0 flex-1 break-words">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-sm font-semibold">
+                        {item.quantity} × {item.name}
+                      </h3>
+                      <span className="shrink-0 text-sm tabular-nums">
+                        ₱{Number(item.subtotal).toFixed(2)}
+                      </span>
+                    </div>
                     {item.variants?.length > 0 && (
                       <p className="mt-1 text-xs leading-relaxed text-text-secondary">
                         {item.variants.map((v) => v.label).join(" · ")}
@@ -730,9 +749,6 @@ export default function OrderTrackingPage() {
                       </p>
                     )}
                   </div>
-                  <span className="shrink-0 text-sm">
-                    ₱{Number(item.subtotal).toFixed(2)}
-                  </span>
                 </div>
               ))}
             </div>
@@ -751,6 +767,25 @@ export default function OrderTrackingPage() {
                 <div className="flex justify-between">
                   <dt>Delivery</dt>
                   <dd>₱{Number(order.delivery_fee).toFixed(2)}</dd>
+                </div>
+              )}
+              <div className="flex justify-between gap-3 text-text-secondary">
+                <dt>Item VAT (12%, included)</dt>
+                <dd className="shrink-0 tabular-nums">
+                  {order.tax_summary
+                    ? `₱${(order.tax_summary.item_vat_centavos / 100).toFixed(2)}`
+                    : "Unavailable"}
+                </dd>
+              </div>
+              {Number(order.tax_summary?.delivery_vat_centavos) > 0 && (
+                <div className="flex justify-between gap-3 text-text-secondary">
+                  <dt>Delivery VAT (included)</dt>
+                  <dd className="shrink-0 tabular-nums">
+                    ₱
+                    {(order.tax_summary!.delivery_vat_centavos! / 100).toFixed(
+                      2,
+                    )}
+                  </dd>
                 </div>
               )}
               <div className="flex justify-between border-t border-border pt-4 text-lg font-semibold">
@@ -806,7 +841,14 @@ export default function OrderTrackingPage() {
                 Cancel unpaid order
               </button>
             )}
-            {["paid","refunded"].includes(order.payment_status) && <Link href={`/orders/${order.id}/invoice`} className="text-link justify-center w-full">View invoice / Save PDF</Link>}
+            {["paid", "refunded"].includes(order.payment_status) && (
+              <Link
+                href={`/orders/${order.id}/invoice`}
+                className="text-link justify-center w-full"
+              >
+                View invoice / Save PDF
+              </Link>
+            )}
             {order.payment_status === "paid" &&
               ["pending", "confirmed"].includes(order.status) && (
                 <Link

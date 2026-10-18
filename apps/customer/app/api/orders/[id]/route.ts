@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { acceptedTicketTax } from "../../../../lib/accepted-ticket";
 import {
   ApiAccessError,
   PRIVATE_HEADERS,
@@ -19,11 +20,11 @@ export async function GET(
       scope: "read",
       allowStaff: true,
     });
-    const [items, history, qr] = await Promise.all([
+    const [items, history, qr, financials] = await Promise.all([
       db
         .from("order_items")
         .select(
-          "id,menu_item_id,name,price,quantity,variants,subtotal,notes,created_at",
+          "id,menu_item_id,name,price,quantity,variants,subtotal,notes,created_at,menu_item:menu_items(image_url)",
         )
         .eq("order_id", order.id)
         .order("created_at"),
@@ -33,6 +34,11 @@ export async function GET(
         .eq("order_id", order.id)
         .order("created_at"),
       orderPickupCredentials(db, order, canManage),
+      db
+        .from("order_financials")
+        .select("breakdown")
+        .eq("order_id", order.id)
+        .maybeSingle(),
     ]);
     if (items.error || history.error)
       throw new ApiAccessError(
@@ -43,7 +49,16 @@ export async function GET(
       {
         order: {
           ...publicOrder(order),
-          items: items.data ?? [],
+          items: (items.data ?? []).map(({ menu_item, ...item }) => {
+            const photo = Array.isArray(menu_item) ? menu_item[0] : menu_item;
+            return { ...item, image_url: photo?.image_url ?? null };
+          }),
+          tax_summary: financials.error
+            ? null
+            : acceptedTicketTax(
+                financials.data?.breakdown,
+                Number(order.total),
+              ),
           status_history: history.data ?? [],
           ...qr,
         },
