@@ -1,0 +1,491 @@
+{
+  "sourceCommit": "51697c4864a24d0ed6700cd310e9da56b9858bbb",
+  "backend": {
+    "source": "7adb8f8",
+    "pass": 167,
+    "fail": 0
+  },
+  "focused": {
+    "pass": 19,
+    "fail": 0
+  },
+  "images": {
+    "products": 55,
+    "originalBytes": 33563252,
+    "cardBytes": 1084346,
+    "detailBytes": 3373490,
+    "cardReductionPercent": 96.77,
+    "detailReductionPercent": 89.95
+  },
+  "liveRecipes": {
+    "status": "PASS",
+    "at": "2026-10-17T17:52:14.159Z",
+    "products": 55,
+    "recipeLines": 204,
+    "newIngredientsUncounted": 4,
+    "vanillaMilkshakeBlockedUntilReceived": true,
+    "results": [
+      {
+        "name": "Americano",
+        "recipe": "PASS",
+        "ingredients": 2
+      },
+      {
+        "name": "Coffee Latte",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Spanish Latte",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Vanilla Latte",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "French Vanilla",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Caramel Latte",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Hazelnut Latte",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Macadamia Latte",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Butterscotch Latte",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Aussie Latte",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "White Mocha Latte",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Cinnamon Cappuccino",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Caramel Macchiato",
+        "recipe": "PASS",
+        "ingredients": 5
+      },
+      {
+        "name": "Caramel Mocha",
+        "recipe": "PASS",
+        "ingredients": 5
+      },
+      {
+        "name": "Salted Caramel",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Mocha",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Cloud Hazelnut",
+        "recipe": "PASS",
+        "ingredients": 5
+      },
+      {
+        "name": "Tres Leche Shaken Espresso",
+        "recipe": "PASS",
+        "ingredients": 5
+      },
+      {
+        "name": "Milo Shaken Espresso",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Hazelnut Mocha",
+        "recipe": "PASS",
+        "ingredients": 5
+      },
+      {
+        "name": "Biscoff",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Cocoa Lava",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Matcha Latte",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Strawberry Milk",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Nom Yen Pink Milk",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Vanilla Milkshake",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Cookies & Cream",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Dark Chocolate",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Matcha",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Strawberries & Cream",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Caramel Frappe",
+        "recipe": "PASS",
+        "ingredients": 5
+      },
+      {
+        "name": "Mocha Frappe",
+        "recipe": "PASS",
+        "ingredients": 5
+      },
+      {
+        "name": "Java Chip",
+        "recipe": "PASS",
+        "ingredients": 6
+      },
+      {
+        "name": "Salted Caramel Frappe",
+        "recipe": "PASS",
+        "ingredients": 5
+      },
+      {
+        "name": "Biscoff Frappe",
+        "recipe": "PASS",
+        "ingredients": 6
+      },
+      {
+        "name": "Classic Milk Tea",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Wintermelon Milk Tea",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Okinawa Milk Tea",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Dark Chocolate Milk Tea",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Taro Milk Tea",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Cookies & Cream Milk Tea",
+        "recipe": "PASS",
+        "ingredients": 4
+      },
+      {
+        "name": "Strawberry Soda",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Blueberry Soda",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Green Apple Soda",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Lychee Soda",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Honey Peach Soda",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Just Croffle",
+        "recipe": "PASS",
+        "ingredients": 2
+      },
+      {
+        "name": "S'mores",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Banatella",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Biscoff Croffle",
+        "recipe": "PASS",
+        "ingredients": 2
+      },
+      {
+        "name": "Almond Nutella",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Ham & Cheese",
+        "recipe": "PASS",
+        "ingredients": 3
+      },
+      {
+        "name": "Flavored Fries",
+        "recipe": "PASS",
+        "ingredients": 2
+      },
+      {
+        "name": "Nachos",
+        "recipe": "PASS",
+        "ingredients": 2
+      },
+      {
+        "name": "Chicken Pop",
+        "recipe": "PASS",
+        "ingredients": 2
+      }
+    ]
+  },
+  "privateEvidence": [
+    {
+      "path": ".codex-logs/2026-10-18-backend-final.log",
+      "sha256": "267b70dc69b3c61954385f76a3334ba6104ecb92b6e24f73b17974c57407bd57"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-final-focused.log",
+      "sha256": "f89b8f7fd88d6ddd2c14d2907a270c02bf9311a44d40b8a36617864e5d2993b2"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-typecheck.log",
+      "sha256": "2a15c23c73dcb633aa3598feeded2fc5d689cbb6fc560330327c86e641849c8c"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-lint.log",
+      "sha256": "dbd6493b15da3a88b87f205fd8b23ad9176526483bdcadbcf84f3e983aff4e51"
+    },
+    {
+      "path": ".codex-logs/optimized-menu/applied.json",
+      "sha256": "ee4b5242c60b88f16e15858c988ee37b922e42c9d846509f1eb505e11ca0b03f"
+    },
+    {
+      "path": ".codex-logs/live-recipe-verification.json",
+      "sha256": "c501a3a9d95009e38148644bef6a69ecf6f6f5e457ff99b8fbaed3cbbc95912f"
+    },
+    {
+      "path": ".codex-logs/recipe-live-migration-retry.log",
+      "sha256": "fa7d2aa8a385b666ed11a271dd962497b283f0401360b2f92166c4f4dc7edf69"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-customer-final-browser.log",
+      "sha256": "b75662347afe726fc4f5ce811d4241113c11398f741d61e99d0d3bbde77cd864"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-pwa.log",
+      "sha256": "80b67095e4610e8d0d0334e03d81353abec286e7428a8557903eb1b952090cb6"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-hosted-verification.json",
+      "sha256": "212fc2d93b36c1be95477da027a5d0a6eee91d14ec1e0fca4cd1c8d39d4bde9e"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-customer-final-build.log",
+      "sha256": "9bb954a10f3f3020a134412def12a3cc7428c579dca1218568f80cc00d7006b5"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-pos-build.log",
+      "sha256": "f19bb070de27b0da569ce603a81c46e80c82ad21f0a42bd515811f9825fd9e08"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-final-changed-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-live-availability.png",
+      "sha256": "c82fd8f63411f7bf8c7d35d08bb83a4f2f3e07f335eace9321fb15503b21939c"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-live-menu.png",
+      "sha256": "51f70ace5f3d4d9d61e7ae9d50bdd5bf5d7fc4242d015a9f051f3c2cfdb46c82"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-customer-final-alias.log",
+      "sha256": "fcf6afd9a8a06f7f2bf1757a624cb0af363a8a404d0b5ad7407fde5dfbe7030d"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-pos-alias.log",
+      "sha256": "1cf2a1f5cdd2888a928ab5d4259ceb5c3df92ecf55dc711f167cb808d53da454"
+    }
+  ],
+  "posSourceCommit": "3a3c02896a7edd2b23a29cbaa256146414438613",
+  "browser": {
+    "sourceCommit": "51697c4864a24d0ed6700cd310e9da56b9858bbb",
+    "base": "http://127.0.0.1:4320",
+    "isolated": true,
+    "products": 55,
+    "widths": [
+      360,
+      390,
+      430,
+      768,
+      834,
+      844,
+      1024,
+      1180,
+      1280
+    ],
+    "continuousCategorySections": 7,
+    "categoryJumpAndScrollTracking": true,
+    "tabletAndLandscapeMenuAligned": true,
+    "soldOutPricesVisibleAndGrey": true,
+    "favoritesOnProductDetailsOnly": true,
+    "automaticReturnToMenuAfterAdd": true,
+    "gpsOnlyAfterTap": 1,
+    "checkoutRequests": 3,
+    "canonicalSales": 1,
+    "voucherValidations": 3,
+    "voucherAndPointsReview": true,
+    "includedWholeMilkDefault": true,
+    "paidMilkOptional": true,
+    "compactAccountQr": true,
+    "crossPageOfflineScope": "Separate real-service-worker PWA suite",
+    "homePersonalRecommendations": true,
+    "recommendationReads": 16,
+    "controlledLocalMetrics": {
+      "lcp": 172,
+      "cls": 0,
+      "interaction": 0
+    },
+    "metricScope": "Local fixture browser timings, not production measurements or field INP.",
+    "errors": []
+  },
+  "pwa": {
+    "sourceCommit": "3a3c02896a7edd2b23a29cbaa256146414438613",
+    "realServiceWorker": true,
+    "publicCacheOnly": true,
+    "offlineReload": true,
+    "offlineDraftEditing": true,
+    "draftPreserved": true,
+    "reconnectionPreservesDocumentAndNotes": true,
+    "cachedResources": 140,
+    "remoteNetworkDenied": true,
+    "remoteOrigins": [
+      "https://segzigvrcgxdjskfltju.supabase.co"
+    ],
+    "remoteFrameRequests": 15,
+    "remoteWorkerRequests": 0,
+    "runtimeErrors": [],
+    "realAndroidIosNotVerified": true
+  },
+  "hosted": {
+    "status": "PASS",
+    "checkedAt": "2026-10-18T01:04:06.589Z",
+    "base": "https://jaydscafe.vercel.app",
+    "products": 53,
+    "responsiveSamples": [
+      {
+        "name": "Coffee Latte",
+        "currentSrc": "https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e1000000-0000-4000-a000-000000000002/coffee-latte-0bb329a295f9-320.webp",
+        "srcset": "https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e1000000-0000-4000-a000-000000000002/coffee-latte-0bb329a295f9-320.webp 320w, https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e1000000-0000-4000-a000-000000000002/coffee-latte-0bb329a295f9-640.webp 640w",
+        "width": 175
+      },
+      {
+        "name": "Vanilla Milkshake",
+        "currentSrc": "https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e3000000-0000-4000-a000-000000000001/vanilla-milkshake-d377b177b34d-320.webp",
+        "srcset": "https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e3000000-0000-4000-a000-000000000001/vanilla-milkshake-d377b177b34d-320.webp 320w, https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e3000000-0000-4000-a000-000000000001/vanilla-milkshake-d377b177b34d-640.webp 640w",
+        "width": 175
+      },
+      {
+        "name": "Chicken Pop",
+        "currentSrc": "https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e7000000-0000-4000-a000-000000000003/chicken-pop-8fcd16e2fd3f-320.webp",
+        "srcset": "https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e7000000-0000-4000-a000-000000000003/chicken-pop-8fcd16e2fd3f-320.webp 320w, https://segzigvrcgxdjskfltju.supabase.co/storage/v1/object/public/jayds-menu-images/generated/e7000000-0000-4000-a000-000000000003/chicken-pop-8fcd16e2fd3f-640.webp 640w",
+        "width": 175
+      }
+    ],
+    "oneAvailabilityPanel": true,
+    "uncaughtErrors": [],
+    "browserBusinessWrites": [],
+    "authenticatedEndpointTimings": [
+      {
+        "path": "/api/customer/recommendations?history=1",
+        "ms": 1574,
+        "bytes": 39
+      },
+      {
+        "path": "/api/customer/recommendations",
+        "ms": 2868,
+        "bytes": 58
+      }
+    ],
+    "timingScope": "One sequential spot check using a designated test account, not a percentile or populated-history load benchmark."
+  },
+  "release": {
+    "customer": {
+      "id": "dpl_5eLsyvN5RSj94i7kcWzqepVfzNfh",
+      "url": "https://jaydscafe-2fclecnxe-aaron-martinezs-projects-ea1c41f7.vercel.app",
+      "publicAlias": "https://jaydscafe.vercel.app"
+    },
+    "pos": {
+      "id": "dpl_BZZ5Pdfm7wCgNNZR7uWxuJ3KyHdS",
+      "url": "https://jaydscafe-90ug2r7yi-aaron-martinezs-projects-ea1c41f7.vercel.app",
+      "publicAlias": "https://jaydscafe-pos.vercel.app"
+    },
+    "previousMain": "fc50a578c192fb1c300ca1d7d4805944eed10311",
+    "rollbackTag": "pre-image-recipe-2026-10-18"
+  }
+}
