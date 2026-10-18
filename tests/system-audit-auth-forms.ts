@@ -19,14 +19,28 @@ try {
     const scope = prefix ? "Staff" : "Customer";
     const context = await browser.newContext({ serviceWorkers: "block" });
     let signupFail = true, recoverFail = true, signupRequests = 0, recoverRequests = 0;
+    const signupRedirects: (string | null)[] = [];
+    const emailRedirects: (string | null)[] = [];
+    const exchanges: { auth_code?: string; code_verifier?: string }[] = [];
+    let confirmedSession = false;
+    const fixtureUser = { id: "90000000-0000-4000-8000-000000000088", email: "forms@example.test", app_metadata: {}, user_metadata: {}, aud: "authenticated", created_at: new Date().toISOString() };
     const p = await context.newPage();
     await context.routeWebSocket("**", socket => socket.close());
     await context.route("**/*", route => {
       const request = route.request(), url = new URL(request.url());
       if (url.pathname.startsWith("/auth/")) {
         const action = url.pathname.split("/").at(-1);
+        if (action === "token" && url.searchParams.get("grant_type") === "pkce") {
+          exchanges.push(request.postDataJSON());
+          confirmedSession = true;
+          const expires = Math.floor(Date.now() / 1000) + 3600;
+          const jwt = [Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url"), Buffer.from(JSON.stringify({ sub: fixtureUser.id, exp: expires, aud: "authenticated", role: "authenticated" })).toString("base64url"), "fixture-signature"].join(".");
+          return route.fulfill({ json: { access_token: jwt, refresh_token: "fixture-refresh", token_type: "bearer", expires_in: 3600, user: fixtureUser } });
+        }
+        if (action === "user" && confirmedSession) return route.fulfill({ json: fixtureUser });
         if (action === "signup") {
           signupRequests++;
+          signupRedirects.push(url.searchParams.get("redirect_to"));
           if (signupFail) { signupFail = false; return route.fulfill({ status: 503, json: { message: "Test signup unavailable", code: "unexpected_failure" } }); }
           const body = request.postDataJSON();
           assert.equal(body.data.role, prefix ? "staff" : "customer");
@@ -35,6 +49,7 @@ try {
         }
         if (action === "recover" || action === "resend") {
           recoverRequests++;
+          emailRedirects.push(url.searchParams.get("redirect_to"));
           if (recoverFail) { recoverFail = false; return route.fulfill({ status: 503, json: { message: "Test email unavailable" } }); }
           return route.fulfill({ json: {} });
         }
@@ -85,6 +100,27 @@ try {
         await p.locator("form button[type=submit], form button:not([type])").click();
         await p.waitForURL(new RegExp(prefix + "/check-email"));
         assert.equal(signupRequests, 2);
+        assert.deepEqual(signupRedirects, [base + prefix + "/login", base + prefix + "/login"]);
+      }, p);
+      if (!prefix) await check("Customer: verification resend returns to the same app", async () => {
+        const request = p.waitForRequest(r => new URL(r.url()).pathname.endsWith("/auth/v1/resend"));
+        recoverFail = false;
+        await p.getByRole("button", { name: "Resend verification email", exact: true }).click();
+        const sent = await request;
+        assert.equal(new URL(sent.url()).searchParams.get("redirect_to"), base + "/login");
+        await expect(p.getByText(/Email requested/)).toBeVisible();
+        recoverRequests = 0;
+        emailRedirects.length = 0;
+        recoverFail = true;
+      }, p);
+      if (!prefix) await check("Customer: confirmation return exchanges PKCE and opens Home", async () => {
+        await p.goto(base + "/login?code=isolated-confirmation-code");
+        await p.waitForURL(base + "/menu");
+        assert.equal(exchanges.length, 1);
+        assert.equal(exchanges[0].auth_code, "isolated-confirmation-code");
+        assert.ok(exchanges[0].code_verifier, "Confirmation keeps the signup browser's proof key");
+        await context.clearCookies();
+        confirmedSession = false;
       }, p);
       await p.goto(base + prefix + "/forgot-password");
       await p.locator("input[type=email]").fill("forms@example.test");
@@ -99,6 +135,7 @@ try {
         await p.waitForURL(new RegExp(prefix + "/check-email\\?"));
         assert.equal(new URL(p.url()).searchParams.get("type"), "reset");
         assert.equal(recoverRequests, 2);
+        assert.deepEqual(emailRedirects, [base + prefix + "/reset-password", base + prefix + "/reset-password"]);
       }, p);
       if (!prefix) await check("Customer: recovery resend has a cooldown", async () => {
         const resend = p.getByRole("button", { name: "Resend reset email", exact: true });

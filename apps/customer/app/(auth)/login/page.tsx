@@ -4,7 +4,7 @@
 "use client";
 
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -14,11 +14,15 @@ import { getCustomerAuthErrorMessage } from "../../../utils/authMessages";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signIn, loading: authLoading } = useAuth();
+  const { signIn, user, initialized, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialized && user) router.replace("/menu");
+  }, [initialized, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

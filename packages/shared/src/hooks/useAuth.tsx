@@ -320,6 +320,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
         options: {
+          ...(typeof window !== "undefined"
+            ? { emailRedirectTo: window.location.origin + appPath("/login") }
+            : {}),
           data: {
             full_name: fullName,
             phone: contactPhone || null,

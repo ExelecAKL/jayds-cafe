@@ -1,0 +1,18 @@
+# Only these Auth URL properties are applied to the hosted project.
+# Keep local development settings in supabase/config.toml.
+project_id = "jayds-hosted-auth"
+
+[auth]
+site_url = "https://jaydscafe.vercel.app/login"
+additional_redirect_urls = [
+  "https://jaydscafe.vercel.app/login",
+  "https://jaydscafe.vercel.app/reset-password",
+  "https://jaydscafe.vercel.app/staff/login",
+  "https://jaydscafe.vercel.app/staff/reset-password",
+  "https://jaydscafe.vercel.app/admin/login",
+  "https://jaydscafe.vercel.app/admin/reset-password",
+  "https://jaydscafe-pos.vercel.app/staff/login",
+  "https://jaydscafe-pos.vercel.app/staff/reset-password",
+  "https://jaydscafe-admin.vercel.app/admin/login",
+  "https://jaydscafe-admin.vercel.app/admin/reset-password",
+]
