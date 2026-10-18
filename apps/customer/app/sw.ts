@@ -24,6 +24,8 @@ const entries = (self.__SW_MANIFEST ?? [])
     return (
       /\.(?:m?js|css|woff2?|otf|png|svg|ico)$/.test(url) &&
       !/^\/workbox-/.test(url) &&
+      // Mail artwork is public but is not part of the app's offline shell.
+      !/^\/?email\//.test(url) &&
       !/^\/?products\//.test(url)
     );
   });
