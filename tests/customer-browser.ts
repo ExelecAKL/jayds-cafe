@@ -590,7 +590,21 @@ async function checkAccountLayout() {
 try {
   for (let i = 0; i < 100; i++) {
     try {
-      if ((await fetch(base + "/login")).ok) break;
+      if (
+        (
+          await fetch(base + "/login", {
+            redirect: "manual",
+            headers: process.env.JAYDS_AUDIT_PROTECTION_BYPASS
+              ? {
+                  "x-vercel-protection-bypass":
+                    process.env.JAYDS_AUDIT_PROTECTION_BYPASS,
+                }
+              : undefined,
+            signal: AbortSignal.timeout(5000),
+          })
+        ).ok
+      )
+        break;
     } catch {}
     await new Promise((r) => setTimeout(r, 200));
   }

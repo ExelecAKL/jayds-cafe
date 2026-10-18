@@ -1,0 +1,136 @@
+{
+  "date": "2026-10-18",
+  "app": "Customer",
+  "sourceCommit": "04ee5aa72039ca2cfd969b94b5cdae7669cd1596",
+  "rollbackTags": {
+    "wholeSurveyUpdate": "pre-survey-ux-2026-10-18",
+    "pointsOnly": "pre-order-points-2026-10-18"
+  },
+  "release": {
+    "source": "04ee5aa72039ca2cfd969b94b5cdae7669cd1596",
+    "deployment": {
+      "id": "dpl_D2nz1PzazaFXgWKfWgwuikLYtyuf",
+      "url": "jaydscafe-26cn0vc8t-aaron-martinezs-projects-ea1c41f7.vercel.app",
+      "readyState": "READY"
+    },
+    "publicAlias": {
+      "name": "jaydscafe.vercel.app",
+      "deploymentId": "dpl_D2nz1PzazaFXgWKfWgwuikLYtyuf"
+    },
+    "checks": [
+      {
+        "path": "/menu",
+        "status": 200,
+        "pass": true
+      },
+      {
+        "path": "/menu/browse",
+        "status": 200,
+        "pass": true
+      },
+      {
+        "path": "/register",
+        "status": 200,
+        "pass": true
+      },
+      {
+        "path": "/cart",
+        "status": 200,
+        "pass": true
+      },
+      {
+        "path": "/checkout",
+        "status": 200,
+        "pass": true
+      },
+      {
+        "path": "/account",
+        "status": 200,
+        "pass": true
+      },
+      {
+        "path": "/api/branch",
+        "status": 200,
+        "pass": true
+      },
+      {
+        "path": "/api/orders/00000000-0000-4000-8000-000000000000",
+        "status": 404,
+        "pass": true
+      }
+    ]
+  },
+  "checks": {
+    "backendRegression": {
+      "pass": 194,
+      "fail": 0
+    },
+    "focusedFinal": {
+      "pass": 5,
+      "fail": 0
+    },
+    "typeChecks": "PASS: Customer, POS, Admin, shared and scripts; Customer/scripts rerun for follow-ups",
+    "lint": "PASS; original changed-file run had one pre-existing Auth cleanup warning; follow-up lint has no warnings",
+    "directAxe": "PASS: registration, bag, guest checkout and member checkout, zero violations",
+    "browser": {
+      "base": "https://jaydscafe-26cn0vc8t-aaron-martinezs-projects-ea1c41f7.vercel.app",
+      "isolated": true,
+      "hostedMutations": 0,
+      "legalVersion": "2026-10-07",
+      "passed": [
+        "Phone input hard cap, country-code paste, strict mobile validation and exact red/yellow/green meter colors",
+        "Single checkout action at 320/390/768/1280, compact notes, bag vouchers, guest ordering, read-only checkout, item photos and VAT, cancellable five-second submission",
+        "Address search moves pin, manual pin changes fill address, precise coordinates preserved, failure requires manual confirmation, stale responses ignored, coverage and GPS fallback",
+        "Account-scoped voucher and points selections survive navigation to read-only checkout with matching totals",
+        "Readable desktop menu, favorites stay on details, closed outlet modal, signout cancellation/Escape/confirmation and success toast"
+      ],
+      "signupCalls": 0,
+      "logoutCalls": 1,
+      "creates": 1,
+      "quotes": 1
+    },
+    "notTested": [
+      "Physical phones and screen reader software",
+      "Real payment, delivery booking and customer-account mutations in this release"
+    ]
+  },
+  "mcp": "Stopped on user request; no full MCP certification",
+  "privateLogs": [
+    {
+      "path": ".codex-logs/2026-10-18-survey-backend.log",
+      "sha256": "de89258fe5fe75cc431f418fbb5e0e79f0e0543ea08ab504ea793a2200a2b696"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-points-tests.log",
+      "sha256": "fb31ee128847e4fefa2284e8eb7cbed4c33adb3499cfe4e83b7791355cc9dfcf"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-points-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-points-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-survey-final-script-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-points-browser.log",
+      "sha256": "8f09a3093baf0cd5e72d5dc76b20ccc79ecd668c7437435821348a8342cba32b"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-points-deploy.log",
+      "sha256": "a900692626afa9afe6de804e15f6f7c29f5270f5c0b805b0a896cf252e67b17c"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-points-promote.log",
+      "sha256": "0010fd6de8e72c9e17ee536daa994e267db888ae6eadc1563160b4faf0456e5c"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-points-alias.log",
+      "sha256": "7aa9f6dd0f1de153225d9f247db2f5e853c150877129164d61cef56b8d670a95"
+    }
+  ]
+}
