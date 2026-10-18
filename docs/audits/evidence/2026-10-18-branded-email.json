@@ -1,0 +1,244 @@
+{
+  "sources": {
+    "customer": "2765385768def171d55e4d793c23351db81a7643",
+    "admin": "fa1876998602dc308d608c7bbc82f5065bb3a326",
+    "pos": "1f317d4ee077771784e7b5482e99e3b902dded76"
+  },
+  "backend": {
+    "pass": 175,
+    "fail": 0
+  },
+  "focused": {
+    "pass": 8,
+    "fail": 0
+  },
+  "forms": {
+    "checks": 16,
+    "failures": [],
+    "output": "C:\\Users\\Exelec\\Downloads\\pwajaydsmobilesokpos\\.codex-logs\\2026-10-18-email-auth-browser\\auth-forms"
+  },
+  "browser": {
+    "base": "https://jaydscafe.vercel.app",
+    "isolated": true,
+    "products": 55,
+    "widths": [
+      360,
+      390,
+      430,
+      768,
+      834,
+      844,
+      1024,
+      1180,
+      1280
+    ],
+    "continuousCategorySections": 7,
+    "categoryJumpAndScrollTracking": true,
+    "tabletAndLandscapeMenuAligned": true,
+    "soldOutPricesVisibleAndGrey": true,
+    "favoritesOnProductDetailsOnly": true,
+    "automaticReturnToMenuAfterAdd": true,
+    "gpsOnlyAfterTap": 1,
+    "checkoutRequests": 3,
+    "canonicalSales": 1,
+    "voucherValidations": 3,
+    "voucherAndPointsReview": true,
+    "includedWholeMilkDefault": true,
+    "paidMilkOptional": true,
+    "compactAccountQr": true,
+    "crossPageOfflineScope": "Separate real-service-worker PWA suite",
+    "homePersonalRecommendations": true,
+    "recommendationReads": 17,
+    "controlledLocalMetrics": {
+      "lcp": 420,
+      "cls": 0,
+      "interaction": 0
+    },
+    "metricScope": "Local fixture browser timings, not production measurements or field INP.",
+    "errors": []
+  },
+  "pwa": {
+    "realServiceWorker": true,
+    "publicCacheOnly": true,
+    "offlineReload": true,
+    "offlineDraftEditing": true,
+    "draftPreserved": true,
+    "reconnectionPreservesDocumentAndNotes": true,
+    "cachedResources": 141,
+    "remoteNetworkDenied": true,
+    "remoteOrigins": [
+      "https://segzigvrcgxdjskfltju.supabase.co"
+    ],
+    "remoteFrameRequests": 15,
+    "remoteWorkerRequests": 0,
+    "runtimeErrors": [],
+    "realAndroidIosNotVerified": true
+  },
+  "finance": {
+    "status": "PASS",
+    "fixtureOnly": true,
+    "setupRequiredFeedback": true,
+    "setupSuccessToast": true,
+    "invoiceFromPosCash": true,
+    "customerInvoiceView": true,
+    "expensePostingAndReversal": true,
+    "removedBenefitApiUnavailable": true,
+    "viewports": [
+      1440,
+      768,
+      390
+    ],
+    "counts": {
+      "invoices": 1,
+      "events": 1,
+      "expenses": 1,
+      "reversals": 1
+    }
+  },
+  "live": {
+    "status": "PASS",
+    "at": "2026-10-18T03:30:55.801Z",
+    "deliveryEnabled": false,
+    "providerReady": false,
+    "pending": 0,
+    "sent": 0,
+    "cronReady": true,
+    "credentialReady": true,
+    "anonymousQueueAccessDenied": true,
+    "publicWorkerAccessDenied": true,
+    "logoBytes": 11444,
+    "actualEmailsSent": 0
+  },
+  "survey": {
+    "at": "2026-10-18T02:53:21.274Z",
+    "mode": "owner-approved temporary signup without email confirmation",
+    "realEmailsSent": false,
+    "status": "PASS",
+    "immediateSignupSession": true,
+    "passwordSignin": true,
+    "temporaryAccountRemoved": true
+  },
+  "previews": {
+    "status": "PASS",
+    "checks": 14,
+    "widths": [
+      390,
+      680
+    ],
+    "emailsSent": 0,
+    "scope": "Chrome email HTML previews, not mailbox delivery or Outlook/Gmail client rendering."
+  },
+  "sendingGate": {
+    "providerConfigured": false,
+    "authTemplatesInstalled": false,
+    "invoiceDeliveryEnabled": false,
+    "actualEmailsSent": 0
+  },
+  "deployments": {
+    "customer": "dpl_7SEJ3uKYvHtoDZQbdrrU9PSkQoJr",
+    "pos": "dpl_8bb679nby25i9bcYGCfC4yrMSbej",
+    "admin": "dpl_4hVDjfg5jRFdDNxY7HQVzvEvKwR1"
+  },
+  "rollback": {
+    "tag": "pre-branded-email-2026-10-18",
+    "previousMain": "484c9075081bc0ff7ce249d39f8051729f864883"
+  },
+  "privateEvidence": [
+    {
+      "path": ".codex-logs/2026-10-18-email-backend.log",
+      "sha256": "1881db33dcd4cc74687502a12561c2f0e588ec799696d35afd62d68e1ded6c2a"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-focused-final.log",
+      "sha256": "405382a8e72adb15bb1f51cf394cb0f3a133a3b318b81d244fb644a4e6448596"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-typecheck-final.log",
+      "sha256": "2a15c23c73dcb633aa3598feeded2fc5d689cbb6fc560330327c86e641849c8c"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-lint-final.log",
+      "sha256": "b5eb0aed96897b04f31af4367a4c3faf5403cbfb78ae2d1b43facf740d4695de"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-status-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-sw-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-auth-browser.log",
+      "sha256": "76e0c170c70adbe1307b8f244f83d2a47f21ac21336bfa577168fb6cb63441c7"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-customer-browser.log",
+      "sha256": "1ad1eebd37a52e9db73ef54d4eb27a2c8b9ab85444d11868e30451559b92dc64"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-pwa-final.log",
+      "sha256": "f7cb2017280c2f3b7dfe4a5c05702dffdd30890614ed5498b632322794e1b898"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-finance-browser.log",
+      "sha256": "5168a19ab8e35f551591c68380b3d30c5452b98111c84d8bbb1da689c4292524"
+    },
+    {
+      "path": ".codex-logs/invoice-audit/browser-result.json",
+      "sha256": "77d53baf70bb60aa31dfb92dd451ccd039cd0020618e6a2ecedf8b8c71e60a46"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-live-verification.json",
+      "sha256": "7e63c4c61f240030ac9cf3b4f4500a175e973a3c7fe7c55acfa445d1e51886f9"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-survey-registration.json",
+      "sha256": "92a4f2f384d951ad215db9b84b64b0be010baaa634af7e67bcac096ddbca606e"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-live-migration.log",
+      "sha256": "be17fd45873f1ce859093bec9a66456458f3af35e8ab00be08ceab4a3f31d2e3"
+    },
+    {
+      "path": ".codex-logs/survey-auth-mode/push.log",
+      "sha256": "22b4fbf4204b7588ce6b5280f0ababc6d88ca77121eee4976d09fe8d24feae68"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-customer-final-local-build.log",
+      "sha256": "10c4f81f42b333f02df546776680ea8fe3413edea187bdbf8a0ed33941203d80"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-customer-final-deploy.log",
+      "sha256": "6b5982b9e3963ad02c0fee4f64b9f184b1e1fad596ba35435f936cc1ade07e8a"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-pos-deploy.log",
+      "sha256": "ed8647059dccdf486bc784e60748cea71d601eae8021e8abdcbe115e4dca21bb"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-admin-final-deploy.log",
+      "sha256": "fbe629b58ed43e42044454a9ef237f80ef647f34c9c2b56f5fb3b07efa387a49"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-customer-final-alias.log",
+      "sha256": "bbcb5922cc124d6c21ac7a89fc9cfe3302c2a959e54d945d2085dbd295954dbe"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-pos-alias.log",
+      "sha256": "ce462a97ba674962594e974e43112265fd3ebfd9244b8bc623cd74f7f9985824"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-email-admin-alias.log",
+      "sha256": "1cddedc2193129f821d5ef7417f984dc816fc63d78b76aec2481e4e827aeaae6"
+    },
+    {
+      "path": ".codex-logs/email-previews/confirmation-390.png",
+      "sha256": "fcbcee4aa586f909cfe0281abe311d36d9f3c9e51cb80a2498ef51badf52793e"
+    },
+    {
+      "path": ".codex-logs/email-previews/invoice-390.png",
+      "sha256": "427dc3d8766147445e9d34d6ca362e10e595ee80240c5381d30a4b82edccaa43"
+    }
+  ]
+}
