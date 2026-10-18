@@ -25,6 +25,18 @@ export async function financeJourneys({
     .png()
     .toBuffer();
   const privatePhotos = new Map<string, Buffer>();
+  let failEmailStatus = true;
+  await page
+    .context()
+    .route("**/rest/v1/rpc/invoice_email_status", async (route) => {
+      if (failEmailStatus) {
+        failEmailStatus = false;
+        await route.fulfill({
+          status: 503,
+          json: { message: "Fixture status unavailable" },
+        });
+      } else await route.fallback();
+    });
   let failUpload = true;
   await page
     .context()
@@ -164,6 +176,11 @@ export async function financeJourneys({
   const emailStatus = page.getByRole("complementary", {
     name: "Invoice email delivery",
   });
+  await expect(emailStatus).toContainText(
+    "Email delivery status is unavailable",
+  );
+  await expect(emailStatus).not.toContainText("Checking email delivery");
+  await emailStatus.getByRole("button", { name: "Retry", exact: true }).click();
   await expect(emailStatus).toContainText("Sender not connected");
   await expect(
     emailStatus.getByRole("button", { name: "Email new invoices" }),

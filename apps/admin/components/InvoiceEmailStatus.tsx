@@ -12,6 +12,7 @@ interface MailStatus {
 export function InvoiceEmailStatus() {
   const [status, setStatus] = useState<MailStatus | null>(null),
     [busy, setBusy] = useState(false),
+    [loadVersion, setLoadVersion] = useState(0),
     [error, setError] = useState("");
   useEffect(() => {
     let active = true;
@@ -29,7 +30,7 @@ export function InvoiceEmailStatus() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [loadVersion]);
   async function toggle() {
     if (busy || !status?.provider_ready) return;
     setBusy(true);
@@ -72,7 +73,9 @@ export function InvoiceEmailStatus() {
           <h3 style={{ margin: 0 }}>Email invoices</h3>
           <p style={{ margin: "6px 0 0" }}>
             {!status
-              ? "Checking email delivery…"
+              ? error
+                ? "Email delivery status is unavailable."
+                : "Checking email delivery…"
               : !status.provider_ready
                 ? "Sender not connected. Invoices are available in the app."
                 : status.enabled
@@ -105,6 +108,18 @@ export function InvoiceEmailStatus() {
       {error && (
         <p role="status" style={{ margin: "12px 0 0" }}>
           {error}
+          {!status && (
+            <button
+              className="ops-button"
+              type="button"
+              onClick={() => {
+                setError("");
+                setLoadVersion((value) => value + 1);
+              }}
+            >
+              Retry
+            </button>
+          )}
         </p>
       )}
     </aside>
