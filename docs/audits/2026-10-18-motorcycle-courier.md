@@ -15,9 +15,13 @@ Provider responses are mapped to safe, useful messages. Insufficient sandbox tes
 | Provider Motorcycle quote, simulated booking, immediate cancellation | PASS |
 | Ten focused regression checks: vehicle enforcement, credit errors, privacy, permissions, duplicate prevention, changed fees, uncertain responses | PASS |
 | Workspace type checks | PASS |
-| Full backend suite, lint and hosted release verification | Recorded in release evidence |
+| Full backend suite: 183 passed plus 2 export cases passed on isolated retry after a startup memory crash | PASS |
+| Lint and both Vercel production builds | PASS |
+| Hosted signed PHP quote retrieved with the supplied sandbox pair and verified as Motorcycle | PASS |
 | Physical rider dispatch, delivery completion and production wallet charging | NOT TESTED |
 
 Private diagnostic files are kept under ignored `.codex-logs/`. The first parallel backend/lint run exhausted the local process memory limit; the full suite was rerun sequentially. The rollback tag and final implementation/deployment identifiers are recorded in the release evidence. Reverting application code does not restore prior provider credentials; their private backup is separate.
 
 Provider contract: [Lalamove API reference](https://developers.lalamove.com/#place-order), including insufficient-credit responses and vehicle inheritance from quotations.
+
+Implementation: `eb032249436e5f088597ccfab65cf7b47bf17cee`. Rollback: `pre-motorcycle-courier-2026-10-18` (`6201757c8fd431dedf473a5409f577733fc0f574`). See [sanitized release evidence](evidence/2026-10-18-motorcycle-courier.json) for deployments and private log hashes. The full browser and PWA suites were not rerun for this server validation and POS wording update.

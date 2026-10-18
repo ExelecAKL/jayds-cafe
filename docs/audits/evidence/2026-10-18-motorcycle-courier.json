@@ -1,0 +1,131 @@
+{
+  "checkedAt": "2026-10-18T09:11:33.346Z",
+  "implementationCommit": "eb032249436e5f088597ccfab65cf7b47bf17cee",
+  "rollbackTag": "pre-motorcycle-courier-2026-10-18",
+  "rollbackCommit": "6201757c8fd431dedf473a5409f577733fc0f574",
+  "checks": {
+    "backend": {
+      "status": "PASS",
+      "distinctTestsPassed": 185,
+      "failuresRemaining": 0,
+      "initialParallelRun": "Process memory exhaustion",
+      "sequentialRun": {
+        "passed": 183,
+        "failedFile": "admin-exports.test.ts",
+        "cause": "Startup out of memory while the previous run was still finishing"
+      },
+      "isolatedExportRetry": {
+        "passed": 2,
+        "failed": 0
+      }
+    },
+    "focused": {
+      "status": "PASS",
+      "passed": 10,
+      "failed": 0
+    },
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "provider": {
+      "status": "PASS",
+      "environment": "sandbox",
+      "motorcycleSupported": true,
+      "quoteStatus": 201,
+      "quotedVehicle": "MOTORCYCLE",
+      "bookingStatus": 201,
+      "cancellationStatus": 204,
+      "realBookingCreated": false
+    },
+    "credentials": {
+      "status": "PASS",
+      "serverOnly": true,
+      "source": "Owner supplied sandbox pair",
+      "mayaEnvironment": "sandbox",
+      "localMatchesRemote": true
+    },
+    "hosted": {
+      "checkedAt": "2026-10-18T09:11:12.287Z",
+      "status": "PASS",
+      "sandboxOnly": true,
+      "hostedQuoteStatus": 200,
+      "quotedVehicle": "MOTORCYCLE",
+      "currency": "PHP",
+      "signedQuote": true,
+      "quotationRetrievedWithSuppliedPair": true,
+      "bookingCreated": false,
+      "deployments": [
+        {
+          "project": "jaydscafe",
+          "id": "dpl_kUssrzj7BMxzKZ8mytUsKViK7JNo",
+          "url": "jaydscafe-5u9mv18ru-aaron-martinezs-projects-ea1c41f7.vercel.app",
+          "readyState": "READY"
+        },
+        {
+          "project": "jaydscafe-pos",
+          "id": "dpl_Dgw9y3Mjhw1Uz7EisCkwQqTPb72R",
+          "url": "jaydscafe-fnav9rjqp-aaron-martinezs-projects-ea1c41f7.vercel.app",
+          "readyState": "READY"
+        }
+      ]
+    }
+  },
+  "notTested": [
+    "Physical rider dispatch and completed delivery",
+    "Production wallet charging",
+    "Full browser and PWA suites were not rerun for this server validation and POS wording update"
+  ],
+  "evidenceHashes": [
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-backend.log",
+      "sha256": "5eb943562f31ac9334d8870789e658c095e835230c5f2b19da32e5722eab127a"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-backend-final.log",
+      "sha256": "5aa30e7ccd5c3d24fc7d11d33f2ca8a880526d3d0def3f1c284c19415322c065"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-exports-retry.log",
+      "sha256": "e02ae1e0fb76a92caa699f0dcafa908c37eb40cb46c28f93b7777d6715214b59"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-focused.log",
+      "sha256": "04c5a3f9e06b9513f64a27383a99a97cb9c318a944c185650fa67c28329a524c"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-typecheck.log",
+      "sha256": "2a15c23c73dcb633aa3598feeded2fc5d689cbb6fc560330327c86e641849c8c"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-diagnostic.json",
+      "sha256": "c97d1ba69f9dad1fe13d784caace14f408ced1af54766c4f9e88409e77f39b64"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-hosted.json",
+      "sha256": "8d3e54e30acbd5108f3ff3336779d2b355034cbde77fedea1352f4f3a85b9e09"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-requested-lalamove-applied.json",
+      "sha256": "b7b8cb8f36a6769b68e56c519917b9a269cd44ca4f053d5508fb2187b7e72206"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-customer-deploy.log",
+      "sha256": "af3f8cb9d8c633564faff5e2287f49859b54ac42798a0e2ec91873c0e7a5f3ac"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-pos-deploy.log",
+      "sha256": "a615997cf85135b191fe9ddfe1c8d3cc154d6da771ba3f5f535038277b61540a"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-customer-alias.log",
+      "sha256": "029aa149956d1518031a48bdc1f59fd18ec5ebbde8a70c6b2d3f959346a91711"
+    },
+    {
+      "path": ".codex-logs/2026-10-18-motorcycle-pos-alias.log",
+      "sha256": "0f0da7e49c69c69c31462f143bd5a733f6eece2af2489cff8d9da9a35c27beb3"
+    }
+  ]
+}
