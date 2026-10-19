@@ -1,0 +1,898 @@
+/* Shared components across every back-office workspace. */
+.admin-shell .ops-sidebar {
+  transition: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-sidebar-border) transparent;
+}
+.admin-shell .ops-brand {
+  color: var(--ui-feature-text);
+}
+.admin-shell .ops-sidebar nav {
+  flex: none;
+  overflow: visible;
+}
+.admin-shell .ops-sidebar-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+.admin-shell .ops-topbar {
+  padding-inline: var(--ui-space-3);
+}
+.admin-shell .ops-help-button {
+  padding-inline: var(--ui-space-2);
+}
+.ops-help-button > span {
+  display: none;
+}
+.admin-shell .ops-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ui-space-5);
+  margin-bottom: var(--ui-space-8);
+}
+.admin-shell .ops-page-header h1,
+.admin-shell main > div > h1 {
+  color: var(--ui-text-primary);
+  font-size: var(--ui-text-display);
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  font-weight: 500;
+}
+.admin-shell .ops-eyebrow {
+  color: var(--ui-text-link);
+  font-size: var(--ui-text-micro);
+  letter-spacing: 0.12em;
+  font-weight: 500;
+}
+.admin-shell .ops-description {
+  font-size: var(--ui-text-body);
+  line-height: 1.55;
+  color: var(--ui-text-secondary);
+  max-width: 65ch;
+}
+.admin-shell .ops-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+  max-width: 100%;
+}
+.admin-shell .ops-panel {
+  background: var(--ui-surface-card);
+  border: var(--ui-size-rule) solid var(--ui-border-default);
+  border-radius: var(--ui-radius-card);
+  box-shadow: none;
+}
+.admin-shell .ops-panel-header {
+  padding: var(--ui-space-5);
+  gap: var(--ui-space-3);
+  flex-wrap: wrap;
+  border-color: var(--ui-border-default);
+}
+.admin-shell .ops-panel-header h2,
+.admin-shell main h2 {
+  font-size: var(--ui-text-section);
+  font-weight: 500;
+  color: var(--ui-text-primary);
+}
+.admin-shell .ops-panel-header p {
+  font-size: var(--ui-text-small);
+  color: var(--ui-text-secondary);
+  line-height: 1.5;
+}
+.admin-shell .ops-panel-header a {
+  min-height: var(--ui-size-target);
+  font-size: var(--ui-text-small);
+  color: var(--ui-text-link);
+}
+.admin-shell :is(.ops-toolbar, .ops-header-actions) {
+  min-width: 0;
+}
+.admin-shell .ops-toolbar {
+  padding: var(--ui-space-4);
+  gap: var(--ui-space-3);
+  margin: 0;
+  background: var(--ui-surface-card);
+}
+.admin-shell .ops-toolbar > *,
+.admin-shell .ops-search {
+  min-width: 0;
+  max-width: 100%;
+}
+.admin-shell .ops-search {
+  flex: 1 1 100%;
+  width: 100%;
+  border-color: var(--ui-border-strong);
+  color: var(--ui-text-secondary);
+  background: var(--ui-surface-card);
+  border-radius: var(--ui-radius-control);
+}
+.admin-shell .ops-search input {
+  min-height: var(--ui-size-target);
+  font-size: var(--ui-text-small);
+  color: var(--ui-text-primary);
+}
+.admin-shell :is(input, textarea)::placeholder {
+  color: var(--ui-text-secondary);
+  opacity: 1;
+}
+.admin-shell
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(
+        [type="range"]
+      ),
+    textarea
+  ) {
+  color: var(--ui-text-primary);
+  background-color: var(--ui-surface-card);
+  border-color: var(--ui-border-strong);
+  font-size: var(--ui-text-body);
+  border-radius: var(--ui-radius-control);
+  min-width: 0;
+  max-width: 100%;
+}
+.admin-shell
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(
+    [type="range"]
+  ) {
+  min-height: var(--ui-size-target);
+}
+.admin-shell :is(input, textarea):focus-visible {
+  outline: var(--ui-size-ring) solid var(--ui-text-link);
+  outline-offset: var(--ui-size-ring-offset);
+  box-shadow: none;
+}
+.admin-shell :is(input, textarea)[aria-invalid="true"] {
+  border-color: var(--ui-status-danger);
+}
+.admin-shell :is(input, textarea):disabled {
+  opacity: var(--ui-opacity-disabled);
+  cursor: not-allowed;
+}
+.admin-shell input:is([type="checkbox"], [type="radio"]) {
+  accent-color: var(--ui-action-primary);
+  min-width: var(--ui-space-4);
+  min-height: var(--ui-space-4);
+}
+.admin-shell label {
+  color: var(--ui-text-primary);
+}
+.admin-shell :is(.ops-form, .ops-form label) {
+  gap: var(--ui-space-3);
+}
+.admin-shell .ops-form label {
+  font-size: var(--ui-text-small);
+}
+.admin-shell .ops-form label small {
+  font-size: var(--ui-text-micro);
+  color: var(--ui-text-secondary);
+  line-height: 1.5;
+}
+.admin-shell .ops-form :is(input, textarea) {
+  padding: var(--ui-space-3);
+}
+.admin-shell .ops-form-grid,
+.admin-shell .ops-detail-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-4);
+}
+.admin-shell .ops-detail-grid > div {
+  background: var(--ui-surface-raised);
+  padding: var(--ui-space-4);
+  border-radius: var(--ui-radius-control);
+}
+.admin-shell .ops-detail-grid small {
+  font-size: var(--ui-text-micro);
+}
+.admin-shell .ops-detail-grid strong {
+  font-size: var(--ui-text-stat);
+  color: var(--ui-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.admin-shell .ops-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
+  border-color: var(--ui-border-default);
+  padding-top: var(--ui-space-5);
+}
+.admin-shell .ops-form-summary {
+  background: var(--ui-status-info-surface);
+  color: var(--ui-status-info);
+  border: var(--ui-size-rule) solid var(--ui-status-info-border);
+  border-radius: var(--ui-radius-control);
+  font-size: var(--ui-text-small);
+  padding: var(--ui-space-4);
+}
+.admin-shell .ops-tabs {
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-1);
+  background: var(--ui-surface-raised);
+  border-radius: var(--ui-radius-control);
+  border: none;
+  margin-block: var(--ui-space-5);
+}
+.admin-shell .ops-tabs button {
+  min-height: var(--ui-size-target);
+  border: var(--ui-size-rule) solid transparent;
+  border-radius: var(--ui-radius-small);
+  color: var(--ui-text-secondary);
+  font-size: var(--ui-text-small);
+  padding: var(--ui-space-2) var(--ui-space-3);
+}
+.admin-shell .ops-tabs button:hover {
+  color: var(--ui-text-primary);
+  background: var(--ui-surface-card);
+}
+.admin-shell .ops-tabs button.active {
+  color: var(--ui-text-link);
+  background: var(--ui-surface-card);
+  border-color: var(--ui-border-default);
+  font-weight: 500;
+}
+.admin-shell .ops-tabs small {
+  font-size: var(--ui-text-micro);
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-primary);
+  border-radius: var(--ui-radius-small);
+}
+.admin-shell .ops-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-1);
+  background: var(--ui-surface-raised);
+  border-radius: var(--ui-radius-control);
+  border-color: var(--ui-border-default);
+}
+.admin-shell .ops-segmented button {
+  min-height: var(--ui-size-target);
+  padding: var(--ui-space-2) var(--ui-space-3);
+  color: var(--ui-text-secondary);
+  font-size: var(--ui-text-small);
+  border-radius: var(--ui-radius-small);
+  background: transparent;
+}
+.admin-shell .ops-segmented button[aria-pressed="true"] {
+  background: var(--ui-surface-card);
+  color: var(--ui-text-primary);
+}
+.admin-shell main table {
+  color: var(--ui-text-primary);
+}
+.admin-shell main table:is(.ops-table, .dashboard-table),
+.admin-shell main table:not(.ops-table) {
+  border-collapse: collapse;
+}
+.admin-shell main table:is(.ops-table, .dashboard-table) th,
+.admin-shell main table:not(.ops-table) th {
+  color: var(--ui-text-secondary);
+  background: var(--ui-surface-page);
+  font-size: var(--ui-text-micro);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: var(--ui-space-3) var(--ui-space-5);
+  border-color: var(--ui-border-default);
+  text-transform: none;
+  white-space: nowrap;
+}
+.admin-shell main table:is(.ops-table, .dashboard-table) td,
+.admin-shell main table:not(.ops-table) td {
+  font-size: var(--ui-text-small);
+  border-color: var(--ui-border-default);
+  padding: var(--ui-space-4) var(--ui-space-5);
+}
+.admin-shell main table tbody tr:hover {
+  background: var(--ui-surface-raised);
+}
+.admin-shell main table .item-name {
+  color: var(--ui-text-primary);
+  font-weight: 500;
+}
+.admin-shell main table small {
+  color: var(--ui-text-secondary);
+  font-size: var(--ui-text-micro);
+}
+.admin-shell main table button {
+  min-height: var(--ui-size-target);
+}
+.admin-shell .admin-table-scroll {
+  max-width: 100%;
+}
+.admin-shell .admin-pagination {
+  padding: var(--ui-space-4);
+  font-size: var(--ui-text-small);
+  gap: var(--ui-space-3);
+  border-color: var(--ui-border-default);
+  background: var(--ui-surface-card);
+}
+.admin-shell .admin-pagination-controls {
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+.admin-shell .admin-pagination-controls button,
+.admin-shell .admin-page-number {
+  min-height: var(--ui-size-target);
+  min-width: var(--ui-size-target);
+  padding: var(--ui-space-2) var(--ui-space-3);
+  color: var(--ui-text-primary);
+  background: var(--ui-surface-card);
+  border-color: var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+  font-size: var(--ui-text-small);
+  font-weight: 500;
+}
+.admin-shell .admin-page-number {
+  background: var(--ui-surface-raised);
+  border-color: var(--ui-border-default);
+}
+.admin-shell .admin-pagination-controls button:hover:not(:disabled) {
+  background: var(--ui-surface-raised);
+}
+.admin-shell .ops-badge {
+  font-size: var(--ui-text-micro);
+  border-radius: var(--ui-radius-pill);
+  padding: var(--ui-space-1) var(--ui-space-2);
+  color: var(--ui-text-secondary);
+  background: var(--ui-surface-raised);
+  font-weight: 500;
+}
+.admin-shell .ops-badge.success {
+  color: var(--ui-status-success);
+  background: var(--ui-status-success-surface);
+}
+.admin-shell .ops-badge.warning,
+.admin-shell .ops-badge.brand {
+  color: var(--ui-status-warning);
+  background: var(--ui-status-warning-surface);
+}
+.admin-shell .ops-badge.danger {
+  color: var(--ui-status-danger);
+  background: var(--ui-status-danger-surface);
+}
+.admin-shell .ops-badge.info {
+  color: var(--ui-status-info);
+  background: var(--ui-status-info-surface);
+}
+.admin-shell .ops-empty {
+  padding: var(--ui-space-10) var(--ui-space-5);
+  min-height: calc(var(--ui-size-chart) + var(--ui-space-8));
+  color: var(--ui-text-secondary);
+  gap: var(--ui-space-3);
+}
+.admin-shell .ops-empty h3 {
+  color: var(--ui-text-primary);
+  font-size: var(--ui-text-section);
+}
+.admin-shell .ops-empty p {
+  font-size: var(--ui-text-body);
+  line-height: 1.6;
+  max-width: 48ch;
+}
+.admin-shell .ops-notice {
+  background: var(--ui-status-info-surface);
+  color: var(--ui-status-info);
+  border: var(--ui-size-rule) solid var(--ui-status-info-border);
+  padding: var(--ui-space-4);
+  border-radius: var(--ui-radius-control);
+  font-size: var(--ui-text-small);
+}
+.admin-shell .ops-feedback {
+  display: flex;
+  gap: var(--ui-space-3);
+  align-items: flex-start;
+  padding: var(--ui-space-4);
+  border: var(--ui-size-rule) solid var(--ui-status-info-border);
+  border-radius: var(--ui-radius-control);
+  background: var(--ui-status-info-surface);
+  color: var(--ui-status-info);
+  font-size: var(--ui-text-small);
+  margin-bottom: var(--ui-space-4);
+}
+.admin-shell .ops-feedback > svg {
+  flex-shrink: 0;
+}
+.admin-shell .ops-feedback.error {
+  background: var(--ui-status-danger-surface);
+  color: var(--ui-status-danger);
+  border-color: var(--ui-status-danger-border);
+}
+.admin-shell .ops-feedback.success {
+  background: var(--ui-status-success-surface);
+  color: var(--ui-status-success);
+  border-color: var(--ui-status-success-border);
+}
+.admin-shell .ops-feedback.warning {
+  background: var(--ui-status-warning-surface);
+  color: var(--ui-status-warning);
+  border-color: var(--ui-status-warning-border);
+}
+.admin-shell
+  :is(
+    .ops-form-section,
+    .ops-stock-chart,
+    .ops-record-card,
+    .ops-stock-table,
+    .ops-disclosure,
+    .ops-stock-metrics,
+    .ops-source-card,
+    .ops-photo-field,
+    .ops-sticky-actions
+  ) {
+  background: var(--ui-surface-card);
+  color: var(--ui-text-primary);
+  border-color: var(--ui-border-default);
+}
+.admin-shell .ops-photo-preview {
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-secondary);
+}
+.admin-shell input::file-selector-button {
+  min-height: var(--ui-size-target);
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-primary);
+  border: var(--ui-size-rule) solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-small);
+  padding: var(--ui-space-2) var(--ui-space-3);
+}
+.admin-shell .ops-export-layout {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-5);
+}
+.admin-shell .ops-export-download {
+  position: static;
+}
+.admin-shell .ops-export-tables {
+  grid-template-columns: minmax(0, 1fr);
+}
+.admin-shell .ops-export-group summary {
+  min-height: var(--ui-size-target);
+  padding-block: var(--ui-space-3);
+  color: var(--ui-text-link);
+  font-size: var(--ui-text-small);
+}
+.admin-shell .ops-export-group {
+  padding: var(--ui-space-5);
+}
+.admin-shell .ops-export-group > div {
+  flex-wrap: wrap;
+}
+.admin-shell .ops-export-tables label {
+  min-height: var(--ui-size-target);
+}
+.admin-shell .ops-day-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--ui-space-3);
+  border-color: var(--ui-border-default);
+}
+.admin-shell .ops-day-toggle {
+  grid-column: 1 / -1;
+  min-height: var(--ui-size-target);
+}
+.admin-shell .ops-day-closed {
+  color: var(--ui-text-secondary);
+}
+.admin-shell .ops-recipe-line {
+  grid-template-columns: minmax(0, 1fr);
+}
+.admin-shell .ops-option-row {
+  flex-wrap: wrap;
+  border-color: var(--ui-border-default);
+}
+.admin-shell .ops-detail-grid strong {
+  overflow-wrap: anywhere;
+}
+.admin-shell .ops-overlay,
+.admin-dialog-backdrop,
+.ops-palette-overlay,
+.jayds-confirm-overlay {
+  background: var(--ui-surface-overlay);
+}
+.admin-shell .ops-drawer,
+.admin-shell .admin-dialog-panel,
+.ops-palette,
+.jayds-confirm {
+  color: var(--ui-text-primary);
+  background: var(--ui-surface-card);
+  border: var(--ui-size-rule) solid var(--ui-border-default);
+  border-radius: var(--ui-radius-card);
+}
+.admin-shell .ops-drawer {
+  border-radius: var(--ui-radius-card) 0 0 var(--ui-radius-card);
+  width: min(100%, 44rem);
+}
+.admin-shell .ops-drawer > header {
+  padding: var(--ui-space-5);
+  background: var(--ui-surface-card);
+  border-color: var(--ui-border-default);
+  gap: var(--ui-space-3);
+}
+.admin-shell .ops-drawer > header h2 {
+  font-size: var(--ui-text-section);
+  color: var(--ui-text-primary);
+}
+.admin-shell .ops-drawer > header p {
+  font-size: var(--ui-text-small);
+  color: var(--ui-text-secondary);
+}
+.admin-shell .ops-drawer-body {
+  padding: var(--ui-space-5);
+}
+.admin-shell .admin-dialog-panel {
+  max-width: min(100%, 48rem);
+}
+.admin-shell .admin-dialog-panel button {
+  min-height: var(--ui-size-target);
+}
+.jayds-confirm {
+  font-family: var(--ui-font-family);
+  padding: var(--ui-space-6);
+}
+.jayds-confirm-eyebrow {
+  color: var(--ui-text-secondary);
+  font-size: var(--ui-text-micro);
+}
+.jayds-confirm ul {
+  background: var(--ui-surface-raised);
+}
+.jayds-confirm button {
+  min-height: var(--ui-size-target);
+  color: var(--ui-text-primary);
+  background: var(--ui-surface-card);
+  border-color: var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+}
+.jayds-confirm button.is-primary {
+  color: var(--ui-text-on-action);
+  background: var(--ui-action-primary);
+  border-color: var(--ui-action-primary);
+}
+.jayds-confirm button.is-danger {
+  color: var(--ui-text-on-action);
+  background: var(--ui-action-destructive);
+  border-color: var(--ui-action-destructive);
+}
+.jayds-confirm button:focus-visible {
+  outline-color: var(--ui-text-link);
+}
+.ops-palette-search,
+.ops-palette-footer {
+  background: var(--ui-surface-card);
+  border-color: var(--ui-border-default);
+  color: var(--ui-text-secondary);
+}
+.ops-palette-search input {
+  background: transparent;
+  color: var(--ui-text-primary);
+}
+.ops-palette-results li {
+  color: var(--ui-text-primary);
+}
+.ops-palette-results li.active {
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-link);
+}
+.ops-palette-results small,
+.ops-palette-empty {
+  color: var(--ui-text-secondary);
+}
+.ops-palette-icon {
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-link);
+}
+.ops-palette kbd {
+  color: var(--ui-text-secondary);
+  background: var(--ui-surface-raised);
+  border-color: var(--ui-border-default);
+}
+.admin-toast {
+  background: var(--ui-surface-card);
+  color: var(--ui-text-primary);
+  border: var(--ui-size-rule) solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+}
+.admin-toast.error {
+  border-color: var(--ui-status-danger-border);
+}
+.admin-toast.success {
+  border-color: var(--ui-status-success-border);
+}
+.admin-toast.error .admin-toast-mark {
+  color: var(--ui-status-danger);
+}
+.admin-toast.success .admin-toast-mark {
+  color: var(--ui-status-success);
+}
+.admin-toast.info .admin-toast-mark {
+  color: var(--ui-status-info);
+}
+.admin-toast-mark svg {
+  width: var(--ui-space-5);
+  height: var(--ui-space-5);
+}
+.admin-select {
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  vertical-align: middle;
+}
+.admin-shell .ops-form .admin-select {
+  width: 100%;
+}
+.admin-select-trigger,
+.admin-shell .admin-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+  min-height: var(--ui-size-target);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border: var(--ui-size-rule) solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+  background: var(--ui-surface-card);
+  color: var(--ui-text-primary);
+  font-size: var(--ui-text-small);
+  text-align: left;
+  cursor: pointer;
+}
+.admin-select-trigger > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-select-trigger > svg {
+  width: var(--ui-space-4);
+  height: var(--ui-space-4);
+  flex-shrink: 0;
+}
+.admin-select-trigger:hover:not(:disabled) {
+  border-color: var(--ui-text-link);
+  background: var(--ui-surface-raised);
+}
+.admin-select-trigger[aria-expanded="true"] {
+  border-color: var(--ui-text-link);
+}
+.admin-select-trigger[aria-invalid="true"] {
+  border-color: var(--ui-status-danger);
+}
+.admin-select-trigger:disabled {
+  opacity: var(--ui-opacity-disabled);
+  cursor: not-allowed;
+}
+.admin-select-popup {
+  position: fixed;
+  z-index: 1200;
+  padding: var(--ui-space-2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ui-surface-card);
+  color: var(--ui-text-primary);
+  border: var(--ui-size-rule) solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+  font-family: var(--ui-font-family);
+  font-size: var(--ui-text-small);
+}
+.admin-select-option {
+  min-height: var(--ui-size-target);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border-radius: var(--ui-radius-small);
+  cursor: pointer;
+}
+.admin-select-option.is-active {
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-link);
+  outline: var(--ui-size-rule) solid var(--ui-border-default);
+}
+.admin-select-option[aria-disabled="true"] {
+  opacity: var(--ui-opacity-disabled);
+  cursor: not-allowed;
+}
+.admin-select-option > span {
+  overflow-wrap: anywhere;
+}
+.admin-select-option small {
+  display: block;
+  font-size: var(--ui-text-micro);
+  color: var(--ui-text-secondary);
+}
+.admin-select-validation {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.admin-select-error {
+  font-size: var(--ui-text-micro);
+  color: var(--ui-status-danger);
+  margin-top: var(--ui-space-1);
+}
+.admin-shell .ops-loading-row {
+  border-color: var(--ui-border-default);
+}
+.admin-shell .ops-loading-row span,
+.admin-shell .ops-detail-skeleton i {
+  background: var(--ui-surface-raised);
+}
+.admin-shell .ops-metric {
+  background: var(--ui-surface-card);
+  border-color: var(--ui-border-default);
+  box-shadow: none;
+}
+.admin-shell .ops-metric-value {
+  color: var(--ui-text-primary);
+  font-size: var(--ui-text-stat);
+}
+.admin-shell .ops-metric small,
+.admin-shell .ops-metric-label {
+  color: var(--ui-text-secondary);
+  font-size: var(--ui-text-small);
+}
+.admin-shell .ops-metrics {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-4);
+}
+.admin-shell .ops-everyday-links a,
+.admin-shell .ops-quick-actions a {
+  color: var(--ui-text-primary);
+  background: var(--ui-surface-card);
+  border-color: var(--ui-border-default);
+  min-height: var(--ui-size-target);
+  font-size: var(--ui-text-small);
+}
+.admin-shell .ops-action-row {
+  border-color: var(--ui-border-default);
+}
+.admin-shell .ops-action-icon {
+  color: var(--ui-text-link);
+  background: var(--ui-surface-raised);
+}
+.admin-shell .ops-action-row strong {
+  font-size: var(--ui-text-body);
+}
+.admin-shell .ops-action-row p {
+  font-size: var(--ui-text-small);
+}
+.admin-shell .ops-purchase-stages {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.admin-shell .ops-purchase-stages button {
+  background: var(--ui-surface-card);
+  color: var(--ui-text-primary);
+  border-color: var(--ui-border-default);
+}
+.admin-shell .ops-purchase-stages button[aria-pressed="true"] {
+  background: var(--ui-surface-raised);
+  border-color: var(--ui-text-link);
+}
+.admin-shell .ops-purchase-stages button span {
+  color: var(--ui-text-secondary);
+}
+.admin-shell .ops-purchase-stages strong {
+  color: var(--ui-text-primary);
+}
+.admin-shell .recharts-cartesian-grid line {
+  stroke: var(--ui-border-default);
+}
+.admin-shell .recharts-cartesian-axis-tick text,
+.admin-shell .recharts-legend-item-text {
+  fill: var(--ui-text-secondary);
+  color: var(--ui-text-secondary) !important;
+}
+.admin-shell .recharts-default-tooltip {
+  background: var(--ui-surface-card) !important;
+  color: var(--ui-text-primary) !important;
+  border-color: var(--ui-border-default) !important;
+  border-radius: var(--ui-radius-control);
+}
+.admin-shell .recharts-tooltip-label {
+  color: var(--ui-text-primary);
+}
+.admin-shell .recharts-tooltip-cursor {
+  fill: var(--ui-surface-raised);
+}
+.admin-shell .tier-overview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-4);
+}
+.admin-shell .tier-overview > div {
+  flex: 1 1 12rem;
+  background: var(--ui-surface-card);
+  border: var(--ui-size-rule) solid var(--ui-border-default);
+  border-radius: var(--ui-radius-card);
+}
+.admin-login {
+  min-height: 100dvh;
+  background: var(--ui-sidebar-surface);
+  display: grid;
+  place-items: center;
+  padding: var(--ui-space-6);
+}
+.admin-login .login-subtitle {
+  color: var(--ui-sidebar-text);
+}
+.admin-login form {
+  border: var(--ui-size-rule) solid var(--ui-border-default);
+  background: var(--ui-surface-card);
+  border-radius: var(--ui-radius-card);
+  box-shadow: none;
+}
+.admin-login form button[type="submit"] {
+  background: var(--ui-action-primary);
+  color: var(--ui-text-on-action);
+  min-height: var(--ui-size-target);
+}
+.admin-login input {
+  min-height: var(--ui-size-target);
+  border-color: var(--ui-border-strong);
+}
+@media (min-width: 36rem) {
+  .admin-shell .ops-topbar {
+    padding-inline: var(--ui-space-6);
+  }
+  .ops-help-button > span {
+    display: inline;
+  }
+  .admin-shell .ops-help-button {
+    padding-inline: var(--ui-space-3);
+  }
+  .admin-shell .ops-form-grid,
+  .admin-shell .ops-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-shell .ops-search {
+    flex-basis: 18rem;
+  }
+  .admin-shell .ops-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-shell .ops-purchase-stages {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .admin-shell .ops-day-row {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .admin-shell .ops-day-toggle {
+    grid-column: auto;
+  }
+  .admin-shell .ops-export-tables {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 64rem) {
+  .admin-shell .ops-page-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .admin-shell .ops-header-actions {
+    justify-content: flex-end;
+  }
+  .admin-shell .ops-metrics {
+    grid-template-columns: 1.35fr repeat(3, minmax(0, 1fr));
+  }
+  .admin-shell .ops-export-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+  }
+  .admin-shell .ops-export-download {
+    position: sticky;
+    top: calc(var(--ui-size-topbar) + var(--ui-space-5));
+  }
+}
+@media (min-width: 80rem) {
+  .admin-shell .ops-topbar {
+    padding-inline: var(--ui-space-10);
+  }
+}

@@ -19,6 +19,10 @@ import type { PaymentQuote } from "@cafeos/shared/finance/quote";
 import TicketItemImage from "../../../../components/TicketItemImage";
 import OrderCountdown from "../../../../components/OrderCountdown";
 import OrderPoints from "../../../../components/OrderPoints";
+import DeliveryMapPreview from "../../../../components/DeliveryMapPreview";
+import MayaMark from "../../../../components/MayaMark";
+import Icon from "../../../../components/Icon";
+import { coordinates } from "../../../../lib/location";
 interface Review {
   owner: string;
   paymentMethod: string;
@@ -52,6 +56,26 @@ export default function ConfirmOrderPage() {
     [error, setError] = useState(""),
     [conflict, setConflict] = useState(false);
   const [countdown, setCountdown] = useState(false);
+  const [branch, setBranch] = useState({
+    name: "Jayds Café",
+    latitude: 14.346621,
+    longitude: 120.981057,
+  });
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch("/api/branch", { signal: controller.signal })
+      .then((r) => r.json())
+      .then((b) => {
+        if (
+          !controller.signal.aborted &&
+          b?.name &&
+          coordinates(b.latitude, b.longitude)
+        )
+          setBranch(b);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
   const owner = user?.id ?? "guest";
   useEffect(() => {
     if (!initialized) return;
@@ -87,6 +111,25 @@ export default function ConfirmOrderPage() {
     review?.financialQuote?.total === Math.round(total * 100)
       ? review.financialQuote.breakdown
       : null;
+  // A recovered attempt carries its own payload; a fresh review uses the form.
+  const payload = attempt?.payload ?? {};
+  const isDelivery =
+    String(payload.order_type ?? cart.orderType) === "delivery";
+  const paymentMethod = String(
+    payload.payment_method ?? review?.paymentMethod ?? "",
+  );
+  const numeric = (value: unknown) =>
+    typeof value === "number" ? value : Number.NaN;
+  const pinned = coordinates(
+    numeric(review?.deliveryLat ?? payload.delivery_lat),
+    numeric(review?.deliveryLng ?? payload.delivery_lng),
+  );
+  const deliveryAddress =
+    review?.deliveryAddress || String(payload.delivery_address ?? "");
+  const recipientName =
+    review?.recipientName || String(payload.delivery_name ?? "");
+  const recipientPhone =
+    review?.recipientPhone || String(payload.delivery_phone ?? "");
   async function place() {
     if (lock.current || !initialized || (!review && !attempt)) return;
     if (!navigator.onLine) {
@@ -299,26 +342,92 @@ export default function ConfirmOrderPage() {
               <span>{String(attempt?.payload.notes ?? cart.orderNote)}</span>
             </p>
           )}
-          <p className="text-sm">
-            {String(
-              attempt?.payload.order_type ?? cart.orderType,
-            ).toUpperCase()}{" "}
-            ·{" "}
-            {String(
-              attempt?.payload.payment_method ?? review?.paymentMethod ?? "",
-            ).toUpperCase()}
-          </p>
-          {review?.pickupSlotStart && (
-            <p>
-              Pickup{" "}
-              {new Date(review.pickupSlotStart).toLocaleString("en-PH", {
-                timeZone: "Asia/Manila",
-              })}
-            </p>
-          )}
-          {review?.deliveryAddress && (
-            <p className="text-sm">{review.deliveryAddress}</p>
-          )}
+          <div className="review-fulfillment">
+            <div className="review-fulfillment-heading">
+              <span className="review-fulfillment-icon" aria-hidden="true">
+                <Icon name={isDelivery ? "truck" : "bag"} size={20} />
+              </span>
+              <div>
+                <h3>{isDelivery ? "Delivery" : "Pickup"}</h3>
+                <p>
+                  {isDelivery
+                    ? "Motorcycle courier from " + branch.name
+                    : review?.pickupSlotStart
+                      ? "Collect at " +
+                        branch.name +
+                        " · " +
+                        new Date(review.pickupSlotStart).toLocaleString("en-PH", {
+                          timeZone: "Asia/Manila",
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })
+                      : "Collect at " + branch.name + " when it is ready"}
+                </p>
+              </div>
+              {!attempt && (
+                <Link href="/checkout" className="text-link">
+                  Change
+                </Link>
+              )}
+            </div>
+            {isDelivery && pinned && (
+              <DeliveryMapPreview
+                destination={pinned}
+                origin={{ lat: branch.latitude, lng: branch.longitude }}
+                originName={branch.name}
+                className="review-map"
+              />
+            )}
+            {isDelivery && (
+              <dl className="review-details">
+                {deliveryAddress && (
+                  <div>
+                    <dt>
+                      <Icon name="pin" size={16} /> Deliver to
+                    </dt>
+                    <dd>{deliveryAddress}</dd>
+                  </div>
+                )}
+                {recipientName && (
+                  <div>
+                    <dt>
+                      <Icon name="user" size={16} /> Recipient
+                    </dt>
+                    <dd>
+                      {recipientName}
+                      {recipientPhone ? ` · ${recipientPhone}` : ""}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            )}
+          </div>
+          <div className="review-payment">
+            {paymentMethod === "maya" ? (
+              <>
+                <MayaMark size="md" />
+                <div>
+                  <strong>Pay with card or Maya wallet</strong>
+                  <p>
+                    After you place the order, you continue to Maya’s secure
+                    checkout and come back here.
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="review-cash-mark" aria-hidden="true">
+                  <Icon name="wallet" size={22} />
+                </span>
+                <div>
+                  <strong>Cash at the counter</strong>
+                  <p>Pay the cashier when you collect your order.</p>
+                </div>
+              </>
+            )}
+          </div>
           <p className="text-xs text-text-muted">
             Prices, stock and eligible rewards are checked when you place your
             order. Pay before the reservation deadline shown on your accepted

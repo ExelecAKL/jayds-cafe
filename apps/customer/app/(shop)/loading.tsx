@@ -1,8 +1,6 @@
-import BrandLoader from "../../components/BrandLoader";
+// Fallback for any customer screen without its own loading shape.
+import { ScreenSkeleton } from "../../components/Skeletons";
+
 export default function Loading() {
-  return (
-    <div className="route-loading">
-      <BrandLoader label="One moment. We’re getting things ready…" />
-    </div>
-  );
+  return <ScreenSkeleton label="One moment, getting things ready" />;
 }

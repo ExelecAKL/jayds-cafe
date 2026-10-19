@@ -5,6 +5,16 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "@cafeos/shared/ui/action-confirm.css";
+import "@cafeos/shared/ui/motion.css";
+import "@cafeos/shared/ui/skeleton.css";
+import "../design-system/theme.css";
+import "../design-system/dashboard.css";
+import "../design-system/admin.css";
+import "@cafeos/shared/ui/connection-status.css";
+import "@cafeos/shared/ui/startup-screen.css";
+import "../design-system/polish.css";
+import { RouteProgress } from "@cafeos/shared/ui/route-progress";
+import { ConnectionStatus } from "@cafeos/shared/ui/connection-status";
 const founders = localFont({
   src: [
     { path: "../../../fonts/FoundersGrotesk-Regular.otf", weight: "400" },
@@ -18,7 +28,7 @@ const founders = localFont({
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Jayds Café — Back Office",
+  title: "Jayds Café  -  Back Office",
   description: "Admin panel for managing menu, orders, staff, and analytics.",
   icons: {
     icon: "/icons/jayds-favicon-32.png",
@@ -32,7 +42,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('jayds-admin-theme');document.documentElement.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}` }} />
+      </head>
       <body
         className={
           founders.className +
@@ -41,6 +54,14 @@ export default function RootLayout({
           " min-h-screen antialiased"
         }
       >
+        <RouteProgress />
+        <ConnectionStatus
+          copy={{
+            offline: "You’re offline. Changes won’t save until you reconnect.",
+            slow: "Slow connection. Data may take longer to refresh.",
+            restored: "Back online. Data is refreshing.",
+          }}
+        />
         <Providers>{children}</Providers>
       </body>
     </html>

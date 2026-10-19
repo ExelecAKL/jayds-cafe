@@ -7,6 +7,7 @@ import AppShell, {
   EmptyState,
   InlineNotice,
 } from "../../../components/AppShell";
+import { ProductGridSkeleton } from "../../../components/Skeletons";
 import MenuCard from "../../../components/MenuCard";
 export default function FavoritesPage() {
   const { menuItems, loading: menuLoading } = useMenu();
@@ -41,11 +42,7 @@ export default function FavoritesPage() {
         </InlineNotice>
       )}
       {loading || menuLoading ? (
-        <div className="product-grid">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="skeleton h-72" />
-          ))}
-        </div>
+        <ProductGridSkeleton count={4} label="Loading your favorites" />
       ) : products.length ? (
         <div className="product-grid">
           {products.map((item) => (

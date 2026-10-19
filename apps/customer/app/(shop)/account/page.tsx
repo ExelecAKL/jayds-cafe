@@ -8,6 +8,7 @@ import AppShell, {
   EmptyState,
   InlineNotice,
 } from "../../../components/AppShell";
+import { AccountSkeleton } from "../../../components/Skeletons";
 import Icon, { type IconName } from "../../../components/Icon";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import { useCustomerToast } from "../../../context/CustomerToast";
@@ -85,10 +86,7 @@ export default function AccountPage() {
       eyebrow="Your account"
     >
       {!initialized || loading ? (
-        <div className="space-y-4">
-          <div className="skeleton h-40" />
-          <div className="skeleton h-64" />
-        </div>
+        <AccountSkeleton />
       ) : (
         <>
           {error && !logoutOpen && (

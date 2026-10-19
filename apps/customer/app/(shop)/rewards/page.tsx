@@ -9,6 +9,7 @@ import AppShell, {
   InlineNotice,
   WalletTabs,
 } from "../../../components/AppShell";
+import { RewardsSkeleton } from "../../../components/Skeletons";
 import Icon from "../../../components/Icon";
 function perks(value: unknown): string[] {
   if (Array.isArray(value)) return value.filter((v) => typeof v === "string");
@@ -65,10 +66,7 @@ export default function RewardsPage() {
       <WalletTabs active="rewards" />
       {error && <InlineNotice tone="error">{error}</InlineNotice>}
       {!initialized || loading ? (
-        <div className="space-y-4">
-          <div className="skeleton h-56" />
-          <div className="skeleton h-48" />
-        </div>
+        <RewardsSkeleton />
       ) : !user ? (
         <EmptyState
           icon="star"

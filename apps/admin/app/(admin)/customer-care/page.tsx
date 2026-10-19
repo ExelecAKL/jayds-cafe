@@ -1,4 +1,5 @@
 "use client";
+import { AdminSelect } from "../../../components/AdminSelect";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
@@ -205,7 +206,7 @@ export default function CustomerCare() {
         </button>
       </div>
       {error && !selected && (
-        <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-700">
+        <p role="alert" className="rounded-xl bg-danger-soft p-4 text-danger">
           {error}
         </p>
       )}
@@ -214,7 +215,7 @@ export default function CustomerCare() {
           <div className="ops-toolbar">
             <h2 className="text-lg font-semibold">Private requests</h2>
             <span className="spacer" />
-            <select
+            <AdminSelect
               aria-label="Request status"
               value={caseFilter}
               onChange={(event) => setCaseFilter(event.target.value)}
@@ -222,7 +223,7 @@ export default function CustomerCare() {
               <option value="open">Needs a reply</option>
               <option value="all">All requests</option>
               <option value="resolved">Resolved</option>
-            </select>
+            </AdminSelect>
           </div>
           {visibleCases.length === 0 ? (
             !requestsLoaded && !error ? (
@@ -283,7 +284,7 @@ export default function CustomerCare() {
           {operationsError && (
             <div
               role="alert"
-              className="mb-3 rounded-xl bg-red-50 p-3 text-sm text-red-700"
+              className="mb-3 rounded-xl bg-danger-soft p-3 text-sm text-danger"
             >
               <p>{operationsError}</p>
               {ops && (
@@ -328,7 +329,7 @@ export default function CustomerCare() {
         {paymentReviewsError && (
           <div
             role="alert"
-            className="rounded-xl bg-red-50 p-3 text-sm text-red-700"
+            className="rounded-xl bg-danger-soft p-3 text-sm text-danger"
           >
             <p>{paymentReviewsError}</p>
             {paymentReviews && (
@@ -398,7 +399,7 @@ export default function CustomerCare() {
             <label className="block">
               Status
               <FieldRequirement required={true} />
-              <select
+              <AdminSelect
                 className="ops-input w-full"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
@@ -406,7 +407,7 @@ export default function CustomerCare() {
                 <option value="open">Open</option>
                 <option value="in_review">In review</option>
                 <option value="resolved">Resolved</option>
-              </select>
+              </AdminSelect>
             </label>
             <label className="block">
               Private reply

@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
+import { Skeleton, SkeletonStatus } from "@cafeos/shared/ui/skeleton";
 
 interface QRDisplayProps {
   data: string;
@@ -34,17 +35,15 @@ export function QRDisplay({
 
   if (!qrUrl) {
     return (
-      <div
-        className="bg-gray-100 rounded-2xl flex items-center justify-center animate-pulse"
-        style={{ width: size, height: size }}
-      >
-        <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-      </div>
+      <SkeletonStatus label="Preparing QR code" className="flex flex-col items-center gap-3">
+        <Skeleton shape="block" width={size + 24} height={size + 24} radius={16} />
+        {label && <Skeleton width={Math.min(size, 160)} height={14} />}
+      </SkeletonStatus>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-3 jm-reveal">
       <div className="bg-white p-3 rounded-2xl shadow-lg">
         <img
           src={qrUrl}

@@ -26,6 +26,10 @@ import Icon from "../../../components/Icon";
 import TicketItemImage from "../../../components/TicketItemImage";
 import OrderPoints from "../../../components/OrderPoints";
 import { cartFinancialPreview } from "../../../utils/cartFinancialPreview";
+import DeliveryMapPreview from "../../../components/DeliveryMapPreview";
+import MayaMark from "../../../components/MayaMark";
+import { Skeleton } from "../../../components/Skeletons";
+import { useCustomerToast } from "../../../context/CustomerToast";
 interface Destination {
   lat: number;
   lng: number;
@@ -58,11 +62,18 @@ export default function CheckoutPage() {
     [slot, setSlot] = useState(""),
     [slots, setSlots] = useState<PickupSlot[]>([]),
     [slotReason, setSlotReason] = useState(""),
-    [branch, setBranch] = useState({
+    [branch, setBranch] = useState<{
+      name: string;
+      latitude: number;
+      longitude: number;
+      delivery_radius_km?: number;
+    }>({
       name: "Jayds Café",
       latitude: 14.346621,
       longitude: 120.981057,
     });
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const notify = useCustomerToast();
   const [date, setDate] = useState(manilaDate()),
     quoteVersion = useRef(0);
   const reviewRequest = useRef<AbortController | null>(null);
@@ -73,6 +84,10 @@ export default function CheckoutPage() {
     maxPoints = Math.min(profile?.points ?? 0, Math.floor(cart.total * 10)),
     redeemed = Math.min(maxPoints, user ? cart.pointsToRedeem : 0);
   const financial = cartFinancialPreview(cart, redeemed);
+  const phoneInvalid =
+    phoneTouched &&
+    phone.trim().length > 0 &&
+    !isValidContactPhone(normalizeContactPhone(phone));
   const total =
     Math.round(
       (Math.max(0, cart.total - redeemed / 10) +
@@ -441,77 +456,200 @@ export default function CheckoutPage() {
               </div>
             )}
             {delivery && (
-              <div className="mt-4 space-y-3">
-                {addresses.length > 0 && (
-                  <label className="block text-sm">
-                    Saved destination
-                    <FieldRequirement required={false} />
-                    <select
-                      className="input-field w-full"
-                      value=""
-                      onChange={(e) => {
-                        const a = addresses[Number(e.target.value)];
-                        if (a) setDestination(a);
-                      }}
+              <div className="checkout-delivery mt-5">
+                <div className="checkout-step">
+                  <h3 className="checkout-step-title">
+                    <span className="checkout-step-number">1</span>
+                    Where should we bring it?
+                  </h3>
+                  {addresses.length > 0 && (
+                    <div
+                      className="saved-address-choices"
+                      role="group"
+                      aria-label="Saved destinations"
                     >
-                      <option value="">Choose saved address</option>
-                      {addresses.map((a, i) => (
-                        <option key={i} value={i}>
-                          {a.label} · {a.address}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )}
-                <button
-                  className="btn-secondary min-h-12 w-full"
-                  onClick={() => setMapOpen(true)}
+                      {addresses.map((a, i) => {
+                        const chosen =
+                          !!destination &&
+                          destination.lat === a.lat &&
+                          destination.lng === a.lng &&
+                          destination.address === a.address;
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            className="saved-address-choice"
+                            aria-pressed={chosen}
+                            onClick={() => {
+                              setDestination(a);
+                              if (!chosen)
+                                notify(`Delivering to ${a.label || "your saved address"}`, {
+                                  icon: "pin",
+                                });
+                            }}
+                          >
+                            <Icon name={chosen ? "check" : "pin"} size={16} />
+                            <span>
+                              <strong>{a.label || "Saved address"}</strong>
+                              <small>{a.address}</small>
+                            </span>
+                          </button>
+                        );
+                      })}
+                      <button
+                        type="button"
+                        className="saved-address-choice is-new"
+                        onClick={() => setMapOpen(true)}
+                      >
+                        <Icon name="plus" size={16} />
+                        <span>
+                          <strong>New pin</strong>
+                          <small>Place it on the map</small>
+                        </span>
+                      </button>
+                    </div>
+                  )}
+                  {destination ? (
+                    <section
+                      className="delivery-destination-card has-map"
+                      aria-label="Pinned delivery address"
+                    >
+                      <DeliveryMapPreview
+                        destination={destination}
+                        origin={{ lat: branch.latitude, lng: branch.longitude }}
+                        originName={branch.name}
+                        onAdjust={() => setMapOpen(true)}
+                      />
+                      <div className="delivery-destination-copy">
+                        <div className="delivery-destination-heading">
+                          <h3>{destination.label || "Deliver to"}</h3>
+                          <span>
+                            <Icon name="check" size={14} /> Pin selected
+                          </span>
+                        </div>
+                        <p>{destination.address}</p>
+                        <button
+                          type="button"
+                          className="delivery-change-pin"
+                          onClick={() => setMapOpen(true)}
+                        >
+                          Change pin <Icon name="arrowRight" size={17} />
+                        </button>
+                      </div>
+                    </section>
+                  ) : (
+                    <button
+                      type="button"
+                      className="delivery-pin-empty"
+                      onClick={() => setMapOpen(true)}
+                    >
+                      <span className="delivery-pin-empty-icon" aria-hidden="true">
+                        <Icon name="pin" size={24} />
+                      </span>
+                      <span className="delivery-pin-empty-copy">
+                        <strong>Choose destination on map</strong>
+                        <small>
+                          Drop a pin, search, or use your location
+                          {branch.delivery_radius_km
+                            ? ` within ${branch.delivery_radius_km} km of the café.`
+                            : "."}
+                        </small>
+                      </span>
+                      <Icon name="arrowRight" size={18} />
+                    </button>
+                  )}
+                </div>
+                <div className="checkout-step">
+                  <h3 className="checkout-step-title">
+                    <span className="checkout-step-number">2</span>
+                    Who receives it?
+                  </h3>
+                  <div className="recipient-fields">
+                    <label className="recipient-field">
+                      <span className="recipient-label">
+                        Recipient name
+                        <FieldRequirement required={true} />
+                      </span>
+                      <span className="recipient-input">
+                        <Icon name="user" size={18} />
+                        <input
+                          autoComplete="name"
+                          className="input-field w-full"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          maxLength={120}
+                          placeholder="Full name"
+                        />
+                      </span>
+                    </label>
+                    <label className="recipient-field">
+                      <span className="recipient-label">
+                        Recipient phone
+                        <FieldRequirement required={true} />
+                      </span>
+                      <span className="recipient-input">
+                        <Icon name="bell" size={18} />
+                        <input
+                          type="tel"
+                          autoComplete="tel"
+                          inputMode="tel"
+                          className="input-field w-full"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          onBlur={() => setPhoneTouched(true)}
+                          maxLength={20}
+                          placeholder="09XX XXX XXXX"
+                          aria-invalid={phoneInvalid}
+                          aria-describedby="recipient-phone-hint"
+                        />
+                      </span>
+                      <small
+                        id="recipient-phone-hint"
+                        className={`recipient-hint${phoneInvalid ? " is-error" : ""}`}
+                      >
+                        {phoneInvalid
+                          ? "Enter a valid Philippine mobile number, for example 0917 123 4567."
+                          : "The rider calls this number when they arrive."}
+                      </small>
+                    </label>
+                  </div>
+                </div>
+                <div
+                  className={`delivery-fee-row${quoting ? " is-loading" : quote ? " is-ready" : ""}`}
+                  role="status"
                 >
-                  {destination
-                    ? "Change destination"
-                    : "Choose destination on map"}
-                </button>
-                {destination && (
-                  <p className="text-sm">{destination.address}</p>
-                )}
-                <label className="block text-sm">
-                  Recipient name
-                  <FieldRequirement required={true} />
-                  <input
-                    autoComplete="name"
-                    className="input-field mt-1 w-full"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    maxLength={120}
-                  />
-                </label>
-                <label className="block text-sm">
-                  Recipient phone
-                  <FieldRequirement required={true} />
-                  <input
-                    type="tel"
-                    autoComplete="tel"
-                    className="input-field mt-1 w-full"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    maxLength={20}
-                  />
-                </label>
-                <p role="status" className="text-sm">
-                  {quoting
-                    ? "Calculating delivery fee…"
-                    : quote
-                      ? "Delivery " + php(quote.deliveryFee)
-                      : "Choose a destination to calculate the fee."}
-                </p>
-                {destination && !quoting && !quote && (
-                  <button
-                    className="btn-secondary"
-                    onClick={() => setDestination({ ...destination })}
-                  >
-                    Retry quotation
-                  </button>
-                )}
+                  <span className="delivery-fee-icon" aria-hidden="true">
+                    <Icon name="truck" size={20} />
+                  </span>
+                  <span className="delivery-fee-copy">
+                    <strong>
+                      {quoting
+                        ? "Calculating delivery fee…"
+                        : quote
+                          ? "Delivery " + php(quote.deliveryFee)
+                          : "Choose a destination to calculate the fee."}
+                    </strong>
+                    {quote && !quoting && (
+                      <small>
+                        Motorcycle courier · price held until{" "}
+                        {new Date(quote.expiresAt).toLocaleTimeString("en-PH", {
+                          timeZone: "Asia/Manila",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </small>
+                    )}
+                  </span>
+                  {quoting && <Skeleton width={56} height={14} />}
+                  {destination && !quoting && !quote && (
+                    <button
+                      className="btn-secondary"
+                      onClick={() => setDestination({ ...destination })}
+                    >
+                      Retry quotation
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </section>
@@ -520,19 +658,45 @@ export default function CheckoutPage() {
               Payment
               <FieldRequirement required={true} />
             </h2>
-            <div className="segmented-control">
+            <div className="payment-choices" role="group" aria-label="Payment method">
               <button
-                className={paymentMethod === "cash" ? "is-selected" : ""}
+                type="button"
+                className="payment-choice"
+                aria-pressed={paymentMethod === "cash"}
+                aria-label="Cash at counter"
+                aria-describedby="payment-cash-note"
                 disabled={delivery || schedule}
                 onClick={() => setPayment("cash")}
               >
-                Cash at counter
+                <span className="payment-choice-radio" aria-hidden="true" />
+                <span className="payment-choice-mark is-cash" aria-hidden="true">
+                  <Icon name="wallet" size={20} />
+                </span>
+                <span className="payment-choice-copy">
+                  <strong>Cash at counter</strong>
+                  <small id="payment-cash-note">
+                    {delivery || schedule
+                      ? "Delivery and scheduled pickup are paid ahead with Maya."
+                      : "Pay the cashier when you collect your order."}
+                  </small>
+                </span>
               </button>
               <button
-                className={paymentMethod === "maya" ? "is-selected" : ""}
+                type="button"
+                className="payment-choice"
+                aria-pressed={paymentMethod === "maya"}
+                aria-label="Maya, card or wallet"
+                aria-describedby="payment-maya-note"
                 onClick={() => setPayment("maya")}
               >
-                Maya · Card / wallet
+                <span className="payment-choice-radio" aria-hidden="true" />
+                <MayaMark size="sm" className="payment-choice-mark" />
+                <span className="payment-choice-copy">
+                  <strong>Card or Maya wallet</strong>
+                  <small id="payment-maya-note">
+                    Secure checkout on Maya. You return here once it is paid.
+                  </small>
+                </span>
               </button>
             </div>
           </section>
@@ -658,6 +822,9 @@ export default function CheckoutPage() {
           onLocationChange={(lat, lng, address) => {
             setDestination({ lat, lng, address });
             setMapOpen(false);
+            notify("Delivery pin set. Getting your delivery fee…", {
+              icon: "pin",
+            });
           }}
         />
       )}

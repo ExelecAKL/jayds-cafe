@@ -2,6 +2,7 @@
 // Category management
 
 "use client";
+import { Icon } from "../../../components/Operations";
 
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useState, useEffect, useCallback } from "react";
@@ -10,7 +11,8 @@ import type { Category } from "@cafeos/shared/types";
 type ManagedCategory = Category & { status?: "active" | "archived" };
 import { Pagination } from "../../../components/Pagination";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
-import { Feedback, LoadingRows } from "../../../components/Operations";
+import { Feedback, LoadingRows, PageHeader } from "../../../components/Operations";
+import { TableSkeleton } from "../../../components/AdminSkeletons";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { AdminDialog } from "../../../components/AdminDialog";
 import { notifyAdmin } from "../../../components/AdminToasts";
@@ -175,6 +177,7 @@ export default function CategoriesPage() {
       return;
     }
 
+    notifyAdmin("Category deleted.", "success");
     setSelectedCategory(null);
     fetchCategories();
   };
@@ -229,6 +232,12 @@ export default function CategoriesPage() {
       return;
     }
 
+    notifyAdmin(
+      newStatus === "archived"
+        ? "Category and its products archived."
+        : "Category restored.",
+      newStatus === "archived" ? "info" : "success",
+    );
     if (selectedCategory) {
       setSelectedCategory({
         ...selectedCategory,
@@ -257,6 +266,10 @@ export default function CategoriesPage() {
       setActionError("Could not change category visibility. " + error.message);
       return;
     }
+    notifyAdmin(
+      isActive ? "Category hidden from the menu." : "Category is visible again.",
+      isActive ? "info" : "success",
+    );
     if (selectedCategory)
       setSelectedCategory({ ...selectedCategory, is_active: !isActive });
     fetchCategories();
@@ -304,24 +317,23 @@ export default function CategoriesPage() {
           Retry categories
         </button>
       )}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+      <PageHeader eyebrow="MENU ORGANIZATION" title="Categories" description="Organize the menu so customers can find their favourites.">
         <button
           type="button"
           onClick={() => setShowArchived(!showArchived)}
           className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
             showArchived
-              ? "bg-amber-100 text-amber-700 border border-amber-200"
-              : "bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200"
+              ? "bg-warning-soft text-warning border border-warning-border"
+              : "bg-raised text-muted border border-subtle hover:bg-raised"
           }`}
         >
-          {showArchived ? "✓ Showing Archived" : "Show Archived"}
+          {showArchived ? "Showing archived" : "Show Archived"}
         </button>
-      </div>
+      </PageHeader>
 
       {/* Add Category */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-        <h2 className="font-semibold text-gray-900 mb-4">Add Category</h2>
+      <div className="bg-surface rounded-2xl shadow-sm border border-subtle p-6 mb-6">
+        <h2 className="font-semibold text-ink mb-4">Add Category</h2>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="block min-w-0 flex-1 text-sm">
             Category name
@@ -330,7 +342,7 @@ export default function CategoriesPage() {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Category name"
-              className="mt-1 block w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+              className="mt-1 block w-full px-4 py-2.5 rounded-xl border border-subtle bg-raised text-ink text-sm placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all"
             />
           </label>
           <label className="block min-w-0 flex-1 text-sm">
@@ -340,13 +352,13 @@ export default function CategoriesPage() {
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
               placeholder="Description (optional)"
-              className="mt-1 block w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+              className="mt-1 block w-full px-4 py-2.5 rounded-xl border border-subtle bg-raised text-ink text-sm placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all"
             />
           </label>
           <button
             onClick={handleAdd}
             disabled={!newName.trim()}
-            className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg shadow-amber-200 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm disabled:opacity-50"
+            className="px-5 py-2.5 bg-gradient-to-r from-action to-action text-on-action font-semibold rounded-xl shadow-lg shadow-none hover:scale-[1.02] active:scale-[0.98] transition-all text-sm disabled:opacity-50"
           >
             Add
           </button>
@@ -354,11 +366,11 @@ export default function CategoriesPage() {
       </div>
 
       {/* Categories List */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden">
         {loading ? (
           <LoadingRows label="Loading categories…" />
         ) : (
-          <div className="divide-y divide-gray-50 flex flex-col h-full">
+          <div className="divide-y divide-subtle flex flex-col h-full">
             <div className="flex-1">
               {paginatedCategories.map((cat) => {
                 const isArchived = cat.status === "archived";
@@ -366,19 +378,21 @@ export default function CategoriesPage() {
                   <div
                     key={cat.id}
                     onClick={() => handleCategoryClick(cat)}
-                    className={`px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer ${isArchived ? "opacity-50" : ""}`}
+                    role="button" tabIndex={0} aria-label={`Open ${cat.name}`}
+                    onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); handleCategoryClick(cat); } }}
+                    className={`px-6 py-4 flex items-center justify-between hover:bg-raised transition-colors cursor-pointer ${isArchived ? "opacity-50" : ""}`}
                   >
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-ink">
                         {cat.name}{" "}
                         {isArchived && (
-                          <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-gray-200 text-gray-600 uppercase tracking-wider">
+                          <span className="ml-2 px-2 py-0.5 rounded text-xs font-bold bg-raised text-muted uppercase tracking-wider">
                             Archived
                           </span>
                         )}
                       </p>
                       {cat.description && (
-                        <p className="text-xs text-gray-400 mt-0.5">
+                        <p className="text-xs text-muted mt-0.5">
                           {cat.description}
                         </p>
                       )}
@@ -387,20 +401,20 @@ export default function CategoriesPage() {
                       <span
                         className={`text-xs px-2.5 py-1 rounded-full font-medium ${
                           cat.is_active
-                            ? "bg-green-50 text-green-700"
-                            : "bg-gray-100 text-gray-500"
+                            ? "bg-success-soft text-success"
+                            : "bg-raised text-muted"
                         }`}
                       >
                         {cat.is_active ? "Active" : "Inactive"}
                       </span>
-                      <span className="text-gray-400">›</span>
+                      <span className="text-muted">›</span>
                     </div>
                   </div>
                 );
               })}
 
               {categories.length === 0 && (
-                <div className="p-8 text-center text-gray-400">
+                <div className="p-8 text-center text-muted">
                   No categories yet.
                 </div>
               )}
@@ -422,32 +436,32 @@ export default function CategoriesPage() {
         <AdminDialog
           title="Category Options"
           onClose={() => setSelectedCategory(null)}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
+          className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
         >
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-            <h3 className="font-bold text-gray-900">Category Options</h3>
+          <div className="px-6 py-4 border-b border-subtle flex items-center justify-between bg-raised">
+            <h3 className="font-bold text-ink">Category Options</h3>
             <button
               aria-label="Close dialog"
               onClick={() => setSelectedCategory(null)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted hover:text-muted"
             >
-              ✕
+              <Icon name="close" />
             </button>
           </div>
 
           <div className="p-6 overflow-y-auto max-h-[70vh]">
             {editingId === selectedCategory.id ? (
-              <div className="space-y-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <label className="block text-sm font-medium text-gray-700">
+              <div className="space-y-4 mb-6 bg-raised p-4 rounded-xl border border-subtle">
+                <label className="block text-sm font-medium text-ink">
                   Name
                   <FieldRequirement required={true} />
                 </label>
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-4 py-2 rounded-xl border border-subtle bg-surface text-sm focus:ring-2 focus:ring-accent"
                 />
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-ink">
                   Description
                   <FieldRequirement required={false} />
                 </label>
@@ -455,18 +469,18 @@ export default function CategoriesPage() {
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
                   rows={2}
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-4 py-2 rounded-xl border border-subtle bg-surface text-sm focus:ring-2 focus:ring-accent"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleUpdate(selectedCategory.id)}
-                    className="flex-1 bg-amber-500 text-white font-medium py-2 rounded-lg text-sm"
+                    className="flex-1 bg-warning text-on-action font-medium py-2 rounded-lg text-sm"
                   >
                     Save Changes
                   </button>
                   <button
                     onClick={() => setEditingId(null)}
-                    className="flex-1 bg-gray-200 text-gray-700 font-medium py-2 rounded-lg text-sm"
+                    className="flex-1 bg-raised text-ink font-medium py-2 rounded-lg text-sm"
                   >
                     Cancel
                   </button>
@@ -474,10 +488,10 @@ export default function CategoriesPage() {
               </div>
             ) : (
               <div className="mb-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-1">
+                <h2 className="text-xl font-bold text-ink mb-1">
                   {selectedCategory.name}
                 </h2>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-muted mb-4">
                   {selectedCategory.description || "No description provided."}
                 </p>
 
@@ -489,10 +503,10 @@ export default function CategoriesPage() {
                         selectedCategory.is_active,
                       )
                     }
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium ${selectedCategory.is_active ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium ${selectedCategory.is_active ? "bg-success-soft text-success hover:bg-success-soft" : "bg-raised text-muted hover:bg-raised"}`}
                   >
                     {selectedCategory.is_active
-                      ? "✓ Active"
+                      ? "Active"
                       : "Enable Category"}
                   </button>
                   <button
@@ -501,7 +515,7 @@ export default function CategoriesPage() {
                       setEditName(selectedCategory.name);
                       setEditDescription(selectedCategory.description || "");
                     }}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-medium"
+                    className="px-3 py-1.5 bg-info-soft text-info hover:bg-info-soft rounded-lg text-sm font-medium"
                   >
                     Edit Info
                   </button>
@@ -514,8 +528,8 @@ export default function CategoriesPage() {
                     }
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
                       selectedCategory.status === "archived"
-                        ? "bg-green-50 text-green-600 hover:bg-green-100"
-                        : "bg-red-50 text-red-600 hover:bg-red-100"
+                        ? "bg-success-soft text-success hover:bg-success-soft"
+                        : "bg-danger-soft text-danger hover:bg-danger-soft"
                     }`}
                   >
                     {selectedCategory.status === "archived"
@@ -524,7 +538,7 @@ export default function CategoriesPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(selectedCategory.id)}
-                    className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-medium ml-auto"
+                    className="px-3 py-1.5 bg-danger-soft text-danger hover:bg-danger-soft rounded-lg text-sm font-medium ml-auto"
                   >
                     Delete
                   </button>
@@ -532,17 +546,20 @@ export default function CategoriesPage() {
               </div>
             )}
 
-            <hr className="border-gray-100 mb-4" />
-            <h4 className="font-semibold text-gray-900 mb-3">
+            <hr className="border-subtle mb-4" />
+            <h4 className="font-semibold text-ink mb-3">
               Linked Menu Items
             </h4>
 
             {loadingItems ? (
-              <div className="py-8 flex justify-center">
-                <div className="w-6 h-6 border-2 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
-              </div>
+              <TableSkeleton
+                label="Loading linked menu items…"
+                header={false}
+                rows={4}
+                columns={["media", "title", "badge"]}
+              />
             ) : connectedItems.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+              <p className="text-sm text-muted text-center py-6 bg-raised rounded-xl border border-dashed border-subtle">
                 No items connected to this category.
               </p>
             ) : (
@@ -550,13 +567,13 @@ export default function CategoriesPage() {
                 {connectedItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-white shadow-sm"
+                    className="flex items-center justify-between p-3 rounded-xl border border-subtle bg-surface shadow-sm"
                   >
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-ink">
                       {item.name}
                     </span>
                     <span
-                      className={`w-2 h-2 rounded-full ${item.is_available ? "bg-green-500" : "bg-red-500"}`}
+                      className={`w-2 h-2 rounded-full ${item.is_available ? "bg-success" : "bg-danger"}`}
                     ></span>
                   </div>
                 ))}

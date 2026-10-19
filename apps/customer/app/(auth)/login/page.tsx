@@ -11,6 +11,7 @@ import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import PasswordInput from "../../../components/PasswordInput";
 import { BrandArtwork } from "@cafeos/shared/brand";
 import { getCustomerAuthErrorMessage } from "../../../utils/authMessages";
+import { useCustomerToast } from "../../../context/CustomerToast";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const notify = useCustomerToast();
 
   useEffect(() => {
     if (initialized && user) router.replace("/menu");
@@ -63,6 +65,7 @@ export default function LoginPage() {
       }
       return;
     }
+    notify("Welcome back to Jayds.", { icon: "coffee" });
     router.push("/menu");
   };
 
@@ -88,7 +91,7 @@ export default function LoginPage() {
       >
         <div className="rounded-3xl border border-border bg-bg-card p-6 shadow-elevated space-y-4">
           {error && (
-            <div className="rounded-2xl border border-error/30 bg-red-50 px-4 py-3 text-sm text-error animate-fade-in">
+            <div className="rounded-2xl border border-feedback-error-border bg-feedback-error px-4 py-3 text-sm text-error animate-fade-in">
               {error}
             </div>
           )}

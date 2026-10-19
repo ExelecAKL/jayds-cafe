@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@cafeos/shared/supabase/client";
 import {InvoiceDocument,type InvoiceRecord} from "@cafeos/shared/finance/invoice";
+import Icon from "../../../components/Icon";
+import { DocumentSkeleton } from "../../../components/Skeletons";
 
 interface ReceiptData {
   invoice?: InvoiceRecord | null;
@@ -64,17 +66,21 @@ export default function GuestReceiptPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin" />
+      <div className="min-h-screen bg-bg-primary flex items-start justify-center px-4 py-10">
+        <div className="w-full max-w-sm">
+          <DocumentSkeleton label="Loading your receipt" />
+        </div>
       </div>
     );
   }
 
   if (expired || !receipt) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
-        <div className="text-center max-w-xs">
-          <span className="text-5xl mb-4 block">🧾</span>
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center p-6">
+        <div className="text-center max-w-xs jm-reveal">
+          <span className="empty-icon" aria-hidden="true">
+            <Icon name="orders" size={32} />
+          </span>
           <h1 className="text-xl font-bold text-gray-800">Receipt Not Found</h1>
           <p className="text-sm text-gray-500 mt-2">
             This receipt has expired or does not exist. Receipts are valid for
@@ -82,7 +88,7 @@ export default function GuestReceiptPage() {
           </p>
           <button
             onClick={() => router.push("/menu")}
-            className="mt-6 w-full py-3 bg-amber-500 text-white font-bold rounded-xl shadow hover:bg-amber-600 transition-colors"
+            className="btn-primary mt-6 w-full"
           >
             Go to Menu
           </button>
@@ -237,9 +243,10 @@ export default function GuestReceiptPage() {
           </p>
           <button
             onClick={() => router.push("/menu")}
-            className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-2xl shadow-xl shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all font-sans text-base"
+            className="btn-primary receipt-cta w-full min-h-12 font-sans text-base"
           >
-            ☕ Order via Web App Now!
+            <Icon name="coffee" size={20} />
+            Order again from the app
           </button>
         </div>
       </div>

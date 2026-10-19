@@ -2,6 +2,7 @@
 // User list + role assignment
 
 "use client";
+import { AdminSelect } from "../../../components/AdminSelect";
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
@@ -9,13 +10,15 @@ import type { Profile, UserRole } from "@cafeos/shared/types";
 import { PaginatedTable } from "../../../components/PaginatedTable";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
-import { Feedback } from "../../../components/Operations";
+import { Feedback, PageHeader } from "../../../components/Operations";
+import { TableSkeleton } from "../../../components/AdminSkeletons";
+import { notifyAdmin } from "../../../components/AdminToasts";
 
 const ROLES: UserRole[] = ["customer", "staff", "admin"];
 const roleColors: Record<UserRole, string> = {
-  customer: "bg-blue-50 text-blue-700",
-  staff: "bg-purple-50 text-purple-700",
-  admin: "bg-amber-50 text-amber-700",
+  customer: "bg-info-soft text-info",
+  staff: "bg-info-soft text-info",
+  admin: "bg-warning-soft text-warning",
 };
 
 export default function StaffPage() {
@@ -74,6 +77,7 @@ export default function StaffPage() {
         return;
       }
 
+      notifyAdmin(`Account role changed to ${newRole}.`, "success");
       await fetchUsers();
     } finally {
       setProcessing(false);
@@ -82,82 +86,80 @@ export default function StaffPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Account roles</h1>
-      <p className="text-gray-500 mb-6">
-        All customer and employee accounts. Use Staff access to approve pending
-        employees. Your own Admin role is locked to prevent accidental lockout.
-      </p>
+      <PageHeader eyebrow="PEOPLE & ACCESS" title="Account roles" description="Manage account permissions. Your own administrator role is protected." />
       <Feedback error={error} />
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center">
-            <div className="w-8 h-8 mx-auto border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
-          </div>
+          <TableSkeleton
+            label="Loading accounts…"
+            rows={8}
+            columns={["title", "text", "text", "badge", "text"]}
+          />
         ) : (
           <div className="overflow-x-auto">
             <PaginatedTable aria-label="Staff" className="w-full">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <tr className="border-b border-subtle bg-raised">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Phone
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Joined
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-subtle">
                 {users.map((user) => (
                   <tr
                     key={user.id}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-raised transition-colors"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                        <div className="w-9 h-9 bg-gradient-to-br from-action to-action rounded-full flex items-center justify-center text-on-action font-semibold text-sm">
                           {(user.full_name || user.email)
                             .charAt(0)
                             .toUpperCase()}
                         </div>
-                        <span className="text-sm font-medium text-gray-900">
-                          {user.full_name || "—"}
+                        <span className="text-sm font-medium text-ink">
+                          {user.full_name || " - "}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {user.email}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {user.phone || "—"}
+                    <td className="px-6 py-4 text-sm text-muted">
+                      {user.phone || " - "}
                     </td>
                     <td className="px-6 py-4">
-                      <select
+                      <AdminSelect
                         aria-label={`Role for ${user.full_name || user.email}`}
                         disabled={processing || user.id === currentUser?.id}
                         value={user.role}
                         onChange={(e) =>
                           handleRoleChange(user.id, e.target.value as UserRole)
                         }
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/20 ${roleColors[user.role]}`}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/20 ${roleColors[user.role]}`}
                       >
                         {ROLES.map((r) => (
                           <option key={r} value={r}>
                             {r.charAt(0).toUpperCase() + r.slice(1)}
                           </option>
                         ))}
-                      </select>
+                      </AdminSelect>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {new Date(user.created_at).toLocaleDateString("en-PH", {
                         month: "short",
                         day: "numeric",
@@ -170,7 +172,7 @@ export default function StaffPage() {
             </PaginatedTable>
 
             {users.length === 0 && (
-              <div className="p-8 text-center text-gray-400">
+              <div className="p-8 text-center text-muted">
                 No users found.
               </div>
             )}

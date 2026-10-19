@@ -8,6 +8,7 @@ import {
 } from "@cafeos/shared/utils/product-images";
 import Icon from "./Icon";
 import LogoArtwork from "./LogoArtwork";
+import { cancelNavigation } from "@cafeos/shared/ui/route-progress";
 export default function HomeCarousel({ products }: { products: MenuItem[] }) {
   const [index, setIndex] = useState(0),
     [paused, setPaused] = useState(false),
@@ -109,6 +110,7 @@ export default function HomeCarousel({ products }: { products: MenuItem[] }) {
           suppressClick.current = false;
           event.preventDefault();
           event.stopPropagation();
+          cancelNavigation();
         }
       }}
       onDragStart={(event) => event.preventDefault()}

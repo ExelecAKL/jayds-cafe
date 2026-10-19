@@ -3,6 +3,7 @@ import { BrandIcon, type BrandIconName } from "@cafeos/shared/brand";
 
 export type IconName =
   | "warning"
+  | "info"
   | "home"
   | "menu"
   | "orders"
@@ -37,6 +38,12 @@ export type IconName =
   | "plus"
   | "minus";
 const paths: Record<IconName, ReactNode> = {
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v6M12 7h.01" />
+    </>
+  ),
   warning: (
     <>
       <path d="M10.3 3.8a2 2 0 0 1 3.4 0l8 14A2 2 0 0 1 20 21H4a2 2 0 0 1-1.7-3.2Z" />

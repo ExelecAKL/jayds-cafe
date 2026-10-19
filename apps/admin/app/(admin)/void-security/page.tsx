@@ -1,4 +1,7 @@
 "use client";
+import { PageHeader, Icon } from "../../../components/Operations";
+import { TableSkeleton } from "../../../components/AdminSkeletons";
+import { notifyAdmin } from "../../../components/AdminToasts";
 import { PasswordInput } from "@cafeos/shared/ui/password-input";
 
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
@@ -81,6 +84,7 @@ export default function VoidSecurityPage() {
         type: "success",
         text: "Void PIN updated successfully!",
       });
+      notifyAdmin("Void PIN updated successfully!", "success");
       setCurrentPin(newPin);
       setNewPin("");
     }
@@ -121,35 +125,28 @@ export default function VoidSecurityPage() {
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Cancellation PIN</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Set the manager PIN used to cancel orders, and review the cancellation
-          log.
-        </p>
-      </div>
+      <PageHeader eyebrow="SECURITY & CONTROL" title="Cancellation PIN" description="Set the manager PIN for order cancellations and review the audit log." />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* PIN Management Card */}
         <div className="lg:col-span-1">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sticky top-8">
-            <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="text-xl">🔒</span> Manager PIN
+          <div className="bg-surface border border-subtle rounded-2xl shadow-sm p-6 sticky top-8">
+            <h2 className="font-bold text-ink mb-4 flex items-center gap-2">
+              <Icon name="lock" /> Manager PIN
             </h2>
 
-            <div className="bg-gray-50 rounded-xl p-4 mb-6 text-center border border-gray-100">
-              <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">
+            <div className="bg-raised rounded-xl p-4 mb-6 text-center border border-subtle">
+              <p className="text-xs text-muted uppercase tracking-widest font-bold mb-1">
                 Current PIN
               </p>
-              <p className="text-3xl font-mono font-black tracking-[0.25em] text-gray-900">
+              <p className="text-3xl font-mono font-black tracking-[0.25em] text-ink">
                 {currentPin}
               </p>
             </div>
 
             <form onSubmit={handleUpdatePin} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-ink mb-1">
                   Update PIN
                   <FieldRequirement required={true} />
                 </label>
@@ -163,13 +160,13 @@ export default function VoidSecurityPage() {
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
                   placeholder="Enter 6-digit PIN"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all text-center font-mono text-xl tracking-widest"
+                  className="w-full px-4 py-2.5 border border-control rounded-xl focus:ring-2 focus:ring-danger focus:border-danger-border transition-all text-center font-mono text-xl tracking-widest"
                 />
               </div>
 
               {pinMessage && (
                 <div
-                  className={`p-3 rounded-xl text-sm ${pinMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
+                  className={`p-3 rounded-xl text-sm ${pinMessage.type === "success" ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}
                 >
                   {pinMessage.text}
                 </div>
@@ -178,7 +175,7 @@ export default function VoidSecurityPage() {
               <button
                 type="submit"
                 disabled={savingPin || newPin.length !== 6}
-                className="w-full py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-black disabled:opacity-50 transition-colors"
+                className="w-full py-3 bg-inverse text-on-action font-bold rounded-xl hover:bg-black disabled:opacity-50 transition-colors"
               >
                 {savingPin ? "Saving..." : "Set New PIN"}
               </button>
@@ -188,9 +185,9 @@ export default function VoidSecurityPage() {
 
         {/* Audit Logs */}
         <div className="lg:col-span-2">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-              <h2 className="font-bold text-gray-900">Void Audit Log</h2>
+          <div className="bg-surface border border-subtle rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-subtle bg-raised">
+              <h2 className="font-bold text-ink">Void Audit Log</h2>
             </div>
 
             <div className="overflow-x-auto">
@@ -205,7 +202,7 @@ export default function VoidSecurityPage() {
                 className="w-full text-sm"
               >
                 <thead>
-                  <tr className="border-b border-gray-100 bg-white text-gray-500 text-xs uppercase tracking-wider">
+                  <tr className="border-b border-subtle bg-surface text-muted text-xs uppercase tracking-wider">
                     <th className="px-6 py-3 text-left font-medium">
                       Date & Time
                     </th>
@@ -215,26 +212,31 @@ export default function VoidSecurityPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {loadingLogs ? (
+                <tbody className="divide-y divide-subtle">
+                  {loadingLogs && !logs.length ? (
                     <tr>
-                      <td colSpan={3} className="px-6 py-12 text-center">
-                        <div className="w-8 h-8 mx-auto border-4 border-red-200 border-t-red-500 rounded-full animate-spin" />
+                      <td colSpan={3} className="p-0">
+                        <TableSkeleton
+                          label="Loading cancellation log…"
+                          header={false}
+                          rows={5}
+                          columns={["text", "title", "text"]}
+                        />
                       </td>
                     </tr>
                   ) : logs.length === 0 ? (
                     <tr>
                       <td
                         colSpan={3}
-                        className="px-6 py-12 text-center text-gray-400"
+                        className="px-6 py-12 text-center text-muted"
                       >
                         No void logs found.
                       </td>
                     </tr>
                   ) : (
                     logs.map((log) => (
-                      <tr key={log.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 text-gray-600">
+                      <tr key={log.id} className="hover:bg-raised">
+                        <td className="px-6 py-4 text-muted">
                           {new Date(log.created_at).toLocaleString("en-PH", {
                             month: "short",
                             day: "numeric",
@@ -242,14 +244,14 @@ export default function VoidSecurityPage() {
                             minute: "2-digit",
                           })}
                         </td>
-                        <td className="px-6 py-4 font-mono font-medium text-gray-900">
+                        <td className="px-6 py-4 font-mono font-medium text-ink">
                           {log.order?.order_number || "Unknown"}
                         </td>
                         <td className="px-6 py-4">
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-ink">
                             {log.staff?.full_name || "Unknown Staff"}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted">
                             {log.staff?.email || ""}
                           </p>
                         </td>

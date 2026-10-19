@@ -1,5 +1,7 @@
+import { Icon } from "./Operations";
 import { useState, useEffect } from "react";
 import { Feedback } from "./Operations";
+import { TableSkeleton } from "./AdminSkeletons";
 import { Pagination, ADMIN_PAGE_SIZE } from "./Pagination";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { AdminDialog } from "./AdminDialog";
@@ -95,29 +97,31 @@ export function HeatmapModal({
     <AdminDialog
       title="Orders by hour"
       onClose={onClose}
-      className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col"
+      className="bg-surface rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col"
     >
-      <div className="px-6 py-4 border-b border-gray-100 flex justify-between bg-amber-50">
+      <div className="px-6 py-4 border-b border-subtle flex justify-between bg-warning-soft">
         <div>
-          <h3 className="font-bold text-gray-900">Orders by hour</h3>
-          <p className="text-sm text-gray-600">
-            {dayName} at {hour + 13}:00 – {hour + 14}:00
+          <h3 className="font-bold text-ink">Orders by hour</h3>
+          <p className="text-sm text-muted">
+            {dayName} at {hour + 13}:00  to  {hour + 14}:00
           </p>
         </div>
         <button
           aria-label="Close dialog"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-muted hover:text-muted"
         >
-          ✕
+          <Icon name="close" />
         </button>
       </div>
 
       <div className="p-6 overflow-y-auto max-h-[70vh]">
         {loading ? (
-          <div className="py-10 text-center">
-            <div className="w-6 h-6 border-2 border-amber-500 border-t-amber-200 rounded-full animate-spin mx-auto" />
-          </div>
+          <TableSkeleton
+            label="Loading orders for this hour…"
+            rows={5}
+            columns={["title", "badge", "number"]}
+          />
         ) : error ? (
           <div>
             <Feedback error={error} />
@@ -131,25 +135,25 @@ export function HeatmapModal({
         ) : (
           <>
             <div className="flex gap-4 mb-6">
-              <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">
+              <div className="flex-1 bg-raised rounded-xl p-4 border border-subtle">
+                <p className="text-xs text-muted uppercase font-bold tracking-wider">
                   Paid orders
                 </p>
-                <p className="text-2xl font-black text-gray-900">{total}</p>
+                <p className="text-2xl font-black text-ink">{total}</p>
               </div>
-              <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">
+              <div className="flex-1 bg-raised rounded-xl p-4 border border-subtle">
+                <p className="text-xs text-muted uppercase font-bold tracking-wider">
                   Collected total
                 </p>
-                <p className="text-2xl font-black text-amber-600">
+                <p className="text-2xl font-black text-warning">
                   ₱{totalRev.toFixed(0)}
                 </p>
               </div>
             </div>
 
-            <h4 className="font-bold text-gray-900 mb-3 text-sm">Orders</h4>
+            <h4 className="font-bold text-ink mb-3 text-sm">Orders</h4>
             {orders.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">
+              <p className="text-sm text-muted italic">
                 No transactions captured during this block.
               </p>
             ) : (
@@ -157,20 +161,20 @@ export function HeatmapModal({
                 {orders.map((o) => (
                   <div
                     key={o.id}
-                    className="flex justify-between items-center p-3 rounded-lg border border-gray-100 bg-white shadow-sm"
+                    className="flex justify-between items-center p-3 rounded-lg border border-subtle bg-surface shadow-sm"
                   >
                     <div>
-                      <p className="font-bold text-gray-900 text-sm">
+                      <p className="font-bold text-ink text-sm">
                         {o.order_number}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted">
                         {o.customer?.full_name || "Walk-in"} •{" "}
                         {new Date(o.created_at).toLocaleDateString("en-PH", {
                           timeZone: "Asia/Manila",
                         })}
                       </p>
                     </div>
-                    <p className="font-bold text-gray-900">
+                    <p className="font-bold text-ink">
                       ₱{Number(o.total).toFixed(2)}
                     </p>
                   </div>
@@ -260,28 +264,30 @@ export function BestSellerModal({
     <AdminDialog
       title={`Product sales: ${itemName}`}
       onClose={onClose}
-      className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col"
+      className="bg-surface rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col"
     >
-      <div className="px-6 py-4 border-b border-gray-100 flex justify-between bg-gray-50">
+      <div className="px-6 py-4 border-b border-subtle flex justify-between bg-raised">
         <div>
-          <h3 className="font-bold text-gray-900 border-l-4 border-amber-500 pl-3">
+          <h3 className="font-bold text-ink border-l-4 border-warning-border pl-3">
             Product sales: {itemName}
           </h3>
         </div>
         <button
           aria-label="Close dialog"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-muted hover:text-muted"
         >
-          ✕
+          <Icon name="close" />
         </button>
       </div>
 
       <div className="p-6 overflow-y-auto max-h-[70vh]">
         {loading ? (
-          <div className="py-10 text-center">
-            <div className="w-8 h-8 border-4 border-amber-500 border-t-amber-200 rounded-full animate-spin mx-auto" />
-          </div>
+          <TableSkeleton
+            label="Loading add-on sales…"
+            rows={5}
+            columns={["title", "number", "number"]}
+          />
         ) : error ? (
           <div>
             <Feedback error={error} />
@@ -295,17 +301,17 @@ export function BestSellerModal({
         ) : (
           <>
             <div className="flex gap-4 mb-6">
-              <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">
+              <div className="flex-1 bg-raised rounded-xl p-4 border border-subtle">
+                <p className="text-xs text-muted uppercase font-bold tracking-wider">
                   Units sold
                 </p>
-                <p className="text-2xl font-black text-gray-900">{totalSold}</p>
+                <p className="text-2xl font-black text-ink">{totalSold}</p>
               </div>
-              <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">
+              <div className="flex-1 bg-raised rounded-xl p-4 border border-subtle">
+                <p className="text-xs text-muted uppercase font-bold tracking-wider">
                   Item sales
                 </p>
-                <p className="text-2xl font-black text-amber-600">
+                <p className="text-2xl font-black text-warning">
                   ₱{totalRev.toFixed(0)}
                 </p>
               </div>
@@ -313,7 +319,7 @@ export function BestSellerModal({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-bold text-gray-900 text-sm mb-3">
+                <h4 className="font-bold text-ink text-sm mb-3">
                   Units by order time
                 </h4>
                 <ResponsiveContainer width="100%" height={200}>
@@ -321,7 +327,7 @@ export function BestSellerModal({
                     <CartesianGrid
                       strokeDasharray="3 3"
                       vertical={false}
-                      stroke="#f0f0f0"
+                      stroke="var(--ui-border-default)"
                     />
                     <XAxis dataKey="hour" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
@@ -329,7 +335,7 @@ export function BestSellerModal({
                     <Bar
                       isAnimationActive={false}
                       dataKey="qty"
-                      fill="#f59e0b"
+                      fill="var(--ui-chart-line)"
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -337,22 +343,22 @@ export function BestSellerModal({
               </div>
 
               <div>
-                <h4 className="font-bold text-gray-900 text-sm mb-3">
+                <h4 className="font-bold text-ink text-sm mb-3">
                   Paid extras
                 </h4>
                 {addons.length === 0 ? (
-                  <p className="text-sm text-gray-400 italic bg-gray-50 p-4 rounded-xl text-center">
+                  <p className="text-sm text-muted italic bg-raised p-4 rounded-xl text-center">
                     No add-ons typically ordered with this item.
                   </p>
                 ) : (
-                  <div className="space-y-2 border border-gray-100 rounded-xl p-3 bg-gray-50">
+                  <div className="space-y-2 border border-subtle rounded-xl p-3 bg-raised">
                     {addons.map((a, i) => (
                       <div
                         key={i}
                         className="flex justify-between items-center text-sm"
                       >
-                        <span className="text-gray-700">{a.name}</span>
-                        <span className="font-bold text-gray-900 bg-white px-2 py-0.5 rounded shadow-sm border border-gray-100">
+                        <span className="text-ink">{a.name}</span>
+                        <span className="font-bold text-ink bg-surface px-2 py-0.5 rounded shadow-sm border border-subtle">
                           {a.qty}
                         </span>
                       </div>
@@ -461,36 +467,40 @@ export function MarginModal({
       : 0;
 
   const pieData = [
-    { name: "Recipe cost", value: rawCost, color: "#ef4444" }, // Red-500
-    { name: "Price remainder", value: Math.max(0, profit), color: "#10b981" }, // Green-500
+    { name: "Recipe cost", value: rawCost, color: "var(--ui-status-danger)" }, // Red-500
+    { name: "Price remainder", value: Math.max(0, profit), color: "var(--ui-status-success)" }, // Green-500
   ];
 
   return (
     <AdminDialog
       title="Recipe cost estimate"
       onClose={onClose}
-      className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col"
+      className="bg-surface rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col"
     >
-      <div className="px-6 py-4 border-b border-gray-100 flex justify-between bg-gray-50">
+      <div className="px-6 py-4 border-b border-subtle flex justify-between bg-raised">
         <div>
-          <h3 className="font-bold text-gray-900">Recipe cost estimate</h3>
-          <p className="text-sm text-gray-500">{item?.name}</p>
+          <h3 className="font-bold text-ink">Recipe cost estimate</h3>
+          <p className="text-sm text-muted">{item?.name}</p>
         </div>
         <button
           aria-label="Close dialog"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-muted hover:text-muted"
         >
-          ✕
+          <Icon name="close" />
         </button>
       </div>
 
       <div className="p-6 overflow-y-auto max-h-[70vh]">
         {loading ? (
-          <p role="status">Loading breakdown…</p>
+          <TableSkeleton
+            label="Loading breakdown…"
+            rows={6}
+            columns={["title", "number", "number", "number"]}
+          />
         ) : error ? (
           <div className="space-y-4">
-            <p role="alert" className="text-sm text-red-700">
+            <p role="alert" className="text-sm text-danger">
               {error}
             </p>
             <button
@@ -528,61 +538,61 @@ export function MarginModal({
 
               <div className="flex-1 space-y-3">
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-0.5">
+                  <p className="text-xs text-muted uppercase tracking-wider font-bold mb-0.5">
                     Selling Price
                   </p>
-                  <p className="text-2xl font-black text-gray-900">
+                  <p className="text-2xl font-black text-ink">
                     ₱{Number(item?.price ?? 0).toFixed(2)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-0.5 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-500"></span>{" "}
+                  <p className="text-xs text-muted uppercase tracking-wider font-bold mb-0.5 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-danger"></span>{" "}
                     Recipe cost
                   </p>
-                  <p className="text-lg font-bold text-gray-700">
+                  <p className="text-lg font-bold text-ink">
                     ₱{rawCost.toFixed(2)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-0.5 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-green-500"></span>{" "}
+                  <p className="text-xs text-muted uppercase tracking-wider font-bold mb-0.5 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-success"></span>{" "}
                     Price remainder
                     <span
-                      className={`px-1.5 py-0.5 rounded text-[10px] ${marginPct >= 60 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                      className={`px-1.5 py-0.5 rounded text-xs ${marginPct >= 60 ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}
                     >
                       {marginPct.toFixed(1)}% Margin
                     </span>
                   </p>
-                  <p className="text-lg font-bold text-gray-900">
+                  <p className="text-lg font-bold text-ink">
                     ₱{profit.toFixed(2)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <h4 className="font-bold text-gray-900 text-sm mb-3">
+            <h4 className="font-bold text-ink text-sm mb-3">
               Estimated ingredient costs
             </h4>
-            <div className="space-y-2 border border-gray-100 rounded-xl bg-gray-50 p-2">
+            <div className="space-y-2 border border-subtle rounded-xl bg-raised p-2">
               {recipe.map((r, i) => {
                 const ing = r.ingredient;
                 const sub = r.quantity_used * (ing?.cost_per_unit || 0);
                 return (
                   <div
                     key={i}
-                    className="flex justify-between items-center text-sm p-1.5 hover:bg-white rounded border border-transparent hover:border-gray-100 hover:shadow-sm transition-all"
+                    className="flex justify-between items-center text-sm p-1.5 hover:bg-surface rounded border border-transparent hover:border-subtle hover:shadow-sm transition-all"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-500 w-12 text-right font-mono text-xs">
+                      <span className="text-muted w-12 text-right font-mono text-xs">
                         {r.quantity_used}
                         {ing?.unit}
                       </span>
-                      <span className="font-medium text-gray-700">
+                      <span className="font-medium text-ink">
                         {ing?.name || "Unknown"}
                       </span>
                     </div>
-                    <span className="font-mono text-gray-600">
+                    <span className="font-mono text-muted">
                       ₱{sub.toFixed(2)}
                     </span>
                   </div>

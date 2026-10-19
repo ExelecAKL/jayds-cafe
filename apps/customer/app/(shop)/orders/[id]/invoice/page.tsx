@@ -8,10 +8,16 @@ import {
   InvoiceDocument,
   type InvoiceRecord,
 } from "@cafeos/shared/finance/invoice";
+import { DocumentSkeleton } from "../../../../../components/Skeletons";
 export default function InvoicePage() {
   const { id } = useParams<{ id: string }>();
   const { user, initialized } = useAuth();
-  if (!initialized) return <p role="status">Loading account…</p>;
+  if (!initialized)
+    return (
+      <main style={{ padding: "24px 16px" }}>
+        <DocumentSkeleton label="Loading account…" />
+      </main>
+    );
   return (
     <InvoiceLoader
       key={`${id}:${user?.id ?? "guest"}`}
@@ -77,7 +83,7 @@ function InvoiceLoader({ id, owner }: { id: string; owner: string | null }) {
         )}
       </div>
       {loading ? (
-        <p role="status">Loading invoice…</p>
+        <DocumentSkeleton label="Loading invoice…" />
       ) : error ? (
         <p role="alert">{error}</p>
       ) : null}

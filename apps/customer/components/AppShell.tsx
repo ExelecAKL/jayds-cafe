@@ -92,7 +92,9 @@ export default function AppShell({
               <Icon name="bag" size={20} />
               <span className="header-bag-label">Your bag</span>
               {itemCount > 0 && (
-                <span className="header-bag-count">{itemCount}</span>
+                <span key={itemCount} className="header-bag-count jm-pop">
+                  {itemCount}
+                </span>
               )}
             </Link>
           )}
@@ -156,7 +158,7 @@ export function InlineNotice({
               ? "warning"
               : tone === "success"
                 ? "check"
-                : "bell"
+                : "info"
           }
           size={20}
         />

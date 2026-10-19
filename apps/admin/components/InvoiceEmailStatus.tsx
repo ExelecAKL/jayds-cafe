@@ -53,11 +53,11 @@ export function InvoiceEmailStatus() {
     <aside
       aria-label="Invoice email delivery"
       style={{
-        border: "1px solid #e8daca",
+        border: "var(--ui-legacy-length-1) solid var(--ui-border-default)",
         borderRadius: 16,
         padding: 20,
-        margin: "16px 0 24px",
-        background: "#fbf7f1",
+        margin: "var(--ui-legacy-length-16) 0 var(--ui-legacy-length-24)",
+        background: "var(--ui-surface-raised)",
       }}
     >
       <div
@@ -71,7 +71,7 @@ export function InvoiceEmailStatus() {
       >
         <div>
           <h3 style={{ margin: 0 }}>Email invoices</h3>
-          <p style={{ margin: "6px 0 0" }}>
+          <p style={{ margin: "var(--ui-legacy-length-6) 0 0" }}>
             {!status
               ? error
                 ? "Email delivery status is unavailable."
@@ -99,14 +99,14 @@ export function InvoiceEmailStatus() {
         )}
       </div>
       {status?.provider_ready && (
-        <p style={{ fontSize: 12, margin: "12px 0 0" }}>
+        <p style={{ fontSize: 12, margin: "var(--ui-legacy-length-12) 0 0" }}>
           {status.sent} sent · {status.pending} waiting
           {status.review ? ` · ${status.review} need review` : ""}. Changes
           apply to future invoices.
         </p>
       )}
       {error && (
-        <p role="status" style={{ margin: "12px 0 0" }}>
+        <p role="status" style={{ margin: "var(--ui-legacy-length-12) 0 0" }}>
           {error}
           {!status && (
             <button

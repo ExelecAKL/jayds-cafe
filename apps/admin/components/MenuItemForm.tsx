@@ -1,4 +1,5 @@
 "use client";
+import { AdminSelect } from "./AdminSelect";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { notifyAdmin } from "./AdminToasts";
 import { validateMenuDefaults } from "@cafeos/shared/menu/options";
@@ -15,6 +16,7 @@ import type {
   MenuItemIngredient,
 } from "@cafeos/shared/types";
 import { Drawer, Feedback, useOperations, quantity } from "./Operations";
+import { FormSkeleton } from "./AdminSkeletons";
 
 type Option = {
   variant_group: string;
@@ -277,7 +279,7 @@ export function MenuItemForm({
     >
       <Feedback error={error} />
       {loading ? (
-        <p role="status">Loading stock requirements…</p>
+        <FormSkeleton label="Loading stock requirements…" sections={3} fields={4} />
       ) : loadError ? (
         <button
           className="ops-button"
@@ -330,7 +332,7 @@ export function MenuItemForm({
                 <label>
                   Category
                   <FieldRequirement required={true} />
-                  <select
+                  <AdminSelect
                     required
                     value={form.category_id}
                     onChange={(e) =>
@@ -344,7 +346,7 @@ export function MenuItemForm({
                         {c.status !== "active" ? " (inactive)" : ""}
                       </option>
                     ))}
-                  </select>
+                  </AdminSelect>
                 </label>
                 <label>
                   Preparation time (minutes)
@@ -368,7 +370,7 @@ export function MenuItemForm({
                       alt="Product photo preview"
                       fill
                       unoptimized
-                      sizes="120px"
+                      sizes="var(--ui-legacy-length-120)"
                       style={{ objectFit: "contain" }}
                     />
                   ) : (
@@ -471,7 +473,7 @@ export function MenuItemForm({
                   .filter((v) => v.is_default)
                   .map(
                     (v) =>
-                      `${v.label}${v.price_modifier ? ` (+₱${v.price_modifier.toFixed(2)})` : " — Included"}`,
+                      `${v.label}${v.price_modifier ? ` (+₱${v.price_modifier.toFixed(2)})` : "  -  Included"}`,
                   )
                   .join(" · ") || "Choose a default in each required group"}
                 . Standard espresso; extra shots are optional.
@@ -485,7 +487,7 @@ export function MenuItemForm({
                   <label>
                     Option group
                     <FieldRequirement required={true} />
-                    <select
+                    <AdminSelect
                       aria-label="Option group"
                       value={option.variant_group}
                       onChange={(e) =>
@@ -510,7 +512,7 @@ export function MenuItemForm({
                       ].map((g) => (
                         <option key={g}>{g}</option>
                       ))}
-                    </select>
+                    </AdminSelect>
                   </label>
                   <label>
                     Option label
@@ -600,7 +602,7 @@ export function MenuItemForm({
                 <label>
                   Add existing option
                   <FieldRequirement required={false} />
-                  <select
+                  <AdminSelect
                     aria-label="Add existing option"
                     value=""
                     onChange={(e) => {
@@ -622,7 +624,7 @@ export function MenuItemForm({
                         {v.variant_group} · {v.label}
                       </option>
                     ))}
-                  </select>
+                  </AdminSelect>
                 </label>
               </div>
             </>
@@ -644,7 +646,7 @@ export function MenuItemForm({
                       <label>
                         Stock item
                         <FieldRequirement required={true} />
-                        <select
+                        <AdminSelect
                           value={recipe.ingredient_id}
                           onChange={(e) =>
                             setRecipes(
@@ -663,7 +665,7 @@ export function MenuItemForm({
                               {!s.is_active ? " (inactive)" : ""}
                             </option>
                           ))}
-                        </select>
+                        </AdminSelect>
                       </label>
                       <label>
                         Base quantity {stock ? "(" + stock.unit + ")" : ""}

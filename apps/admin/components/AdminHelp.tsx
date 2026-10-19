@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Drawer } from "./Operations";
+import { ColorMeanings } from "./StatusSemantics";
 
 type Guide = {
   title: string;
@@ -23,6 +24,23 @@ export const adminGuides: Record<string, Guide> = {
     next: [
       ["/orders", "Check orders"],
       ["/inventory?filter=low", "Check low stock"],
+    ],
+  },
+  notifications: {
+    title: "Notifications",
+    purpose:
+      "See everything that needs a decision: blocked orders, payment checks, stock alerts, help requests and staff waiting for access.",
+    steps: [
+      "Start with Needs attention. Red items block service; amber items need a decision today.",
+      "Select an alert to open the page where you can resolve it. Opening it marks it as read.",
+      "Use the switches to choose which alerts count on the bell on this device.",
+      "Shortcuts: Shift + N opens notifications, Ctrl + K jumps to a page, ? opens help, / searches the page.",
+    ],
+    remember:
+      "Marking an alert as read only changes this list. Low stock or a blocked order stays an alert until it is resolved on its page.",
+    next: [
+      ["/inventory?filter=low", "Check low stock"],
+      ["/customer-care", "Reply to customers"],
     ],
   },
   orders: {
@@ -251,6 +269,12 @@ export function AdminHelp({
           <strong>Before you continue</strong>
           <p>{guide.remember}</p>
         </div>
+        <h3>What colours mean</h3>
+        <p className="ops-help-note">
+          Every status in the back office uses the same colours, always with an
+          icon and a word.
+        </p>
+        <ColorMeanings />
         <h3>Related tasks</h3>
         <div className="ops-guide-links">
           {guide.next.map(([href, label]) => (

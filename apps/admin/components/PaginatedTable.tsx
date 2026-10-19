@@ -79,7 +79,7 @@ function TablePage({
   const label = tableProps["aria-label"] ?? "Table";
   return (
     <div className="admin-paginated-table" data-paginated-table>
-      <div className="admin-table-scroll">
+      <div className="admin-table-scroll" tabIndex={0} role="region" aria-label={`${label} table scroll`}>
         <table {...tableProps} id={tableId}>
           {sections.map((section) =>
             section === body && body

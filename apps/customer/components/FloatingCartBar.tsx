@@ -8,7 +8,9 @@ export default function FloatingCartBar() {
   return (
     <div className="floating-bag">
       <Link href="/cart" className="floating-bag-button">
-        <span className="bag-count">{itemCount}</span>
+        <span key={itemCount} className="bag-count jm-pop">
+          {itemCount}
+        </span>
         <span className="flex-1 text-left">
           <strong className="block text-sm">View your bag</strong>
           <small className="text-white/80">

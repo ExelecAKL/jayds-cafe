@@ -12,6 +12,7 @@ import {
 import { useAvailability } from "@cafeos/shared/hooks/useAvailability";
 import type { ItemVariant, SelectedVariant } from "@cafeos/shared/types";
 import { useCart } from "../../../../../context/CartContext";
+import { useCustomerToast } from "../../../../../context/CustomerToast";
 import AppShell, {
   EmptyState,
   InlineNotice,
@@ -20,6 +21,7 @@ import Icon from "../../../../../components/Icon";
 import FavoriteButton from "../../../../../components/FavoriteButton";
 import { useOutletAvailability } from "../../../../../context/OutletAvailability";
 import { categoryIcon } from "../../../../../utils/menuArtwork";
+import { ProductDetailSkeleton } from "../../../../../components/Skeletons";
 
 const labels: Record<string, string> = {
   temperature: "Temperature",
@@ -42,6 +44,7 @@ export default function BrowseMenuItemPage() {
   const { canSelect } = useOutletAvailability();
   const { menuItems, loading, error, refetch } = useMenu();
   const { addItem, hydrated } = useCart();
+  const notify = useCustomerToast();
   const item = menuItems.find((product) => product.id === params.id);
   const imageUrl = menuProductImageUrl(item?.id, item?.image_url);
   const [selected, setSelected] = useState<Record<string, ItemVariant>>({});
@@ -198,19 +201,16 @@ export default function BrowseMenuItemPage() {
       prep_time_minutes: item.prep_time_minutes,
       notes: notes.trim() || null,
     });
+    notify(`${quantity} × ${item.name} is in your bag`, {
+      icon: "bag",
+      action: { label: "View bag", href: "/cart" },
+    });
     setAdded(true);
   };
   if (loading)
     return (
       <AppShell title="Make it yours." backHref="/menu/browse">
-        <div className="detail-layout">
-          <div className="skeleton aspect-square rounded-3xl" />
-          <div className="space-y-4">
-            <div className="skeleton h-20" />
-            <div className="skeleton h-44" />
-            <div className="skeleton h-44" />
-          </div>
-        </div>
+        <ProductDetailSkeleton />
       </AppShell>
     );
   if (!item)

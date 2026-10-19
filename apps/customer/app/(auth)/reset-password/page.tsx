@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { supabase } from "@cafeos/shared/supabase/client";
 import PasswordInput from "../../../components/PasswordInput";
+import { Skeleton, SkeletonStatus } from "../../../components/Skeletons";
 export default function ResetPasswordPage() {
   const { user, initialized } = useAuth();
   const [password, setPassword] = useState(""),
@@ -46,7 +47,13 @@ export default function ResetPasswordPage() {
       <p className="eyebrow">Jayds Café</p>
       <h1 className="page-title mb-6">Set a new password</h1>
       {!initialized ? (
-        <p>Checking your reset session…</p>
+        <SkeletonStatus label="Checking your reset session…" className="grid gap-4">
+          <Skeleton width={120} height={12} />
+          <Skeleton shape="block" height={48} radius={14} />
+          <Skeleton width={150} height={12} />
+          <Skeleton shape="block" height={48} radius={14} />
+          <Skeleton shape="pill" height={48} className="mt-2" />
+        </SkeletonStatus>
       ) : !user ? (
         <p>
           This link has expired or is unavailable.{" "}

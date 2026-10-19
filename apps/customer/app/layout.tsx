@@ -8,8 +8,15 @@ import DevCacheReset from "../components/DevCacheReset";
 import ReadyOrderBuzzer from "../components/ReadyOrderBuzzer";
 import StartupOverlay from "../components/StartupOverlay";
 import PwaManager from "../components/PwaManager";
+import "@cafeos/shared/ui/motion.css";
+import "@cafeos/shared/ui/skeleton.css";
 import "./globals.css";
 import "./mobile.css";
+import "./customer-enhancements.css";
+import "@cafeos/shared/ui/connection-status.css";
+import "./customer-polish.css";
+import { RouteProgress } from "@cafeos/shared/ui/route-progress";
+import { ConnectionStatus } from "@cafeos/shared/ui/connection-status";
 
 const foundersBody = localFont({
   src: [
@@ -110,8 +117,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${foundersBody.variable} ${foundersDisplay.variable} font-body bg-bg-primary text-text-primary antialiased`}
+        className={`${foundersBody.variable} ${foundersDisplay.variable} customer-client font-body bg-bg-primary text-text-primary antialiased`}
       >
+        <RouteProgress />
+        <ConnectionStatus
+          copy={{
+            offline:
+              "You’re offline. Your bag is saved and we’ll reconnect when you have signal.",
+            slow: "Weak signal. Things may load a little slower.",
+            restored: "Back online.",
+          }}
+        />
         <Providers>
           <DevCacheReset />
           <StartupOverlay />

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import PasswordInput from "../../../../components/PasswordInput";
 import AppShell, { InlineNotice } from "../../../../components/AppShell";
+import { FormSkeleton } from "../../../../components/Skeletons";
 import { getCustomerAuthErrorMessage } from "../../../../utils/authMessages";
 import {
   normalizeContactPhone,
@@ -207,7 +208,7 @@ function ProfileForm() {
       backHref="/account"
     >
       {!initialized || !user ? (
-        <div className="skeleton h-72" />
+        <FormSkeleton columns={2} fields={4} label="Loading your details" />
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
           <form

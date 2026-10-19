@@ -16,6 +16,7 @@ import { cashAtPickup } from "@cafeos/shared/pos/fulfillment";
 import { cashierRequest, useOnline } from "../lib/client";
 import { PosShell } from "./PosShell";
 import { PosDialog, PosIcon } from "./PosPrimitives";
+import { ColumnTicketsSkeleton } from "./PosSkeletons";
 import { OrderPayment } from "./OrderPayment";
 import { QRScanner } from "./QRScanner";
 import { DeliveryOrder } from "./DeliveryOrder";
@@ -394,7 +395,10 @@ export function OrdersWorkspace() {
         {parked || future ? (
           <div className="parked-grid">
             {filtered.map(card)}
-            {!filtered.length && (
+            {!filtered.length && loading && !orders.length && (
+              <ColumnTicketsSkeleton count={3} label="Loading tickets…" />
+            )}
+            {!filtered.length && !(loading && !orders.length) && (
               <div className="pos-empty">
                 <strong>
                   {future ? "No future paid pickups" : "No parked tickets"}
@@ -423,11 +427,18 @@ export function OrdersWorkspace() {
                 </header>
                 <div className="column-tickets">
                   {filtered.filter((o) => o.status === stage.status).map(card)}
-                  {!filtered.some((o) => o.status === stage.status) && (
-                    <div className="pos-empty">
-                      {loading ? "Loading…" : "No orders"}
-                    </div>
-                  )}
+                  {!filtered.some((o) => o.status === stage.status) &&
+                    (loading && !orders.length ? (
+                      <ColumnTicketsSkeleton
+                        count={stages.indexOf(stage) % 2 ? 1 : 2}
+                        label={stages.indexOf(stage) ? null : "Loading orders…"}
+                      />
+                    ) : (
+                      <div className="pos-empty pos-empty-column">
+                        <PosIcon name="check" size={22} />
+                        <span>No orders</span>
+                      </div>
+                    ))}
                 </div>
               </section>
             ))}

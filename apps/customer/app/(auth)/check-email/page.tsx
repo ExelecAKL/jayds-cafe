@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense, useState, useEffect, useRef } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
+import { Skeleton, SkeletonStatus } from "../../../components/Skeletons";
 
 function CheckEmailContent() {
   const searchParams = useSearchParams();
@@ -183,8 +184,17 @@ export default function CheckEmailPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-bg-primary">
-          <div className="w-10 h-10 border-3 border-accent border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen flex items-center justify-center bg-bg-primary px-6">
+          <SkeletonStatus
+            label="Loading"
+            className="grid w-full max-w-sm justify-items-center gap-4"
+          >
+            <Skeleton shape="block" width={80} height={80} radius={24} />
+            <Skeleton shape="title" width="70%" height={28} />
+            <Skeleton width="90%" height={13} />
+            <Skeleton width="60%" height={13} />
+            <Skeleton shape="pill" height={48} className="mt-4" />
+          </SkeletonStatus>
         </div>
       }
     >

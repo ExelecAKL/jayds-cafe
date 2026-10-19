@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
 import AppShell, {
   EmptyState,
@@ -9,9 +9,15 @@ import MenuCard from "../../../../components/MenuCard";
 import Icon from "../../../../components/Icon";
 import FulfillmentContext from "../../../../components/FulfillmentContext";
 import { categoryIcon } from "../../../../utils/menuArtwork";
+import {
+  CategoryRailSkeleton,
+  MenuSectionsSkeleton,
+} from "../../../../components/Skeletons";
 export default function BrowseMenuPage() {
   const { categories, menuItems, loading, error, refetch } = useMenu();
   const [query, setQuery] = useState("");
+  const [availableOnly, setAvailableOnly] = useState(false);
+  const [featuredOnly, setFeaturedOnly] = useState(false);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [jump, setJump] = useState<{
     id: string;
@@ -24,12 +30,15 @@ export default function BrowseMenuPage() {
   const leaving = useRef(false);
   const displayItems = useMemo(
     () =>
-      menuItems.filter((item) =>
-        `${item.name} ${item.description ?? ""} ${(item.tags ?? []).join(" ")}`
-          .toLowerCase()
-          .includes(query.trim().toLowerCase()),
+      menuItems.filter(
+        (item) =>
+          (!availableOnly || item.is_available) &&
+          (!featuredOnly || item.is_featured) &&
+          `${item.name} ${item.description ?? ""} ${item.category?.name ?? categories.find((category) => category.id === item.category_id)?.name ?? ""} ${(item.tags ?? []).join(" ")}`
+            .toLowerCase()
+            .includes(query.trim().toLowerCase()),
       ),
-    [menuItems, query],
+    [menuItems, categories, query, availableOnly, featuredOnly],
   );
   const groups = useMemo(() => {
     const knownCategories = new Set(categories.map((category) => category.id));
@@ -69,6 +78,8 @@ export default function BrowseMenuPage() {
         );
         if (typeof saved?.query === "string")
           setQuery(saved.query.slice(0, 120));
+        setAvailableOnly(saved?.availableOnly === true);
+        setFeaturedOnly(saved?.featuredOnly === true);
         if (typeof saved?.category === "string")
           setJump({
             id: saved.category,
@@ -88,14 +99,22 @@ export default function BrowseMenuPage() {
       leaving.current = false;
     };
   }, [loading]);
-  function remember(category: string | null, search: string, offset = 0) {
-    try {
-      sessionStorage.setItem(
-        "jayds-menu-view",
-        JSON.stringify({ category, query: search, offset }),
-      );
-    } catch {}
-  }
+  const remember = useCallback(
+    function remember(
+      category: string | null,
+      search: string,
+      offset = 0,
+      filters = { availableOnly, featuredOnly },
+    ) {
+      try {
+        sessionStorage.setItem(
+          "jayds-menu-view",
+          JSON.stringify({ category, query: search, offset, ...filters }),
+        );
+      } catch {}
+    },
+    [availableOnly, featuredOnly],
+  );
   function scrollOffset() {
     const nav = rail.current;
     return nav && getComputedStyle(nav).flexDirection === "row"
@@ -176,7 +195,16 @@ export default function BrowseMenuPage() {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, [groups, loading, query, jump]);
+  }, [groups, loading, query, jump, remember]);
+  function resetFilters() {
+    setQuery("");
+    setAvailableOnly(false);
+    setFeaturedOnly(false);
+    remember(selectedCategoryId ?? null, "", 0, {
+      availableOnly: false,
+      featuredOnly: false,
+    });
+  }
   function selectCategory(category: string) {
     setActiveCategoryId(category);
     setJump({
@@ -203,6 +231,7 @@ export default function BrowseMenuPage() {
           <span className="sr-only">Search the menu</span>
           <input
             type="search"
+            maxLength={120}
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -225,12 +254,58 @@ export default function BrowseMenuPage() {
           )}
         </label>
       </div>
+      <div
+        className="menu-refinements"
+        role="group"
+        aria-label="Refine the menu"
+      >
+        <button
+          type="button"
+          className="menu-filter"
+          aria-pressed={availableOnly}
+          onClick={() => {
+            const next = !availableOnly;
+            setAvailableOnly(next);
+            remember(selectedCategoryId ?? null, query, 0, {
+              availableOnly: next,
+              featuredOnly,
+            });
+          }}
+        >
+          <Icon name="check" size={17} /> Available
+        </button>
+        <button
+          type="button"
+          className="menu-filter"
+          aria-pressed={featuredOnly}
+          onClick={() => {
+            const next = !featuredOnly;
+            setFeaturedOnly(next);
+            remember(selectedCategoryId ?? null, query, 0, {
+              availableOnly,
+              featuredOnly: next,
+            });
+          }}
+        >
+          <Icon name="star" size={17} /> Featured
+        </button>
+        {(availableOnly || featuredOnly) && (
+          <button
+            type="button"
+            className="menu-filter-reset"
+            onClick={resetFilters}
+          >
+            Reset filters
+          </button>
+        )}
+      </div>
       <div className="browse-layout">
         <nav
           ref={rail}
           aria-label="Menu categories"
           className="category-list menu-category-rail"
         >
+          {loading && !groups.length && <CategoryRailSkeleton />}
           {groups.map((category) => (
             <button
               type="button"
@@ -262,19 +337,34 @@ export default function BrowseMenuPage() {
               </button>
             </InlineNotice>
           )}
-          <div className="menu-results-summary">
+          <div
+            className="menu-results-summary"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {query.trim() && <h2 className="section-title">Search results</h2>}
             <span className="text-xs text-text-secondary" role="status">
-              {displayItems.length} product
-              {displayItems.length === 1 ? "" : "s"}
+              {loading ? (
+                "Loading the menu…"
+              ) : (
+                <>
+                  <span>
+                    {displayItems.length} product
+                    {displayItems.length === 1 ? "" : "s"}
+                  </span>
+                  <span>
+                    {query.trim()
+                      ? ` matching “${query.trim()}”`
+                      : " to explore"}
+                    {availableOnly ? " · available" : ""}
+                    {featuredOnly ? " · featured" : ""}
+                  </span>
+                </>
+              )}
             </span>
           </div>
           {loading ? (
-            <div className="product-grid">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <div className="skeleton h-72 rounded-3xl" key={i} />
-              ))}
-            </div>
+            <MenuSectionsSkeleton label={null} />
           ) : displayItems.length ? (
             groups.map((group) => (
               <section
@@ -327,12 +417,12 @@ export default function BrowseMenuPage() {
               icon="search"
               title={
                 menuItems.length
-                  ? "Nothing here just yet."
+                  ? "No matches this time."
                   : "The menu is loading."
               }
               description={
                 menuItems.length
-                  ? "Try another name or category to find your favorite."
+                  ? "Try a different search or clear your filters to see more of the menu."
                   : "Reconnect and retry to see the café’s published products."
               }
               action={
@@ -340,12 +430,12 @@ export default function BrowseMenuPage() {
                   className="btn-secondary"
                   type="button"
                   onClick={() => {
-                    setQuery("");
+                    resetFilters();
                     if (groups[0]) selectCategory(groups[0].id);
                     if (!menuItems.length) void refetch();
                   }}
                 >
-                  Reset & retry
+                  {menuItems.length ? "Show the full menu" : "Retry loading"}
                 </button>
               }
             />

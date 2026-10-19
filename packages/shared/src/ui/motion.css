@@ -1,0 +1,224 @@
+/* packages/shared/src/ui/motion.css
+   One motion grammar for Customer, POS and Admin.
+   Enter with ease-out, exit with ease-in, feedback stays short.
+   Under reduced motion every spatial animation becomes an opacity change. */
+
+:root {
+  --jm-duration-none: 0ms;
+  --jm-duration-instant: 90ms;
+  --jm-duration-fast: 140ms;
+  --jm-duration-base: 220ms;
+  --jm-duration-slow: 320ms;
+  --jm-duration-slower: 480ms;
+  --jm-duration-sweep: 1600ms;
+  --jm-duration-trickle: 9000ms;
+  --jm-delay-skeleton: 120ms;
+  --jm-stagger-step: 38ms;
+  --jm-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --jm-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --jm-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --jm-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --jm-distance-xs: 0.125rem;
+  --jm-distance-sm: 0.25rem;
+  --jm-distance-md: 0.5rem;
+  --jm-distance-lg: 1rem;
+  --jm-press-scale: 0.97;
+  --jm-press-scale-small: 0.92;
+  --jm-hover-lift: -0.125rem;
+  --jm-progress-height: 0.1875rem;
+  --jm-progress-color: currentColor;
+}
+
+@keyframes jm-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes jm-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes jm-rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--jm-distance-md), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes jm-drop-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, calc(var(--jm-distance-sm) * -1), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes jm-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes jm-pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes jm-shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  20%,
+  60% {
+    transform: translate3d(calc(var(--jm-distance-sm) * -1), 0, 0);
+  }
+  40%,
+  80% {
+    transform: translate3d(var(--jm-distance-sm), 0, 0);
+  }
+}
+@keyframes jm-progress-trickle {
+  from {
+    transform: scaleX(0);
+  }
+  12% {
+    transform: scaleX(0.32);
+  }
+  45% {
+    transform: scaleX(0.66);
+  }
+  to {
+    transform: scaleX(0.9);
+  }
+}
+
+/* Content arriving after a skeleton. */
+.jm-reveal {
+  animation: jm-rise-in var(--jm-duration-slow) var(--jm-ease-enter) both;
+}
+.jm-fade {
+  animation: jm-fade-in var(--jm-duration-base) var(--jm-ease-standard) both;
+}
+.jm-pop {
+  animation: jm-pop var(--jm-duration-slow) var(--jm-ease-spring) both;
+}
+.jm-shake {
+  animation: jm-shake var(--jm-duration-slow) var(--jm-ease-standard) both;
+}
+
+/* Lists: each of the first twelve children arrives a beat after the previous
+   one; anything later arrives with the twelfth so long lists never feel slow. */
+.jm-stagger > * {
+  animation: jm-rise-in var(--jm-duration-slow) var(--jm-ease-enter) both;
+  animation-delay: calc(var(--jm-i, 12) * var(--jm-stagger-step));
+}
+.jm-stagger > :nth-child(1) {
+  --jm-i: 0;
+}
+.jm-stagger > :nth-child(2) {
+  --jm-i: 1;
+}
+.jm-stagger > :nth-child(3) {
+  --jm-i: 2;
+}
+.jm-stagger > :nth-child(4) {
+  --jm-i: 3;
+}
+.jm-stagger > :nth-child(5) {
+  --jm-i: 4;
+}
+.jm-stagger > :nth-child(6) {
+  --jm-i: 5;
+}
+.jm-stagger > :nth-child(7) {
+  --jm-i: 6;
+}
+.jm-stagger > :nth-child(8) {
+  --jm-i: 7;
+}
+.jm-stagger > :nth-child(9) {
+  --jm-i: 8;
+}
+.jm-stagger > :nth-child(10) {
+  --jm-i: 9;
+}
+.jm-stagger > :nth-child(11) {
+  --jm-i: 10;
+}
+.jm-stagger > :nth-child(12) {
+  --jm-i: 11;
+}
+
+/* Route progress: a thin bar that trickles while the next page loads and
+   completes when it arrives. Hidden for navigations faster than the delay. */
+.jm-route-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 2147483000;
+  height: var(--jm-progress-height);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--jm-duration-base) var(--jm-ease-standard);
+}
+.jm-route-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--jm-progress-color);
+  border-radius: 0 var(--jm-progress-height) var(--jm-progress-height) 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.jm-route-progress[data-state="loading"] {
+  opacity: 1;
+  transition-delay: var(--jm-delay-skeleton);
+}
+.jm-route-progress[data-state="loading"] > span {
+  animation: jm-progress-trickle var(--jm-duration-trickle) var(--jm-ease-enter)
+    forwards;
+}
+.jm-route-progress[data-state="done"] {
+  opacity: 0;
+  transition-delay: var(--jm-duration-fast);
+}
+.jm-route-progress[data-state="done"] > span {
+  transform: scaleX(1);
+  transition: transform var(--jm-duration-base) var(--jm-ease-enter);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jm-reveal,
+  .jm-stagger > *,
+  .jm-pop,
+  .jm-shake {
+    animation-name: jm-fade-in;
+    animation-duration: var(--jm-duration-fast);
+    animation-delay: var(--jm-duration-none);
+  }
+  .jm-route-progress[data-state="loading"] > span {
+    animation: none;
+    transform: scaleX(0.6);
+  }
+}

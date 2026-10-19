@@ -3,15 +3,25 @@
 
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { resolveCustomerPortalUrl } from "@cafeos/shared/customer-url";
+import { StartupScreen } from "@cafeos/shared/ui/startup-screen";
 import { OperationsProvider } from "../../components/Operations";
 import { Topbar } from "../../components/Topbar";
 import { Sidebar } from "../../components/Sidebar";
 import { BrandArtwork } from "@cafeos/shared/brand";
-import { LoadingRows } from "../../components/Operations";
+
+const ADMIN_STEPS = [
+  "Checking your session…",
+  "Verifying admin access…",
+  "Opening the back office…",
+];
+const SPLASH_MINIMUM = 650;
+const SPLASH_EXIT = 340;
+import { AdminNotificationsProvider } from "../../components/notifications/AdminNotifications";
+import { BackToTop } from "../../components/BackToTop";
 
 export default function AdminLayout({
   children,
@@ -48,7 +58,7 @@ export default function AdminLayout({
       return;
     }
 
-    // Staff users are not allowed — redirect to Customer app
+    // Staff users are not allowed  -  redirect to Customer app
     if (resolvedRole === "staff") {
       void handleSignOut();
       window.location.href = resolveCustomerPortalUrl(
@@ -72,35 +82,62 @@ export default function AdminLayout({
     sessionError,
   ]);
 
+  // The branded opening screen stays for at least a moment so it reads as a
+  // deliberate step, then fades over the workspace that is already loading.
+  const ready = initialized && !!user && !!resolvedRole && hasAccess;
+  const openedAt = useRef(0);
+  const [splash, setSplash] = useState<"show" | "leaving" | "gone">("show");
+  useEffect(() => {
+    if (!openedAt.current) openedAt.current = Date.now();
+  }, []);
+  useEffect(() => {
+    if (!ready || splash !== "show") return;
+    const wait = Math.max(0, SPLASH_MINIMUM - (Date.now() - openedAt.current));
+    const timer = setTimeout(() => setSplash("leaving"), wait);
+    return () => clearTimeout(timer);
+  }, [ready, splash]);
+  useEffect(() => {
+    if (splash !== "leaving") return;
+    const timer = setTimeout(() => setSplash("gone"), SPLASH_EXIT);
+    return () => clearTimeout(timer);
+  }, [splash]);
+  const splashStep = !initialized ? 0 : !resolvedRole ? 1 : 2;
+
   if (!initialized || !user || !resolvedRole || !hasAccess) {
+    const needsRecovery =
+      initialized &&
+      (profileError || sessionError || (user && !profile && !profileLoading));
+    // While access is being verified, show the opening screen without
+    // exposing any navigation or data.
+    if (!needsRecovery && !profileError && !sessionError)
+      return (
+        <StartupScreen
+          app="Back office"
+          steps={ADMIN_STEPS}
+          step={splashStep}
+          footer="Jayds Café · Admin"
+        />
+      );
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center space-y-4 p-6">
-          <div style={{ width: 220, margin: "0 auto" }}>
+      <div className="ask-gate">
+        <div className="ask-gate-card jm-reveal">
+          <div className="ask-gate-logo">
             <BrandArtwork variant="lockup" />
           </div>
-          {!profileError && !sessionError && (
-            <LoadingRows label="Opening Admin…" rows={2} />
-          )}
-          <p
-            role="status"
-            className={profileError || sessionError ? "" : "sr-only"}
-          >
+          <p role="status" className="ask-gate-title">
             {profileError || sessionError
               ? "Let’s reconnect your account"
               : "Opening Admin…"}
           </p>
-          {initialized &&
-            (profileError ||
-              sessionError ||
-              (user && !profile && !profileLoading)) && (
-              <>
-                <p>
-                  Your account could not load. Try again, or sign out and sign
-                  back in.
-                </p>
+          {needsRecovery && (
+            <>
+              <p className="ask-gate-copy">
+                Your account could not load. Try again, or sign out and sign
+                back in.
+              </p>
+              <div className="ask-gate-actions">
                 <button
-                  className="ops-button"
+                  className="ops-button primary"
                   disabled={profileLoading}
                   onClick={() => void refreshProfile()}
                 >
@@ -109,8 +146,9 @@ export default function AdminLayout({
                 <button className="ops-button" onClick={handleSignOut}>
                   Sign out
                 </button>
-              </>
-            )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
@@ -118,17 +156,30 @@ export default function AdminLayout({
 
   return (
     <OperationsProvider>
-      <div className="admin-shell">
-        <Sidebar
-          role="admin"
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
-        <div className="ops-main">
-          <Topbar onMenu={() => setSidebarOpen(true)} />
-          <main>{children}</main>
+      <AdminNotificationsProvider>
+        <div className="admin-shell">
+          <a className="ui-skip-link" href="#admin-content">Skip to content</a>
+          <Sidebar
+            role="admin"
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+          <div className="ops-main">
+            <Topbar onMenu={() => setSidebarOpen(true)} />
+            <main id="admin-content" tabIndex={-1}>{children}</main>
+          </div>
+          <BackToTop />
         </div>
-      </div>
+        {splash !== "gone" && (
+          <StartupScreen
+            app="Back office"
+            steps={ADMIN_STEPS}
+            step={2}
+            leaving={splash === "leaving"}
+            footer="Jayds Café · Admin"
+          />
+        )}
+      </AdminNotificationsProvider>
     </OperationsProvider>
   );
 }

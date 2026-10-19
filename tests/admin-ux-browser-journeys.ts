@@ -1,3 +1,4 @@
+import { selectAdminOption } from "./admin-select";
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -344,9 +345,8 @@ export async function adminUxJourneys({
   await capture("forecast");
   await page.getByRole("button", { name: "Past usage", exact: true }).click();
   await page.getByRole("heading", { name: /Daily usage/ }).waitFor();
-  await page
-    .getByRole("combobox", { name: "Detail forecast horizon" })
-    .selectOption("30");
+  await selectAdminOption(page
+    .getByRole("combobox", { name: "Detail forecast horizon" }), "30");
   await page
     .getByText("View numbers and forecast details", { exact: true })
     .click();
@@ -378,7 +378,7 @@ export async function adminUxJourneys({
   await page.getByRole("button", { name: /Review drafts/ }).click();
   await expect(
     page.getByRole("combobox", { name: "Order status" }),
-  ).toHaveValue("draft");
+  ).toHaveAttribute("data-value", "draft");
   let uploadFails = true;
   await page.context().route(
     (url) => url.pathname.endsWith("/api/menu/images"),
@@ -477,9 +477,8 @@ export async function adminUxJourneys({
     page.getByRole("button", { name: "Download selected data" }),
   ).toBeDisabled();
   await page.getByLabel("Select all", { exact: true }).check();
-  await page
-    .getByRole("combobox", { name: "Export format" })
-    .selectOption("json");
+  await selectAdminOption(page
+    .getByRole("combobox", { name: "Export format" }), "json");
   const allDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download selected data" }).click();
   const allFile = await allDownload;

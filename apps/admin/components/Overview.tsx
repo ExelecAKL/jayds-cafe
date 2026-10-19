@@ -3,19 +3,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { useOrders } from "@cafeos/shared/hooks/useOrders";
+import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import {
   Badge,
-  Feedback,
   Icon,
-  PageHeader,
+  LoadingRows,
   peso,
   quantity,
   useOperations,
   type IconName,
 } from "./Operations";
 import { OrderDetailsModal } from "./OrderDetailsModal";
-import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { PaginatedTable } from "./PaginatedTable";
+import { SalesChart } from "./dashboard/SalesChart";
+
 interface Sales {
   revenue: number;
   orders: number;
@@ -24,14 +25,24 @@ interface Sales {
   stock_conflicts: number;
   days: { date: string; revenue: number }[];
 }
+
 export default function Overview() {
   const ops = useOperations();
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
-  const request = useRef(0);
   const [days, setDays] = useState(7);
   const [sales, setSales] = useState<Sales | null>(null);
+  const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
-  const { orders } = useOrders({
+  const [updated, setUpdated] = useState<string | null>(null);
+  const [exported, setExported] = useState(false);
+  const request = useRef(0);
+  const mounted = useRef(false);
+  const {
+    orders,
+    loading: ordersLoading,
+    error: ordersError,
+    refetch,
+  } = useOrders({
     limit: 6,
     includeCustomer: true,
     includeStatusHistory: false,
@@ -39,22 +50,34 @@ export default function Overview() {
   });
   const fetchSales = useCallback(async () => {
     const version = ++request.current;
+    setBusy(true);
     try {
-      const { data, error } = await withRequestDeadline((signal) =>
+      const { data, error: failure } = await withRequestDeadline((signal) =>
         supabase.rpc("inv_dashboard", { p_days: days }).abortSignal(signal),
       );
-      if (version !== request.current) return;
-      if (error) throw new Error("Sales could not load. Try Refresh.");
+      if (!mounted.current || version !== request.current) return;
+      if (failure || !data)
+        throw new Error("Sales could not load. Refresh to try again.");
       setSales(data);
       setError("");
+      setUpdated(
+        new Date().toLocaleTimeString("en-PH", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone: "Asia/Manila",
+        }),
+      );
     } catch (failure) {
-      if (version === request.current)
+      if (mounted.current && version === request.current)
         setError(
           failure instanceof Error ? failure.message : "Sales could not load.",
         );
+    } finally {
+      if (mounted.current && version === request.current) setBusy(false);
     }
   }, [days]);
   useEffect(() => {
+    mounted.current = true;
     void Promise.resolve().then(fetchSales);
     const channel = supabase
       .channel("jayds-overview-orders")
@@ -66,10 +89,13 @@ export default function Overview() {
       .subscribe();
     const timer = setInterval(() => void fetchSales(), 30_000);
     return () => {
+      mounted.current = false;
       clearInterval(timer);
       void supabase.removeChannel(channel);
     };
   }, [fetchSales]);
+
+  const stockReady = !ops.loading && !ops.error;
   const low = ops.stock.filter(
     (item) => Number(item.available_stock) <= Number(item.min_stock_alert),
   );
@@ -78,350 +104,503 @@ export default function Overview() {
       f.horizon === 14 && Number(f.excess_quantity) > 0 && f.history_days >= 14,
   );
   const expiring = ops.stock.filter((item) => Number(item.expiring_stock) > 0);
+  const drafts = ops.purchases.filter((po) => po.status === "draft");
   const incoming = ops.purchases.filter((po) =>
     ["approved", "ordered", "partial"].includes(po.status),
   );
-  const drafts = ops.purchases.filter((po) => po.status === "draft");
-  const forecastTimestamp = ops.forecasts[0]?.calculated_at;
-  const forecastDate = forecastTimestamp ? new Date(forecastTimestamp) : null;
-  const forecastUpdated =
-    forecastDate && Number.isFinite(forecastDate.getTime())
-      ? forecastDate.toLocaleString("en-PH", { timeZone: "Asia/Manila" })
-      : null;
-  const max = Math.max(
-    ...(sales?.days.map((day) => Number(day.revenue)) ?? [0]),
-    1,
+  const actions: {
+    title: string;
+    detail: string;
+    value: number | null;
+    href: string;
+    icon: IconName;
+  }[] = [
+    {
+      title: "Orders blocked by stock",
+      detail: "Resolve before preparation",
+      value: sales?.stock_conflicts ?? null,
+      href: "/orders?filter=stock_conflict",
+      icon: "orders",
+    },
+    {
+      title: "Low and unavailable stock",
+      detail: "Review items to replenish",
+      value: stockReady ? low.length : null,
+      href: "/inventory?filter=low",
+      icon: "stock",
+    },
+    {
+      title: "Excess stock",
+      detail: "Check forecast coverage",
+      value: stockReady ? excess.length : null,
+      href: "/inventory?tab=forecasts&filter=overstock",
+      icon: "reports",
+    },
+    {
+      title: "Expiry checks",
+      detail: "Batches expiring within 14 days",
+      value: stockReady ? expiring.length : null,
+      href: "/inventory?filter=expiry",
+      icon: "shield",
+    },
+  ];
+  const attention = actions.reduce(
+    (sum, action) => sum + (action.value ?? 0),
+    0,
   );
   const metrics: {
     label: string;
-    value: string;
+    value: string | null;
     note: string;
     icon: IconName;
     href: string;
   }[] = [
     {
-      label: "Sales collected",
-      value: sales ? peso(sales.revenue) : "—",
-      note: `Last ${days} days · paid, active sales`,
-      icon: "reports",
-      href: "/analytics",
-    },
-    {
       label: "Orders received",
-      value: sales ? quantity(sales.orders) : "—",
-      note: `${sales ? peso(sales.average) : "—"} average paid order`,
+      value: sales ? quantity(sales.orders) : null,
+      note: sales
+        ? `${peso(sales.average)} avg. paid order`
+        : "All ordering channels",
       icon: "orders",
       href: "/orders",
     },
     {
       label: "Active orders",
-      value: sales ? quantity(sales.active) : "—",
-      note: "Across POS and mobile",
+      value: sales ? quantity(sales.active) : null,
+      note: "Across counter and mobile",
       icon: "coffee",
       href: "/orders",
     },
     {
       label: "Stock on hand value",
-      value:
-        ops.error || ops.loading
-          ? "—"
-          : peso(
-              ops.stock.reduce(
-                (sum, item) => sum + Number(item.stock_value),
-                0,
-              ),
-            ),
+      value: stockReady
+        ? peso(
+            ops.stock.reduce((sum, item) => sum + Number(item.stock_value), 0),
+          )
+        : null,
       note: "Recorded receipt costs",
       icon: "stock",
       href: "/inventory",
     },
   ];
+  const refresh = () => {
+    void fetchSales();
+    void ops.refresh();
+    void refetch();
+  };
+  const exportReport = () => {
+    if (!sales || error) return;
+    const csv =
+      "\uFEFFDate,Collected sales (PHP)\r\n" +
+      sales.days
+        .map((day) => `${day.date},${Number(day.revenue).toFixed(2)}`)
+        .join("\r\n");
+    const url = URL.createObjectURL(
+      new Blob([csv], { type: "text/csv;charset=utf-8" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `jayds-sales-${days}-days.csv`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setExported(true);
+  };
+
   return (
-    <div>
-      <PageHeader
-        eyebrow="Your café, at a glance"
-        title="Café overview"
-        description="A clear view of today’s service, stock, and next steps."
-      >
-        <select
-          className="ops-button"
-          aria-label="Reporting period"
-          value={days}
-          onChange={(event) => setDays(Number(event.target.value))}
-        >
-          <option value={7}>Last 7 days</option>
-          <option value={30}>Last 30 days</option>
-        </select>
-        <button
-          className="ops-button"
-          onClick={() => {
-            void fetchSales();
-            void ops.refresh();
-          }}
-        >
-          <Icon name="refresh" />
-          Refresh
-        </button>
-      </PageHeader>
-      <Feedback error={ops.error || error} />
-      {ops.settings && !ops.settings.enforcement_enabled && (
-        <div className="ops-notice">
-          <Icon name="shield" />
-          <p>
-            <strong>Inventory setup needs attention.</strong>{" "}
-            {ops.readiness
-              ? ops.readiness.ready
-                ? "Setup checks passed. Inventory can now be activated."
-                : `${ops.readiness.missing_counts.length} stock items need posted counts; ${ops.readiness.missing_recipes.length} products need recipes.`
-              : "Checking recipes and opening stock counts…"}
+    <div className="dashboard">
+      <header className="dashboard-heading">
+        <div>
+          <p className="dashboard-eyebrow">
+            <span className="dashboard-wordmark">JAYDS</span> YOUR DAILY
+            PERSPECTIVE
           </p>
-          <Link href="/inventory?setup=1" className="ops-button small">
+          <h1>Café overview</h1>
+          <p className="dashboard-subtitle">
+            A little clarity for everything you’re brewing.
+          </p>
+        </div>
+        <button
+          className="ui-button primary"
+          onClick={exportReport}
+          disabled={!sales || Boolean(error) || busy}
+        >
+          <Icon name="reports" />
+          Export report
+          <Icon name="arrow" />
+        </button>
+      </header>
+
+      <div className="dashboard-toolbar">
+        <div
+          className="dashboard-period"
+          role="group"
+          aria-label="Reporting period"
+        >
+          {[7, 30].map((period) => (
+            <button
+              type="button"
+              key={period}
+              aria-pressed={days === period}
+              onClick={() => {
+                if (period !== days) {
+                  setSales(null);
+                  setError("");
+                  setExported(false);
+                  setBusy(true);
+                  setDays(period);
+                }
+              }}
+            >
+              Last {period} days
+            </button>
+          ))}
+        </div>
+        <div className="dashboard-freshness">
+          <span>
+            <Icon name="clock" size={15} />
+            {updated ? `Updated ${updated} PHT` : "Connecting to your café"}
+          </span>
+          <button
+            className="ui-button"
+            disabled={busy}
+            aria-label="Refresh dashboard"
+            onClick={refresh}
+          >
+            <span className={busy ? "ui-spin" : ""}>
+              <Icon name="refresh" size={16} />
+            </span>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+      <p className="sr-only" role="status">
+        {busy
+          ? "Updating dashboard"
+          : exported
+            ? "Sales report downloaded"
+            : error
+              ? "Sales unavailable"
+              : `Dashboard updated. Last ${days} days.`}
+      </p>
+      {(ops.error || error) && (
+        <div className="dashboard-feedback" role="alert">
+          <Icon name="alert" />
+          <div>
+            <strong>Some data is unavailable</strong>
+            <p>
+              {error || ops.error}
+              {sales ? " Previously loaded figures are still shown." : ""}
+            </p>
+          </div>
+          <button className="ui-button" disabled={busy} onClick={refresh}>
+            Try again
+          </button>
+        </div>
+      )}
+      {ops.settings && !ops.settings.enforcement_enabled && (
+        <div className="dashboard-feedback">
+          <Icon name="shield" />
+          <div>
+            <strong>Finish your inventory setup</strong>
+            <p>
+              {ops.readiness?.ready
+                ? "Your setup checks passed. Inventory is ready to activate."
+                : "Review opening counts and product recipes."}
+            </p>
+          </div>
+          <Link className="ui-button" href="/inventory?setup=1">
             Review setup
-            <Icon name="arrow" size={14} />
+            <Icon name="arrow" size={15} />
           </Link>
         </div>
       )}
-      <div className="ops-metrics">
-        {metrics.map((metric) => (
-          <Link className="ops-metric" href={metric.href} key={metric.label}>
-            <div className="ops-metric-label">
-              {metric.label}
-              <Icon name={metric.icon} />
-            </div>
-            <div className="ops-metric-value">{metric.value}</div>
-            <small>{metric.note}</small>
-          </Link>
-        ))}
-      </div>
-      <div className="ops-quick-actions">
-        <span>Quick actions</span>
-        <Link href="/orders">
-          <Icon name="orders" />
-          View orders
-        </Link>
-        <Link href="/menu">
-          <Icon name="catalog" />
-          Edit menu
-        </Link>
-        <Link href="/inventory?tab=stocktakes">
-          <Icon name="stock" />
-          Count stock
-        </Link>
-        <Link href="/purchasing">
-          <Icon name="purchase" />
-          Receive supplies
-        </Link>
-      </div>
-      <div className="ops-overview-grid">
-        <section className="ops-panel">
-          <div className="ops-panel-header">
-            <div>
-              <h2>Sales performance</h2>
-              <p>Paid sales by Philippine business date</p>
-            </div>
-            <Badge tone="brand">{days} days</Badge>
+
+      <section className="dashboard-summary" aria-label="Business summary">
+        <Link className="revenue-card" href="/analytics">
+          <div className="revenue-card-top">
+            <span>
+              <Icon name="reports" />
+              Sales collected
+            </span>
+            <Icon name="arrow" />
           </div>
-          <div className="ops-bar-chart">
-            {sales?.days.map((day, index) => (
-              <div
-                key={day.date}
-                className="ops-bar-column"
-                title={`${day.date}: ${peso(day.revenue)}`}
-              >
-                <div
+          <div className="revenue-value">
+            {sales ? (
+              peso(sales.revenue)
+            ) : (
+              <span className={busy ? "ui-skeleton" : ""}>
+                {busy ? "Loading" : "Unavailable"}
+              </span>
+            )}
+          </div>
+          <div className="revenue-card-bottom">
+            <span>
+              Last {days} days<span className="revenue-separator">·</span>Paid,
+              active sales
+            </span>
+            <span className="revenue-mini-chart" aria-hidden="true">
+              {(sales?.days.slice(-12) ?? []).map((day) => (
+                <i
+                  key={day.date}
                   style={{
-                    height: `${Math.max(2, (Number(day.revenue) / max) * 100)}%`,
+                    height: `${Math.max(4, (Number(day.revenue) / Math.max(...(sales?.days.map((d) => Number(d.revenue)) ?? [1]), 1)) * 100)}%`,
                   }}
                 />
-                <span>
-                  {days === 7
-                    ? new Date(day.date + "T12:00:00Z").toLocaleDateString(
-                        "en-PH",
-                        { weekday: "short" },
-                      )
-                    : index % 5 === 0
-                      ? day.date.slice(-2)
-                      : ""}
-                </span>
-              </div>
-            ))}
+              ))}
+            </span>
           </div>
-          <p className="ops-chart-caption">
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#a97b54",
-              }}
-            />
-            {sales
-              ? `${peso(sales.revenue)} collected during this period`
-              : "Waiting for verified sales data"}
-          </p>
-        </section>
-        <section className="ops-panel">
-          <div className="ops-panel-header">
-            <div>
-              <h2>Needs your attention</h2>
-              <p>Act before stock affects service</p>
-            </div>
-            <Icon name="bell" />
-          </div>
-          {[
-            {
-              title: "Orders blocked by stock",
-              detail: "Resolve reservations before preparation",
-              value: sales?.stock_conflicts ?? 0,
-              href: "/orders?filter=stock_conflict",
-              icon: "orders" as IconName,
-            },
-            {
-              title: "Low and unavailable stock",
-              detail: "Review quantities and affected products",
-              value: low.length,
-              href: "/inventory?filter=low",
-              icon: "stock" as IconName,
-            },
-            {
-              title: "Excess stock",
-              detail: "Based on forecast coverage",
-              value: excess.length,
-              href: "/inventory?tab=forecasts&filter=overstock",
-              icon: "reports" as IconName,
-            },
-            {
-              title: "Expiry checks",
-              detail: "Batches expiring within 14 days",
-              value: expiring.length,
-              href: "/inventory?filter=expiry",
-              icon: "shield" as IconName,
-            },
-          ].map((action) => (
+        </Link>
+        <div className="supporting-metrics">
+          {metrics.map((metric) => (
             <Link
-              className="ops-action-row"
-              href={action.href}
-              key={action.title}
+              className="summary-metric"
+              href={metric.href}
+              key={metric.label}
             >
-              <span className="ops-action-icon">
-                <Icon name={action.icon} />
+              <span className="summary-metric-icon">
+                <Icon name={metric.icon} />
               </span>
-              <div>
-                <strong>{action.title}</strong>
-                <p>{action.detail}</p>
-              </div>
-              <b>{ops.error || ops.loading ? "—" : action.value}</b>
-              <Icon name="arrow" size={15} />
+              <span className="summary-metric-label">{metric.label}</span>
+              <strong className="summary-metric-value">
+                {metric.value ?? (
+                  <span className={busy || ops.loading ? "ui-skeleton" : ""}>
+                    {busy || ops.loading ? "Loading" : "Unavailable"}
+                  </span>
+                )}
+              </strong>
+              <span className="summary-metric-note">{metric.note}</span>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <div className="dashboard-main-grid">
+        <section
+          className="dashboard-panel sales-panel"
+          aria-labelledby="sales-heading"
+        >
+          <SalesChart
+            sales={sales}
+            days={days}
+            loading={busy}
+            error={error}
+            onRetry={refresh}
+          />
+        </section>
+        <section
+          className="dashboard-panel attention-panel"
+          aria-labelledby="attention-heading"
+        >
+          <div className="dashboard-panel-heading">
+            <div>
+              <p className="dashboard-kicker">KEEP SERVICE MOVING</p>
+              <h2 id="attention-heading">Needs your attention</h2>
+            </div>
+            <span
+              className="attention-count"
+              aria-label={
+                stockReady && sales
+                  ? `${attention} items to review`
+                  : "Attention data unavailable"
+              }
+            >
+              {stockReady && sales ? attention : "?"}
+            </span>
+          </div>
+          <div className="attention-list">
+            {actions.map((action) => (
+              <Link
+                className="attention-row"
+                key={action.title}
+                href={action.href}
+              >
+                <span className="dashboard-icon-tile">
+                  <Icon name={action.icon} />
+                </span>
+                <span className="attention-copy">
+                  <strong>{action.title}</strong>
+                  <small>{action.detail}</small>
+                </span>
+                <b>{action.value === null ? "?" : action.value}</b>
+                <Icon name="arrow" size={15} />
+              </Link>
+            ))}
+          </div>
+          <Link className="attention-footer" href="/inventory">
+            Open stock workspace
+            <Icon name="arrow" size={15} />
+          </Link>
         </section>
       </div>
-      <div className="ops-overview-grid">
-        <section className="ops-panel">
-          <div className="ops-panel-header">
+
+      <section className="dashboard-shortcuts" aria-label="Quick actions">
+        <span>Make your next move</span>
+        {(
+          [
+            { href: "/orders", icon: "orders", label: "View orders" },
+            { href: "/menu", icon: "catalog", label: "Edit menu" },
+            {
+              href: "/inventory?tab=stocktakes",
+              icon: "stock",
+              label: "Count stock",
+            },
+            {
+              href: "/purchasing",
+              icon: "purchase",
+              label: "Receive supplies",
+            },
+          ] as const
+        ).map((action) => (
+          <Link href={action.href} key={action.href}>
+            <Icon name={action.icon} size={17} />
+            {action.label}
+            <Icon name="arrow" size={14} />
+          </Link>
+        ))}
+      </section>
+
+      <div className="dashboard-main-grid">
+        <section
+          className="dashboard-panel orders-panel"
+          aria-labelledby="recent-heading"
+        >
+          <div className="dashboard-panel-heading">
             <div>
-              <h2>Recent orders</h2>
-              <p>One order stream for the counter and mobile app</p>
+              <p className="dashboard-kicker">FROM COUNTER TO MOBILE</p>
+              <h2 id="recent-heading">Recent orders</h2>
             </div>
-            <Link href="/orders">
+            <Link className="dashboard-text-link" href="/orders">
               All orders
-              <Icon name="arrow" size={14} />
+              <Icon name="arrow" size={15} />
             </Link>
           </div>
-          <div className="ops-table-wrap">
-            <PaginatedTable aria-label="Recent orders" className="ops-table">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Customer</th>
-                  <th>Channel</th>
-                  <th>Status</th>
-                  <th className="number">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id}>
-                    <td>
-                      <button
-                        className="item-name ops-text-button"
-                        onClick={() => setSelectedOrder(order.id)}
-                      >
-                        {order.order_number}
-                      </button>
-                    </td>
-                    <td>{order.customer?.full_name || "Walk-in / guest"}</td>
-                    <td>
-                      {order.order_source === "pos" ? "Counter" : "Mobile"}
-                    </td>
-                    <td>
-                      <Badge
-                        tone={
-                          order.status === "cancelled"
-                            ? "danger"
-                            : order.status === "completed"
-                              ? "success"
-                              : "brand"
-                        }
-                      >
-                        {order.status}
-                      </Badge>
-                    </td>
-                    <td className="number">{peso(order.total)}</td>
-                  </tr>
-                ))}
-                {!orders.length && (
+          {ordersLoading ? (
+            <LoadingRows label="Loading recent orders" rows={4} />
+          ) : ordersError ? (
+            <div className="dashboard-empty">
+              <Icon name="alert" />
+              <h3>Orders could not load</h3>
+              <button className="ui-button" onClick={() => void refetch()}>
+                Retry orders
+              </button>
+            </div>
+          ) : !orders.length ? (
+            <div className="dashboard-empty">
+              <Icon name="coffee" size={30} />
+              <h3>Ready for your next order</h3>
+              <p>New counter and mobile orders will appear here.</p>
+              <Link className="ui-button" href="/orders">
+                View orders
+                <Icon name="arrow" size={15} />
+              </Link>
+            </div>
+          ) : (
+            <div
+              className="dashboard-table-scroll"
+              role="region"
+              aria-label="Recent orders table"
+              tabIndex={0}
+            >
+              <PaginatedTable
+                className="dashboard-table"
+                aria-label="Recent orders"
+              >
+                <thead>
                   <tr>
-                    <td colSpan={5} className="ops-muted">
-                      No orders to display yet.
-                    </td>
+                    <th>Order / customer</th>
+                    <th>Channel</th>
+                    <th>Status</th>
+                    <th className="number">Total</th>
                   </tr>
-                )}
-              </tbody>
-            </PaginatedTable>
-          </div>
+                </thead>
+                <tbody>
+                  {orders.map((order) => (
+                    <tr key={order.id}>
+                      <td>
+                        <button
+                          className="dashboard-order-link"
+                          onClick={() => setSelectedOrder(order.id)}
+                        >
+                          {order.order_number}
+                          <Icon name="arrow" size={13} />
+                        </button>
+                        <small>
+                          {order.customer?.full_name || "Walk-in / guest"}
+                        </small>
+                      </td>
+                      <td>
+                        <span className="order-channel">
+                          <Icon
+                            name={
+                              order.order_source === "pos" ? "coffee" : "orders"
+                            }
+                            size={14}
+                          />
+                          {order.order_source === "pos" ? "Counter" : "Mobile"}
+                        </span>
+                      </td>
+                      <td>
+                        <Badge
+                          tone={
+                            order.status === "cancelled"
+                              ? "danger"
+                              : order.status === "completed"
+                                ? "success"
+                                : "brand"
+                          }
+                        >
+                          {order.status.replaceAll("_", " ")}
+                        </Badge>
+                      </td>
+                      <td className="number">{peso(order.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </PaginatedTable>
+            </div>
+          )}
         </section>
-        <section className="ops-panel">
-          <div className="ops-panel-header">
+        <section
+          className="dashboard-panel purchasing-panel"
+          aria-labelledby="purchase-heading"
+        >
+          <div className="dashboard-panel-heading">
             <div>
-              <h2>Stock to reorder</h2>
-              <p>Prepared suggestions, reviewed by you</p>
+              <p className="dashboard-kicker">PLAN AHEAD</p>
+              <h2 id="purchase-heading">Stock to reorder</h2>
             </div>
-            <Link href="/purchasing">
-              Purchasing
-              <Icon name="arrow" size={14} />
-            </Link>
+            <Icon name="purchase" />
           </div>
-          <Link className="ops-action-row" href="/purchasing?filter=draft">
-            <span className="ops-action-icon">
-              <Icon name="purchase" />
-            </span>
+          <div className="purchase-summary">
+            <strong>{stockReady ? drafts.length : "?"}</strong>
             <div>
-              <strong>Purchase drafts</strong>
-              <p>Review before approving supplier orders</p>
+              <h3>Purchase drafts</h3>
+              <p>Ready for your review</p>
             </div>
-            <b>{ops.error ? "—" : drafts.length}</b>
-          </Link>
-          <Link className="ops-action-row" href="/purchasing?filter=incoming">
-            <span className="ops-action-icon">
-              <Icon name="stock" />
-            </span>
-            <div>
-              <strong>Incoming deliveries</strong>
-              <p>Receive actual quantities and batches</p>
-            </div>
-            <b>{ops.error ? "—" : incoming.length}</b>
-          </Link>
-          <div className="ops-action-row">
-            <Icon name="refresh" size={15} />
-            <p>
-              {forecastUpdated
-                ? `Forecast refreshed ${forecastUpdated}`
-                : "Refresh forecasts after recording sales history."}
-            </p>
           </div>
+          <p className="purchase-description">
+            Review quantities before approving supplier orders.
+          </p>
+          <Link className="ui-button" href="/purchasing?filter=draft">
+            Review drafts
+            <Icon name="arrow" size={16} />
+          </Link>
+          <Link className="incoming-link" href="/purchasing?filter=incoming">
+            <Icon name="stock" />
+            <span>Incoming deliveries</span>
+            <b>{stockReady ? incoming.length : "?"}</b>
+            <Icon name="arrow" size={15} />
+          </Link>
         </section>
       </div>
+      <footer className="dashboard-footer">
+        <span>
+          <Icon name="coffee" size={16} />A clear view. A well-run café.
+        </span>
+        <span>
+          Jayds Café<span aria-hidden="true"> / </span>Back office
+        </span>
+      </footer>
       {selectedOrder && (
         <OrderDetailsModal
           orderId={selectedOrder}

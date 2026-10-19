@@ -1054,7 +1054,7 @@ try {
     );
     await expect(soldOutCard.locator(".product-price")).toHaveCSS(
       "color",
-      "rgb(115, 115, 115)",
+      "rgb(98, 91, 85)",
     );
     assert.equal(
       await page.locator(".product-card .favorite-button").count(),
@@ -1216,13 +1216,17 @@ try {
     await map.getByRole("button", { name: "Close map", exact: true }).click();
     await page.goto(base + "/cart");
     await page.getByRole("button", { name: "Pickup", exact: true }).click();
+    if (!(await page.locator("#bag-voucher").isVisible()))
+      await page.getByText("Enter a voucher code", { exact: true }).click();
     await page.locator("#bag-voucher").fill("EXPIRED");
-    await page.getByRole("button", { name: "Apply", exact: true }).click();
+    await page.getByRole("button", { name: "Apply code", exact: true }).click();
     await page
       .getByText("This demo voucher has expired.", { exact: true })
       .waitFor();
+    if (!(await page.locator("#bag-voucher").isVisible()))
+      await page.getByText("Enter a voucher code", { exact: true }).click();
     await page.locator("#bag-voucher").fill("DEMO10");
-    await page.getByRole("button", { name: "Apply", exact: true }).click();
+    await page.getByRole("button", { name: "Apply code", exact: true }).click();
     await page.getByText("DEMO10 applied", { exact: false }).waitFor();
     await page.goto(base + "/checkout");
     await page
@@ -1818,8 +1822,10 @@ try {
       "Historical account must separately acknowledge the current version",
     );
     await page.goto(base + "/cart");
+    if (!(await page.locator("#bag-voucher").isVisible()))
+      await page.getByText("Enter a voucher code", { exact: true }).click();
     await page.locator("#bag-voucher").fill("DEMO10");
-    await page.getByRole("button", { name: "Apply", exact: true }).click();
+    await page.getByRole("button", { name: "Apply code", exact: true }).click();
     await page.getByText("DEMO10 applied", { exact: false }).waitFor();
     await page.getByLabel(/Use rewards points/).fill("10");
     await page.goto(base + "/checkout");
@@ -1912,10 +1918,12 @@ try {
     assert.deepEqual(errors, []);
   }
 } catch (error) {
+  console.error("Customer browser audit failed:", error);
   await page.screenshot({
     path: path.join(output, "customer-error.png"),
     fullPage: true,
-  });
+    timeout: 5000,
+  }).catch(() => console.error("Failure screenshot unavailable; retaining the original error."));
   console.log(
     JSON.stringify(
       await page.evaluate(() => ({

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { MenuItem } from "@cafeos/shared/types";
 import { useCustomerFavorites } from "../context/CustomerFeatures";
+import { useCustomerToast } from "../context/CustomerToast";
 import Icon from "./Icon";
 export default function FavoriteButton({
   item,
@@ -11,6 +12,7 @@ export default function FavoriteButton({
   className?: string;
 }) {
   const { isFavorite, toggle } = useCustomerFavorites();
+  const notify = useCustomerToast();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const selected = isFavorite(item.id);
@@ -27,6 +29,17 @@ export default function FavoriteButton({
           setError("");
           try {
             await toggle(item);
+            notify(
+              selected
+                ? `${item.name} removed from favorites`
+                : `${item.name} saved to favorites`,
+              {
+                icon: "heart",
+                action: selected
+                  ? undefined
+                  : { label: "View", href: "/favorites" },
+              },
+            );
           } catch {
             setError("Could not save favorite. Try again.");
           } finally {
@@ -37,7 +50,7 @@ export default function FavoriteButton({
         <Icon name="heart" />
       </button>
       {error && (
-        <p role="alert" className="mt-1 text-xs text-red-700">
+        <p role="alert" className="mt-1 text-xs text-error">
           {error}
         </p>
       )}

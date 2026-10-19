@@ -3,9 +3,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
-import { Icon } from "./Operations";
+import { Icon, useOperations } from "./Operations";
 import { BrandArtwork, BrandIcon } from "@cafeos/shared/brand";
 import { adminNavGroups as groups, isNavActive } from "./adminNav";
+import { useAdminNotifications } from "./notifications/AdminNotifications";
 export function Sidebar({
   isOpen = false,
   onClose,
@@ -17,6 +18,15 @@ export function Sidebar({
   const pathname = usePathname();
   const { profile, signOut } = useAuth();
   const sidebar = useRef<HTMLElement>(null);
+  const ops = useOperations();
+  const feed = useAdminNotifications();
+  const lowStock = ops.stock.filter(
+    (item) => Number(item.available_stock) <= Number(item.min_stock_alert),
+  ).length;
+  const badges: Record<string, { count: number; label: string }> = {
+    "/inventory": { count: lowStock, label: "low stock items" },
+    "/notifications": { count: feed.unreadCount, label: "unread notifications" },
+  };
   useEffect(() => {
     if (!isOpen) return;
     const previousFocus = document.activeElement as HTMLElement | null;
@@ -46,6 +56,7 @@ export function Sidebar({
     <>
       {isOpen && <div className="ops-sidebar-backdrop" onClick={onClose} />}
       <aside
+        id="admin-navigation"
         ref={sidebar}
         aria-label="Admin navigation"
         className={"ops-sidebar " + (isOpen ? "open" : "")}
@@ -67,8 +78,7 @@ export function Sidebar({
             <small>BACK OFFICE</small>
           </span>
         </Link>
-        <div className="ops-sidebar-label">ONE BRANCH. ONE WORKSPACE.</div>
-        <nav>
+        <nav aria-label="Admin sections">
           {groups.map((group) => (
             <div className="ops-nav-group" key={group.label}>
               <h3>{group.label}</h3>
@@ -84,7 +94,17 @@ export function Sidebar({
                 >
                   <Icon name={item.icon} />
                   <span>{item.label}</span>
-                  {isNavActive(pathname, item.href) && <i />}
+                  {badges[item.href]?.count ? (
+                    <b
+                      key={badges[item.href].count}
+                      className="ops-nav-badge jm-pop"
+                      aria-label={`${badges[item.href].count} ${badges[item.href].label}`}
+                    >
+                      {badges[item.href].count > 99 ? "99+" : badges[item.href].count}
+                    </b>
+                  ) : (
+                    isNavActive(pathname, item.href) && <i />
+                  )}
                 </Link>
               ))}
             </div>
@@ -98,7 +118,11 @@ export function Sidebar({
             <strong>{profile?.full_name || "Café administrator"}</strong>
             <small>Administrator</small>
           </div>
-          <button aria-label="Sign out" onClick={() => void signOut()}>
+          <button
+            aria-label="Sign out"
+            title="Sign out"
+            onClick={() => void signOut()}
+          >
             <Icon name="logout" />
           </button>
         </div>

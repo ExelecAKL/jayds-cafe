@@ -9,6 +9,7 @@ import type {
   BranchHours,
 } from "@cafeos/shared/customer/types";
 import { Feedback, PageHeader } from "./Operations";
+import { FormSkeleton } from "./AdminSkeletons";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 
 const weekdays = [
@@ -156,12 +157,12 @@ export default function SchedulingWorkspace() {
         description="Manage opening times and customer pickup."
       />
       <Feedback error={error} success={success} />
-      {!settings ? (
+      {!settings && !error ? (
+        <FormSkeleton label="Loading branch settings…" sections={2} fields={6} />
+      ) : !settings ? (
         <div className="ops-form-section">
           <p className="ops-description" role="status">
-            {error
-              ? "Branch settings could not load."
-              : "Loading branch settings…"}
+            Branch settings could not load.
           </p>
           {error && (
             <button className="ops-button" onClick={() => void load()}>
@@ -204,7 +205,7 @@ export default function SchedulingWorkspace() {
                     )
                   }
                 >
-                  Use 1 PM–10 PM for open days
+                  Use 1 PM to 10 PM for open days
                 </button>
               </div>
               {weekdays.map((name, weekday) => {

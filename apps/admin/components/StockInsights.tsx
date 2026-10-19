@@ -1,4 +1,5 @@
 "use client";
+import { AdminSelect } from "./AdminSelect";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@cafeos/shared/supabase/client";
@@ -31,6 +32,7 @@ import {
   useOperations,
   type OperationalStock,
 } from "./Operations";
+import { DetailSkeleton } from "./AdminSkeletons";
 import { OrderDetailsModal } from "./OrderDetailsModal";
 import { notifyAdmin } from "./AdminToasts";
 import { stockReason } from "../lib/stock-copy";
@@ -93,14 +95,7 @@ function ReadFeedback({
 }) {
   return (
     <>
-      {loading && (
-        <div role="status" className="ops-detail-skeleton">
-          <i />
-          <i />
-          <i />
-          <span>Opening details…</span>
-        </div>
-      )}
+      {loading && <DetailSkeleton label="Opening details…" fields={4} lines={3} />}
       <Feedback error={error} />
       {error && (
         <button className="ops-button" onClick={retry}>
@@ -359,7 +354,7 @@ export function StockForecastDrawer({
           ))}
         </div>
         <span className="spacer" />
-        <select
+        <AdminSelect
           aria-label="Detail forecast horizon"
           value={days}
           onChange={(event) => setDays(Number(event.target.value))}
@@ -369,7 +364,7 @@ export function StockForecastDrawer({
               {n} days
             </option>
           ))}
-        </select>
+        </AdminSelect>
       </div>
       <ReadFeedback {...result} />
       {d && (
@@ -385,14 +380,14 @@ export function StockForecastDrawer({
               <small>Projected coverage</small>
               <strong>
                 {f?.coverage_days == null
-                  ? "—"
+                  ? " - "
                   : `${quantity(f.coverage_days)} days`}
               </strong>
             </div>
             <div>
               <small>Suggested purchase</small>
               <strong>
-                {f ? quantity(f.reorder_quantity) : "—"}{" "}
+                {f ? quantity(f.reorder_quantity) : " - "}{" "}
                 <span>{d.stock.unit}</span>
               </strong>
             </div>
@@ -445,7 +440,7 @@ export function StockForecastDrawer({
                     <Bar
                       name={`Used (${d.stock.unit})`}
                       dataKey="quantity"
-                      fill="#9b7054"
+                      fill="var(--ui-chart-line)"
                       radius={[3, 3, 0, 0]}
                       isAnimationActive={false}
                     />
@@ -468,13 +463,13 @@ export function StockForecastDrawer({
                     />
                     <ReferenceLine
                       y={0}
-                      stroke="#ac3e31"
+                      stroke="var(--ui-status-danger)"
                       strokeDasharray="4 4"
                     />
                     <Line
                       name={`Current stock (${d.stock.unit})`}
                       dataKey="without_deliveries"
-                      stroke="#8d5f43"
+                      stroke="var(--ui-text-link)"
                       strokeWidth={2.5}
                       dot={false}
                       isAnimationActive={false}
@@ -482,7 +477,7 @@ export function StockForecastDrawer({
                     <Line
                       name={`With scheduled deliveries (${d.stock.unit})`}
                       dataKey="with_scheduled_deliveries"
-                      stroke="#4a7562"
+                      stroke="var(--ui-status-success)"
                       strokeWidth={2}
                       strokeDasharray="5 4"
                       dot={false}

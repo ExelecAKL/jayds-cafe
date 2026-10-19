@@ -10,8 +10,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        error: "#942f25",
-        warning: "#82450f",
+        error: "var(--status-error)",
+        warning: "var(--status-warning)",
+        success: "var(--status-success)",
+        info: "var(--status-info)",
+        "feedback-error": "var(--status-error-surface)",
+        "feedback-error-border": "var(--status-error-border)",
         "bg-primary": "#fbf5ee",
         "bg-surface": "#fffaf4",
         "bg-elevated": "#f3e4d1",

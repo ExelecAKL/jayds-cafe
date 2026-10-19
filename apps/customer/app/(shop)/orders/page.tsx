@@ -10,6 +10,7 @@ import AppShell, {
   EmptyState,
   InlineNotice,
 } from "../../../components/AppShell";
+import { OrderListSkeleton } from "../../../components/Skeletons";
 import Icon from "../../../components/Icon";
 
 type DisplayOrder = Order & {
@@ -134,11 +135,7 @@ export default function OrdersPage() {
       </div>
       {message && <InlineNotice tone="error">{message}</InlineNotice>}
       {isLoading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div className="skeleton h-36 rounded-3xl" key={i} />
-          ))}
-        </div>
+        <OrderListSkeleton count={4} />
       ) : !list.length ? (
         <EmptyState
           icon="orders"

@@ -1,0 +1,348 @@
+/* apps/pos/app/pos-polish.css
+   Skeleton shapes and tactile motion for the cashier terminal. Every tap
+   answers within a frame, money changes are visible, nothing waits on an
+   animation, and reduced motion switches it all off (see globals.css). */
+
+:root {
+  --jsk-base: #efe7dd;
+  --jsk-highlight: #fffdf9b3;
+  --jm-progress-color: var(--pos-accent);
+  --pos-shadow-lift: 0 8px 22px #3027201a;
+}
+
+/* ── Skeleton frame ───────────────────────────────────────────────────── */
+.pos-skeleton-shell.jsk-group {
+  animation: none;
+}
+.pos-skeleton-shell .pos-main {
+  animation: jm-fade-in var(--jm-duration-base) var(--jm-ease-standard)
+    var(--jm-delay-skeleton) both;
+}
+.pos-skeleton-shell .pos-rail {
+  --jsk-base: #3c2f27;
+  --jsk-highlight: #ffffff14;
+}
+.pos-rail-placeholder {
+  min-height: 66px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+.pos-rail-placeholder[data-current] {
+  background: #aa7047;
+  color: #fff;
+  opacity: 1;
+}
+.pos-skeleton-title {
+  margin-top: 4px;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--pos-ink);
+}
+.pos-skeleton-catalog {
+  --columns: 4;
+  --rows: 3;
+}
+.product-card.is-skeleton,
+.order-ticket.is-skeleton {
+  pointer-events: none;
+}
+.product-card.is-skeleton .product-image {
+  background: var(--jsk-base);
+}
+.product-card.is-skeleton .product-image > .jsk {
+  width: 100%;
+}
+.order-ticket.is-skeleton .order-ticket-open {
+  display: grid;
+  gap: 10px;
+}
+.pos-skeleton-stack {
+  display: grid;
+  gap: 10px;
+}
+.parked-grid > .pos-skeleton-stack {
+  display: contents;
+}
+.pos-skeleton-ticket {
+  display: grid;
+  gap: 14px;
+}
+.pos-skeleton-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee7de;
+}
+.pos-skeleton-row.is-total {
+  border-bottom: 0;
+}
+.pos-skeleton-panel {
+  display: grid;
+  gap: 16px;
+  max-width: 560px;
+  padding: 24px;
+  border: 1px solid var(--pos-border);
+  border-radius: 14px;
+  background: #fff;
+}
+.pos-empty-column {
+  min-height: 120px;
+  opacity: 0.8;
+}
+.pos-auth-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ── Controls: tactile and quick ─────────────────────────────────────── */
+:is(.pos-button, .pos-icon-button, .catalog-category-list button, .orders-tabs button, .product-card, .product-options, .pos-rail-links a, .pos-rail-exit, .order-ticket-open, .ticket-line-title > button) {
+  transition:
+    background-color var(--jm-duration-fast) var(--jm-ease-standard),
+    border-color var(--jm-duration-fast) var(--jm-ease-standard),
+    color var(--jm-duration-fast) var(--jm-ease-standard),
+    box-shadow var(--jm-duration-base) var(--jm-ease-standard),
+    transform var(--jm-duration-fast) var(--jm-ease-standard);
+}
+:is(.pos-button, .catalog-category-list button, .orders-tabs button, .product-options, .pos-rail-exit):active:not(:disabled) {
+  transform: scale(var(--jm-press-scale));
+  transition-duration: var(--jm-duration-instant);
+}
+.pos-icon-button:active:not(:disabled),
+.pos-rail-links a:active {
+  transform: scale(var(--jm-press-scale-small));
+  transition-duration: var(--jm-duration-instant);
+}
+/* Product tiles sink under the finger so every add is felt. */
+.product-card:not(.is-skeleton):has(.product-main:active:not(:disabled)) {
+  transform: scale(0.965);
+  box-shadow: none;
+  transition-duration: var(--jm-duration-instant);
+}
+.product-image img {
+  transition: transform var(--jm-duration-slower) var(--jm-ease-enter);
+}
+:focus-visible {
+  transition: outline-offset var(--jm-duration-fast) var(--jm-ease-enter);
+}
+
+@keyframes pos-tick {
+  0% {
+    transform: translateY(-35%);
+    opacity: 0.2;
+  }
+  60% {
+    transform: translateY(4%);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes pos-line-in {
+  from {
+    opacity: 0;
+    transform: translate3d(14px, 0, 0);
+    background: #f6e9db;
+  }
+  60% {
+    background: #f6e9db;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    background: transparent;
+  }
+}
+@keyframes pos-settle {
+  0% {
+    transform: scale(0.94);
+  }
+  55% {
+    transform: scale(1.035);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes pos-live {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  70% {
+    box-shadow: 0 0 0 5px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes pos-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+@keyframes pos-sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Numbers that change (quantity, total) roll into place. */
+  .pos-tick {
+    display: inline-block;
+    animation: pos-tick var(--jm-duration-slow) var(--jm-ease-spring);
+  }
+  /* A new ticket line slides in with a warm flash, so the cashier sees it land. */
+  .ticket-line {
+    animation: pos-line-in var(--jm-duration-slower) var(--jm-ease-enter) both;
+  }
+  /* Product tiles deal into the grid on each page of the catalog. */
+  .catalog-products > .product-card:not(.is-skeleton) {
+    animation: jm-rise-in var(--jm-duration-slow) var(--jm-ease-enter) both;
+  }
+  .catalog-products > .product-card:nth-child(2) {
+    animation-delay: calc(var(--jm-stagger-step) * 0.5);
+  }
+  .catalog-products > .product-card:nth-child(3) {
+    animation-delay: calc(var(--jm-stagger-step) * 1);
+  }
+  .catalog-products > .product-card:nth-child(4) {
+    animation-delay: calc(var(--jm-stagger-step) * 1.5);
+  }
+  .catalog-products > .product-card:nth-child(5) {
+    animation-delay: calc(var(--jm-stagger-step) * 2);
+  }
+  .catalog-products > .product-card:nth-child(6) {
+    animation-delay: calc(var(--jm-stagger-step) * 2.5);
+  }
+  .catalog-products > .product-card:nth-child(n + 7) {
+    animation-delay: calc(var(--jm-stagger-step) * 3);
+  }
+  .order-ticket:not(.is-skeleton) {
+    animation: jm-rise-in var(--jm-duration-slow) var(--jm-ease-enter) both;
+  }
+  /* Picked filters settle with a small spring. */
+  .catalog-category-list button.is-selected,
+  .orders-tabs button.is-selected {
+    animation: pos-settle var(--jm-duration-slow) var(--jm-ease-spring);
+  }
+  .pos-rail-links a[aria-current="page"] svg {
+    animation: jm-pop var(--jm-duration-slow) var(--jm-ease-spring);
+  }
+  /* The live connection dot breathes; anything else stays still. */
+  .pos-connection.is-live i {
+    animation: pos-live 2.2s var(--jm-ease-standard) infinite;
+  }
+  .pos-toast {
+    animation: pos-toast-in var(--jm-duration-slow) var(--jm-ease-spring) both;
+  }
+  .pos-overlay {
+    animation: jm-fade-in var(--jm-duration-base) var(--jm-ease-standard) both;
+  }
+  .pos-dialog {
+    animation: jm-scale-in var(--jm-duration-slow) var(--jm-ease-spring) both;
+  }
+  .ticket-undo,
+  .pos-error,
+  .pos-notice {
+    animation: jm-rise-in var(--jm-duration-base) var(--jm-ease-enter) both;
+  }
+  .pos-empty > svg {
+    animation: jm-scale-in var(--jm-duration-slow) var(--jm-ease-spring) both;
+  }
+  /* The Pay button catches the light when there is something to pay. */
+  .ticket-pay {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .ticket-pay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 36%;
+    background: linear-gradient(90deg, transparent, #ffffff40, transparent);
+    transform: translateX(-120%) skewX(-18deg);
+    pointer-events: none;
+  }
+  .ticket-pay:not(:disabled):hover::after {
+    animation: pos-sheen var(--jm-duration-slower) var(--jm-ease-standard);
+  }
+}
+
+/* TV board: a number that becomes ready announces itself across the room. */
+@keyframes pos-tv-arrive {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes pos-tv-glow {
+  0%,
+  100% {
+    text-shadow: none;
+  }
+  40% {
+    text-shadow: 0 0 28px #f2d2ac;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tv-order-number {
+    animation: pos-tv-arrive var(--jm-duration-slower) var(--jm-ease-spring)
+      both;
+  }
+  .tv-ready .tv-order-number {
+    animation:
+      pos-tv-arrive var(--jm-duration-slower) var(--jm-ease-spring) both,
+      pos-tv-glow 1.6s var(--jm-ease-standard) var(--jm-duration-slower) 3;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-card:not(.is-skeleton):hover {
+    transform: translateY(var(--jm-hover-lift));
+    box-shadow: var(--pos-shadow-lift);
+  }
+  .product-card:not(.is-skeleton):hover .product-image img {
+    transform: scale(1.05);
+  }
+  .order-ticket:not(.is-skeleton) {
+    transition:
+      transform var(--jm-duration-base) var(--jm-ease-enter),
+      box-shadow var(--jm-duration-base) var(--jm-ease-standard);
+  }
+  .order-ticket:not(.is-skeleton):hover {
+    transform: translateY(var(--jm-hover-lift));
+    box-shadow: var(--pos-shadow-lift);
+  }
+}
+@media print {
+  .jm-route-progress {
+    display: none;
+  }
+}

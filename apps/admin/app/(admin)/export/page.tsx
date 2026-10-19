@@ -1,4 +1,5 @@
 "use client";
+import { AdminSelect } from "../../../components/AdminSelect";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
@@ -295,7 +296,7 @@ export default function ExportPage() {
           </p>
           <label className="ops-form">
             File format
-            <select
+            <AdminSelect
               aria-label="Export format"
               value={format}
               disabled={busy}
@@ -303,7 +304,7 @@ export default function ExportPage() {
             >
               <option value="csv">CSV files in a ZIP</option>
               <option value="json">JSON</option>
-            </select>
+            </AdminSelect>
           </label>
           <button
             className="ops-button primary"

@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#2d211c] px-4">
+    <div className="admin-login">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <BrandArtwork
@@ -70,17 +70,17 @@ export default function AdminLoginPage() {
             preload
           />
           <h1 className="sr-only">Jayds Café administrator login</h1>
-          <p className="text-gray-400 mt-1">The café operations center</p>
+          <p className="login-subtitle mt-1">The café operations center</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-2xl p-6 space-y-4"
+          className="bg-surface rounded-2xl shadow-2xl p-6 space-y-4"
         >
           {error && (
             <div
               role="alert"
-              className="bg-red-50 text-red-600 text-sm rounded-xl p-3 border border-red-100"
+              className="bg-danger-soft text-danger text-sm rounded-xl p-3 border border-danger-border"
             >
               {error}
             </div>
@@ -89,7 +89,7 @@ export default function AdminLoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1.5"
+              className="block text-sm font-medium text-ink mb-1.5"
             >
               Email
               <FieldRequirement required={true} />
@@ -100,7 +100,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+              className="w-full px-4 py-3 rounded-xl border border-subtle bg-raised text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all"
               placeholder="Your administrator email"
             />
           </div>
@@ -108,7 +108,7 @@ export default function AdminLoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1.5"
+              className="block text-sm font-medium text-ink mb-1.5"
             >
               Password
               <FieldRequirement required={true} />
@@ -119,7 +119,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+              className="w-full px-4 py-3 rounded-xl border border-subtle bg-raised text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all"
               placeholder="••••••••"
             />
           </div>
@@ -127,7 +127,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-4 bg-[#98633f] text-white font-semibold rounded-xl shadow-lg shadow-amber-200 hover:shadow-amber-300 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 px-4 bg-action text-on-action font-semibold rounded-xl shadow-lg shadow-none hover:shadow-none hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </button>
