@@ -1,6 +1,6 @@
 "use client";
 // packages/shared/src/ui/minimal-startup.tsx
-// A quiet opening screen for the cashier terminal: a line-drawn cup that
+// A quiet opening screen for POS and Admin: a line-drawn cup that
 // fills a little more with each step, steam rising, and one line of status.
 // Nothing else competes for attention; the motion carries the waiting.
 import { useEffect, useId, useState } from "react";

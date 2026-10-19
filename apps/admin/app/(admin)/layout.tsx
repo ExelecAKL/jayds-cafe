@@ -7,7 +7,7 @@ import { useEffect, useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { resolveCustomerPortalUrl } from "@cafeos/shared/customer-url";
-import { StartupScreen } from "@cafeos/shared/ui/startup-screen";
+import { MinimalStartupScreen } from "@cafeos/shared/ui/minimal-startup";
 import { OperationsProvider } from "../../components/Operations";
 import { Topbar } from "../../components/Topbar";
 import { Sidebar } from "../../components/Sidebar";
@@ -19,7 +19,8 @@ const ADMIN_STEPS = [
   "Opening the back office…",
 ];
 const SPLASH_MINIMUM = 650;
-const SPLASH_EXIT = 340;
+// Long enough to see the cup top up before the screen fades.
+const SPLASH_EXIT = 660;
 import { AdminNotificationsProvider } from "../../components/notifications/AdminNotifications";
 import { BackToTop } from "../../components/BackToTop";
 
@@ -111,11 +112,10 @@ export default function AdminLayout({
     // exposing any navigation or data.
     if (!needsRecovery && !profileError && !sessionError)
       return (
-        <StartupScreen
-          app="Back office"
+        <MinimalStartupScreen
           steps={ADMIN_STEPS}
           step={splashStep}
-          footer="Jayds Café · Admin"
+          caption="Jayds Café · Admin"
         />
       );
     return (
@@ -171,12 +171,11 @@ export default function AdminLayout({
           <BackToTop />
         </div>
         {splash !== "gone" && (
-          <StartupScreen
-            app="Back office"
+          <MinimalStartupScreen
             steps={ADMIN_STEPS}
             step={2}
             leaving={splash === "leaving"}
-            footer="Jayds Café · Admin"
+            caption="Jayds Café · Admin"
           />
         )}
       </AdminNotificationsProvider>

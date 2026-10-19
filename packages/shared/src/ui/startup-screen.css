@@ -295,7 +295,7 @@
   }
 }
 
-/* ── Minimal staff splash: a cup that fills, one line of status ─────── */
+/* ── Minimal splash: a cup that fills, one line of status ───────────── */
 :root {
   --jms-bg: #f7f5f1;
   --jms-ink: #3b2a20;
@@ -303,6 +303,20 @@
   --jms-coffee: #a5683f;
   --jms-crema: #c98d5f;
   --jms-steam: #b9a593;
+  --jms-surface: #fff;
+  --jms-border: #ddd2c6;
+}
+/* Admin's dark theme sets data-theme before first paint, so the splash
+   opens in the same palette as the workspace behind it. */
+:root[data-theme="dark"] {
+  --jms-bg: #1b1815;
+  --jms-ink: #f2e9df;
+  --jms-muted: #bfb0a2;
+  --jms-coffee: #c98d5f;
+  --jms-crema: #e2b38b;
+  --jms-steam: #6f6155;
+  --jms-surface: #25201c;
+  --jms-border: #45392f;
 }
 .jms {
   position: fixed;
@@ -397,9 +411,9 @@
 .jms-retry {
   min-height: 2.75rem;
   padding: 0 1.125rem;
-  border: 1px solid #ddd2c6;
+  border: 1px solid var(--jms-border);
   border-radius: 999px;
-  background: #fff;
+  background: var(--jms-surface);
   color: var(--jms-ink);
   font: inherit;
   font-size: 0.875rem;
