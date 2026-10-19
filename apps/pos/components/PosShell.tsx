@@ -9,6 +9,7 @@ import { supabase } from "@cafeos/shared/supabase/client";
 import { PosIcon } from "./PosPrimitives";
 import { BrandArtwork } from "@cafeos/shared/brand";
 import { StaffHelp } from "./StaffHelp";
+import { announceNavigation } from "@cafeos/shared/ui/route-progress";
 const statuses = ["pending", "confirmed", "preparing", "ready"] as const;
 export function PosShell({
   title,
@@ -87,10 +88,12 @@ export function PosShell({
         return;
       if (e.key === "F2") {
         e.preventDefault();
+        announceNavigation("/new-order");
         router.push("/new-order");
       }
       if (e.key === "F3") {
         e.preventDefault();
+        announceNavigation("/dashboard");
         router.push("/dashboard");
       }
     };
@@ -129,7 +132,11 @@ export function PosShell({
           >
             <PosIcon name="orders" />
             <span>Orders</span>
-            {count > 0 && <b>{count}</b>}
+            {count > 0 && (
+              <b key={count} className="jm-pop">
+                {count}
+              </b>
+            )}
           </Link>
           <Link
             href="/kds"

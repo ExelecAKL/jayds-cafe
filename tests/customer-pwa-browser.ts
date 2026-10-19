@@ -172,7 +172,7 @@ try {
   // Warm the product's public HTML and assets so its review page is also
   // available offline; adding always happens after explicit configuration.
   const detailPath = "/menu/browse/" + fixture.menuItems[0].id;
-  await page.goto(base + detailPath, { waitUntil: "networkidle" });
+  await page.goto(base + detailPath, { waitUntil: "domcontentloaded" });
   await page.locator(".startup-overlay").waitFor({ state: "detached" });
   await page.getByRole("button", { name: /Add to bag/ }).waitFor();
   const cachedDetail = await page.evaluate(async (pathname) => {

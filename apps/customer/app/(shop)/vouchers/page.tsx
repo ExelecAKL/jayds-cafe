@@ -5,12 +5,14 @@ import { supabase } from "@cafeos/shared/supabase/client";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import type { Voucher } from "@cafeos/shared/types";
 import { useCart } from "../../../context/CartContext";
+import { useCustomerToast } from "../../../context/CustomerToast";
 import { customerHeaders } from "../../../context/CustomerFeatures";
 import AppShell, {
   EmptyState,
   InlineNotice,
   WalletTabs,
 } from "../../../components/AppShell";
+import { VoucherGridSkeleton } from "../../../components/Skeletons";
 import Icon from "../../../components/Icon";
 export default function VouchersPage() {
   const { user } = useAuth();
@@ -20,6 +22,7 @@ export default function VouchersPage() {
     [feedback, setFeedback] = useState(""),
     [busy, setBusy] = useState("");
   const { items, subtotal, applyVoucher, voucher: applied } = useCart();
+  const notify = useCustomerToast();
   useEffect(() => {
     let active = true;
     void supabase
@@ -70,9 +73,10 @@ export default function VouchersPage() {
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "Voucher is not eligible.");
       applyVoucher(data);
-      setFeedback(
-        `${voucher.code} added to your draft. Final eligibility is confirmed at checkout.`,
-      );
+      notify(`${voucher.code} applied. Final eligibility is confirmed at checkout.`, {
+        icon: "wallet",
+        action: { label: "Review bag", href: "/cart" },
+      });
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Voucher could not be checked.",
@@ -84,7 +88,7 @@ export default function VouchersPage() {
   const copy = async (code: string) => {
     try {
       await navigator.clipboard.writeText(code);
-      setFeedback(`${code} copied.`);
+      notify(`${code} copied.`, { icon: "check" });
     } catch {
       setFeedback(`Copy this code: ${code}`);
     }
@@ -114,11 +118,7 @@ export default function VouchersPage() {
         and remaining uses are checked again when you submit.
       </p>
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[1, 2, 3, 4].map((i) => (
-            <div className="skeleton h-52 rounded-3xl" key={i} />
-          ))}
-        </div>
+        <VoucherGridSkeleton />
       ) : vouchers.length ? (
         <div className="grid gap-4 lg:grid-cols-2">
           {vouchers.map((v) => (

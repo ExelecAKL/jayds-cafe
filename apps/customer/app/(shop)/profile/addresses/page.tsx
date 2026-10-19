@@ -4,9 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { supabase } from "@cafeos/shared/supabase/client";
 import AppShell, { InlineNotice } from "../../../../components/AppShell";
+import { AddressGridSkeleton } from "../../../../components/Skeletons";
 import DeliveryMapPickerLazy from "../../../../components/DeliveryMapPickerLazy";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import { coordinates } from "../../../../lib/location";
+import { useCustomerToast } from "../../../../context/CustomerToast";
 interface Address {
   id: string;
   label: string;
@@ -28,8 +30,8 @@ export default function Addresses() {
     [form, setForm] = useState(false),
     [removing, setRemoving] = useState<string | null>(null),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
-    [notice, setNotice] = useState("");
+    [error, setError] = useState("");
+  const notify = useCustomerToast();
   const load = useCallback(async () => {
     if (!user) return;
     const { data, error } = await supabase
@@ -78,7 +80,7 @@ export default function Addresses() {
       return;
     }
     setForm(false);
-    setNotice("Address saved.");
+    notify("Address saved.", { icon: "pin" });
     void load();
   }
   async function remove() {
@@ -95,7 +97,7 @@ export default function Addresses() {
       return;
     }
     setRemoving(null);
-    setNotice("Address removed.");
+    notify("Address removed.", { icon: "pin" });
     void load();
   }
   return (
@@ -105,7 +107,7 @@ export default function Addresses() {
       description="Choose a destination once. Use it at checkout."
     >
       {!initialized ? (
-        <p>Loading your account…</p>
+        <AddressGridSkeleton />
       ) : !user ? (
         <InlineNotice>Sign in to save private delivery addresses.</InlineNotice>
       ) : (
@@ -123,7 +125,6 @@ export default function Addresses() {
             Add address
           </button>
           {error && <InlineNotice tone="error">{error}</InlineNotice>}
-          {notice && <InlineNotice tone="success">{notice}</InlineNotice>}
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {addresses.map((a) => (
               <article className="surface-card p-5" key={a.id}>
@@ -142,7 +143,7 @@ export default function Addresses() {
                     Edit
                   </button>
                   <button
-                    className="min-h-12 px-3 text-sm text-red-800"
+                    className="min-h-12 px-3 text-sm action-destructive"
                     onClick={() => setRemoving(a.id)}
                   >
                     Remove
@@ -210,6 +211,7 @@ export default function Addresses() {
             open={!!removing}
             title="Remove this saved address?"
             confirmLabel="Remove address"
+            tone="destructive"
             busy={busy}
             onConfirm={() => void remove()}
             onCancel={() => setRemoving(null)}

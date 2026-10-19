@@ -9,6 +9,7 @@ import {
 import Icon from "./Icon";
 import { categoryIcon } from "../utils/menuArtwork";
 import { useOutletAvailability } from "../context/OutletAvailability";
+import { cancelNavigation } from "@cafeos/shared/ui/route-progress";
 function defaultConfiguration(item: MenuItem): SelectedVariant[] | null {
   const variants = (item.variants ?? []).filter(
     (v) => !v.applicable_items || v.applicable_items.includes(item.id),
@@ -53,7 +54,9 @@ export default function MenuCard({
 }) {
   const { canSelect } = useOutletAvailability();
   function guard(event: React.MouseEvent) {
-    if (!canSelect()) event.preventDefault();
+    if (canSelect()) return;
+    event.preventDefault();
+    cancelNavigation();
   }
   const defaults = configuration ?? defaultConfiguration(item);
   const imageUrl = menuProductImageUrl(item.id, item.image_url);

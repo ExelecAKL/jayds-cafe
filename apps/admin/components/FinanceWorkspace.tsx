@@ -1,4 +1,5 @@
 "use client";
+import { AdminSelect } from "./AdminSelect";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
@@ -10,6 +11,7 @@ import {
 import { estimateOsdIncomeTax } from "@cafeos/shared/finance/calculations";
 import { manilaDate } from "@cafeos/shared/customer/scheduling";
 import { PageHeader, Drawer, Feedback, LoadingRows, peso } from "./Operations";
+import { PageSkeleton } from "./AdminSkeletons";
 import { notifyAdmin } from "./AdminToasts";
 import { InvoiceEmailStatus } from "./InvoiceEmailStatus";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
@@ -105,7 +107,8 @@ interface PurchaseReceipt {
 const cents = (value: number) => peso(value / 100);
 export default function FinanceWorkspace() {
   const { user, initialized } = useAuth();
-  if (!initialized) return <p role="status">Loading account…</p>;
+  if (!initialized)
+    return <PageSkeleton label="Loading account…" metrics={4} actions={2} />;
   return <FinanceSession key={user?.id ?? "guest"} />;
 }
 function FinanceSession() {
@@ -360,6 +363,7 @@ function FinanceSession() {
                 <div style={{ height: 240 }} aria-hidden="true">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
+                      accessibilityLayer={false}
                       data={report.daily.map((d) => ({
                         ...d,
                         sales: Number(d.net_sales) / 100,
@@ -372,7 +376,7 @@ function FinanceSession() {
                       <Bar
                         isAnimationActive={false}
                         dataKey="sales"
-                        fill="#755237"
+                        fill="var(--ui-text-link)"
                         name="Net sales (PHP)"
                       />
                     </BarChart>
@@ -481,7 +485,7 @@ function FinanceSession() {
                     </td>
                     <td>{cents(e.gross_centavos)}</td>
                     <td>
-                      {e.document_reference || "—"}
+                      {e.document_reference || " - "}
                       {e.document_id && (
                         <button
                           className="ops-button small"
@@ -854,7 +858,7 @@ function ExpenseForm({
       </label>
       <label>
         Category <FieldRequirement required />
-        <select name="category" required>
+        <AdminSelect name="category" required>
           {["rent", "utilities", "wages", "transport", "supplies", "other"].map(
             (c) => (
               <option key={c} value={c}>
@@ -862,7 +866,7 @@ function ExpenseForm({
               </option>
             ),
           )}
-        </select>
+        </AdminSelect>
       </label>
       <label>
         Description <FieldRequirement required />
@@ -1093,7 +1097,7 @@ function SettingsForm({
       </p>
       <label>
         Delivery tax treatment <FieldRequirement required />
-        <select
+        <AdminSelect
           name="delivery_tax_treatment"
           defaultValue={s.delivery_tax_treatment}
         >
@@ -1102,7 +1106,7 @@ function SettingsForm({
           </option>
           <option value="pass_through">Pass-through delivery charge</option>
           <option value="vat_inclusive">VAT-inclusive delivery charge</option>
-        </select>
+        </AdminSelect>
       </label>
       <h3>Individual income tax · 40% OSD</h3>
       <label>

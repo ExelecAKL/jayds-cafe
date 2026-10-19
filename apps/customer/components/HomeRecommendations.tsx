@@ -5,6 +5,7 @@ import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { supabase } from "@cafeos/shared/supabase/client";
 import type { CartItem, MenuItem, Order } from "@cafeos/shared/types";
 import { useCart } from "../context/CartContext";
+import { useCustomerToast } from "../context/CustomerToast";
 import { customerHeaders } from "../context/CustomerFeatures";
 import { useHomeRecommendations } from "../hooks/useHomeRecommendations";
 import { buildReorderDraft } from "../utils/orderReorder";
@@ -12,6 +13,7 @@ import type { ReorderRecommendation } from "../utils/recommendations";
 import { InlineNotice } from "./AppShell";
 import MenuCard from "./MenuCard";
 import ConfirmDialog from "./ConfirmDialog";
+import { ProductCardSkeleton } from "./Skeletons";
 
 function draftFor(entry: ReorderRecommendation) {
   return buildReorderDraft(
@@ -43,7 +45,8 @@ export default function HomeRecommendations({
   const { user } = useAuth(),
     owner = user!.id;
   const cart = useCart(),
-    router = useRouter();
+    router = useRouter(),
+    notify = useCustomerToast();
   const { data, loading, error, refresh } = useHomeRecommendations(catalog);
   const [heading, setHeading] = useState("Just for You");
   const [preview, setPreview] = useState<Preview | null>(null),
@@ -174,6 +177,9 @@ export default function HomeRecommendations({
       await customerHeaders(owner);
       if (!active.current || epoch !== generation.current) return;
       cart.addItem(checked.line);
+      notify(`${checked.line.quantity} × ${checked.line.name} is in your bag`, {
+        icon: "bag",
+      });
       setPreview(null);
       router.push("/cart");
     } catch (error) {
@@ -208,9 +214,13 @@ export default function HomeRecommendations({
           <div className="section-heading">
             <h2 className="section-title">Your usuals</h2>
           </div>
-          <div className="home-reorder-placeholder" aria-hidden="true">
-            <div className="skeleton" />
-            <div className="skeleton" />
+          <div
+            className="home-reorder-rail product-grid skeleton-rail-row"
+            aria-hidden="true"
+          >
+            <ProductCardSkeleton />
+            <ProductCardSkeleton />
+            <ProductCardSkeleton />
           </div>
         </section>
       )}
@@ -337,7 +347,7 @@ export default function HomeRecommendations({
           Final availability and pricing are checked again at checkout.
         </p>
         {actionError && (
-          <p className="mt-3 text-red-800" role="alert">
+          <p className="mt-3 text-error" role="alert">
             {actionError}
           </p>
         )}

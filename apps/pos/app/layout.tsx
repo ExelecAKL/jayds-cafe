@@ -2,9 +2,16 @@
 // POS root layout with AuthProvider
 
 import type { Metadata } from "next";
+import "@cafeos/shared/ui/motion.css";
+import "@cafeos/shared/ui/skeleton.css";
 import "./globals.css";
 import "@cafeos/shared/ui/action-confirm.css";
+import "@cafeos/shared/ui/connection-status.css";
+import "@cafeos/shared/ui/startup-screen.css";
+import "./pos-polish.css";
 import { Providers } from "./providers";
+import { RouteProgress } from "@cafeos/shared/ui/route-progress";
+import { ConnectionStatus } from "@cafeos/shared/ui/connection-status";
 import localFont from "next/font/local";
 const founders = localFont({
   src: [
@@ -35,6 +42,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={founders.variable + " antialiased"}>
+        <RouteProgress />
+        <ConnectionStatus
+          copy={{
+            offline:
+              "Offline. Keep building the ticket on this terminal; payments need a connection.",
+            slow: "Slow connection. Orders may take a moment to update.",
+            restored: "Back online. Orders are syncing.",
+          }}
+        />
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -31,6 +31,7 @@ import {
   useRegisterDraft,
 } from "../lib/client";
 import { PosShell } from "./PosShell";
+import { CatalogTilesSkeleton, CategoryChipsSkeleton } from "./PosSkeletons";
 import { PosConfirm, PosDialog, PosIcon } from "./PosPrimitives";
 import { ProductOptions, productDefaults } from "./ProductOptions";
 import { CheckoutPanel } from "./CheckoutPanel";
@@ -466,6 +467,7 @@ export function Register({ parkedId }: { parkedId?: string }) {
               <PosIcon name="left" />
             </button>
             <div className="catalog-category-list">
+              {loading && !categories.length && <CategoryChipsSkeleton />}
               {categoryList.map((c) => (
                 <button
                   key={c.id ?? "all"}
@@ -500,7 +502,7 @@ export function Register({ parkedId }: { parkedId?: string }) {
             }
           >
             {loading ? (
-              <div className="pos-empty">Loading menu…</div>
+              <CatalogTilesSkeleton count={perPage} />
             ) : (
               shown
                 .slice(currentPage * perPage, (currentPage + 1) * perPage)
@@ -666,7 +668,9 @@ export function Register({ parkedId }: { parkedId?: string }) {
                       >
                         <PosIcon name="minus" size={16} />
                       </button>
-                      <span>{line.quantity}</span>
+                      <span key={line.quantity} className="pos-tick">
+                        {line.quantity}
+                      </span>
                       <button
                         className="pos-icon-button"
                         aria-label={"Increase " + line.name}
@@ -756,7 +760,9 @@ export function Register({ parkedId }: { parkedId?: string }) {
             )}
             <div className="ticket-total">
               <span>Total</span>
-              <strong className="pos-number">{pesos(totals.total)}</strong>
+              <strong key={totals.total} className="pos-number pos-tick">
+                {pesos(totals.total)}
+              </strong>
             </div>
             <button
               className="pos-button pos-primary ticket-pay"

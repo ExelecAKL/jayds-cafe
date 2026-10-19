@@ -11,6 +11,7 @@ export default function ConfirmDialog({
   onCancel,
   busy = false,
   disabled = false,
+  tone = "primary",
 }: {
   open: boolean;
   title: string;
@@ -21,6 +22,7 @@ export default function ConfirmDialog({
   onCancel: () => void;
   busy?: boolean;
   disabled?: boolean;
+  tone?: "primary" | "destructive";
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -60,7 +62,8 @@ export default function ConfirmDialog({
           </button>
           <button
             type="button"
-            className="btn-primary flex-1"
+            className={`${tone === "destructive" ? "btn-destructive" : "btn-primary"} flex-1`}
+            aria-busy={busy}
             disabled={busy || disabled}
             onClick={onConfirm}
           >

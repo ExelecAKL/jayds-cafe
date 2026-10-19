@@ -9,6 +9,7 @@ import { cashAtPickup } from "@cafeos/shared/pos/fulfillment";
 import { cashierRequest, useRegisterDraft } from "../lib/client";
 import { CheckoutPanel } from "./CheckoutPanel";
 import { PosDialog } from "./PosPrimitives";
+import { TicketDialogSkeleton } from "./PosSkeletons";
 export function OrderPayment({
   id,
   onClose,
@@ -69,7 +70,7 @@ export function OrderPayment({
       <PosDialog title="Order payment" onClose={onClose}>
         <div className="pos-dialog-body">
           {loading ? (
-            <p>Loading ticket…</p>
+            <TicketDialogSkeleton label="Loading ticket…" />
           ) : !order ? (
             <p className="pos-error" role="alert">
               {error ?? "Order not found"}
@@ -90,7 +91,11 @@ export function OrderPayment({
             </>
           ) : order.payment_status === "paid" && !receipt ? (
             <>
-              <p>{failure || "Loading accepted receipt…"}</p>
+              {failure ? (
+                <p>{failure}</p>
+              ) : (
+                <TicketDialogSkeleton label="Loading accepted receipt…" />
+              )}
               {failure && (
                 <button className="pos-button" onClick={() => void refetch()}>
                   Refresh order

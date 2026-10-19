@@ -1,3 +1,4 @@
+import { selectAdminOption } from "./admin-select";
 import assert from "node:assert/strict";
 import { expect, type Page } from "@playwright/test";
 
@@ -83,7 +84,7 @@ export async function adminWorkflowJourneys(
     "All fifteen Admin page guides, keyboard focus, Escape and related tasks",
   );
   await open("/dashboard");
-  await page.getByRole("link", { name: /Change a price or product/ }).click();
+  await page.getByRole("link", { name: /Edit menu/ }).click();
   await expect(page).toHaveURL(/\/menu$/);
   await open("/dashboard");
   await expect(page.getByText(/Invalid Date/)).toHaveCount(0);
@@ -107,7 +108,7 @@ export async function adminWorkflowJourneys(
     .first()
     .click();
   drawer = page.getByRole("dialog");
-  await drawer.getByRole("combobox").selectOption({ label: "Stock 01 · g" });
+  await selectAdminOption(drawer.getByRole("combobox"), { label: "Stock 01 · g" });
   await drawer.getByLabel(/^Quantity/).fill("10");
   await drawer
     .getByLabel(/^Delivery reference \/ notes(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
@@ -131,7 +132,7 @@ export async function adminWorkflowJourneys(
     .first()
     .click();
   drawer = page.getByRole("dialog");
-  await drawer.getByRole("combobox").selectOption({ label: "Stock 01 · g" });
+  await selectAdminOption(drawer.getByRole("combobox"), { label: "Stock 01 · g" });
   await drawer.getByLabel(/^Quantity/).fill("5");
   await drawer.getByLabel(/Reason/).fill("QA spoiled stock");
   await drawer.getByRole("button", { name: "Post movement" }).click();
@@ -141,7 +142,7 @@ export async function adminWorkflowJourneys(
   await page.getByRole("tab", { name: "Physical counts" }).click();
   await page.getByRole("button", { name: "New physical count" }).click();
   drawer = page.getByRole("dialog");
-  await drawer.getByRole("combobox").selectOption({ label: "Stock 01 · g" });
+  await selectAdminOption(drawer.getByRole("combobox"), { label: "Stock 01 · g" });
   await drawer.getByLabel(/^Actual count/).fill("90");
   await drawer.getByLabel(/Reason/).fill("QA physical shelf count");
   await unchanged(() =>
@@ -166,29 +167,27 @@ export async function adminWorkflowJourneys(
     page.getByLabel(/^Role for Pagination QA(?:\s*(?:\*|\(optional\)))?$/, { exact: true }),
   ).toBeDisabled();
   await unchanged(() =>
-    page.getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).selectOption("admin"),
+    selectAdminOption(page.getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true }), "admin"),
   );
   await expect(
     page.getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true }),
-  ).toHaveValue("staff");
-  await page
-    .getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
-    .selectOption("admin");
+  ).toHaveAttribute("data-value", "staff");
+  await selectAdminOption(page
+    .getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true }), "admin");
   await accept("Change access");
   await expect(
     page.getByLabel(/^Role for Staff 1(?:\s*(?:\*|\(optional\)))?$/, { exact: true }),
-  ).toHaveValue("admin");
+  ).toHaveAttribute("data-value", "admin");
   fixture.failNext = "profiles";
-  await page
-    .getByLabel(/^Role for Staff 2(?:\s*(?:\*|\(optional\)))?$/, { exact: true })
-    .selectOption("admin");
+  await selectAdminOption(page
+    .getByLabel(/^Role for Staff 2(?:\s*(?:\*|\(optional\)))?$/, { exact: true }), "admin");
   await accept("Change access");
   await expect(page.locator(".ops-feedback.error")).toContainText(
     "Could not change access",
   );
   await expect(
     page.getByLabel(/^Role for Staff 2(?:\s*(?:\*|\(optional\)))?$/, { exact: true }),
-  ).toHaveValue("staff");
+  ).toHaveAttribute("data-value", "staff");
   completed.push(
     "Role changes, self-lockout prevention, cancellation and failed-save recovery",
   );
@@ -339,9 +338,10 @@ export async function adminWorkflowJourneys(
   await expect(drawer).toHaveCount(0);
   assert.equal(fixture.writes.at(-1)?.name, "suppliers");
   completed.push(
-    "Supplier creation; purchase approval, order and partial receiving covered by the PostgreSQL browser demo",
+    "Supplier creation",
   );
   await open("/scheduling");
+  await page.locator("summary").filter({ hasText: "Branch & delivery settings" }).click();
   await page.getByLabel(/^Branch name(?:\s*(?:\*|\(optional\)))?$/, { exact: true }).fill("Workflow café");
   await unchanged(() =>
     page.getByRole("button", { name: "Save settings", exact: true }).click(),
@@ -373,28 +373,25 @@ export async function adminWorkflowJourneys(
   ).toBeVisible();
   completed.push("Manager PIN change confirmation");
   await open("/analytics");
-  for (const label of ["Today", "This Week", "This Month", "Annual"]) {
+  for (const label of ["Today", "This week", "This month", "This year"]) {
     await page.getByRole("button", { name: label, exact: true }).click();
     await expect(
       page.getByRole("table", { name: "Product margins" }),
     ).toBeVisible();
   }
-  const [salesDownload] = await Promise.all([
-    page.waitForEvent("download"),
-    page.getByRole("button", { name: "↓ Global CSV", exact: true }).click(),
-  ]);
-  assert.match(
-    salesDownload.suggestedFilename(),
-    /^Financial_Overview_.*\.csv$/,
-  );
   const [marginsDownload] = await Promise.all([
     page.waitForEvent("download"),
     page.getByRole("button", { name: "↓ CSV", exact: true }).click(),
   ]);
   assert.match(marginsDownload.suggestedFilename(), /^Item_Margins_.*\.csv$/);
-  completed.push(
-    "Report periods, financial CSV and product-margin CSV downloads",
-  );
+  await open("/dashboard");
+  await expect(page.getByRole("button", { name: "Export report", exact: true })).toBeEnabled();
+  const [salesDownload] = await Promise.all([
+    page.waitForEvent("download"),
+    page.getByRole("button", { name: "Export report", exact: true }).click(),
+  ]);
+  assert.match(salesDownload.suggestedFilename(), /^jayds-sales-7-days\.csv$/);
+  completed.push("Report periods, collected-sales CSV and product-margin CSV downloads");
   await page.setViewportSize({ width: 390, height: 844 });
   await open("/inventory");
   await page.getByRole("button", { name: "Help with this page" }).click();

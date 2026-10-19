@@ -11,12 +11,15 @@ import AppShell, {
   EmptyState,
   InlineNotice,
 } from "../../../components/AppShell";
+import { BagSkeleton } from "../../../components/Skeletons";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import Icon from "../../../components/Icon";
 import BagRewards from "../../../components/BagRewards";
 import OrderPoints from "../../../components/OrderPoints";
 import { cartFinancialPreview } from "../../../utils/cartFinancialPreview";
+import { useCustomerToast } from "../../../context/CustomerToast";
 export default function CartPage() {
+  const notify = useCustomerToast();
   const cart = useCart(),
     { user, profile } = useAuth(),
     owner = user?.id ?? "guest";
@@ -41,10 +44,6 @@ export default function CartPage() {
   } | null>(null);
   const [notes, setNotes] = useState("");
   const [clearOwner, setClearOwner] = useState<string | null>(null);
-  const [message, setMessage] = useState<{
-    owner: string;
-    text: string;
-  } | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
@@ -79,14 +78,13 @@ export default function CartPage() {
   function remove(item: CartItem) {
     cart.removeItem(item.id);
     setRemoved({ item, owner });
-    setMessage(null);
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setRemoved(null), 12000);
   }
   function undo() {
     if (removed?.owner !== owner) return;
     cart.addItem(removed.item);
-    setMessage({ owner, text: removed.item.name + " restored." });
+    notify(removed.item.name + " restored.");
     setRemoved(null);
     if (timer.current) clearTimeout(timer.current);
   }
@@ -96,7 +94,7 @@ export default function CartPage() {
     setRemoved(null);
     setEditing(null);
     setClearOwner(null);
-    setMessage({ owner, text: "Your bag was cleared." });
+    notify("Your bag was cleared.");
     if (timer.current) clearTimeout(timer.current);
   }
   return (
@@ -108,7 +106,7 @@ export default function CartPage() {
       actions={
         cart.items.length ? (
           <button
-            className="icon-button"
+            className="icon-button action-destructive"
             aria-label="Clear your bag"
             onClick={() => setClearOwner(owner)}
           >
@@ -127,14 +125,8 @@ export default function CartPage() {
           </div>
         </InlineNotice>
       )}
-      {message?.owner === owner && (
-        <InlineNotice tone="success">{message.text}</InlineNotice>
-      )}
       {!cart.hydrated ? (
-        <div className="space-y-4">
-          <div className="skeleton h-40" />
-          <div className="skeleton h-40" />
-        </div>
+        <BagSkeleton />
       ) : !cart.items.length ? (
         <EmptyState
           icon="bag"
@@ -214,7 +206,7 @@ export default function CartPage() {
                       </p>
                     </div>
                     <button
-                      className="icon-button !h-12 !w-12 shrink-0"
+                      className="icon-button action-destructive !h-12 !w-12 shrink-0"
                       aria-label={"Remove " + item.name}
                       onClick={() => remove(item)}
                     >
@@ -285,7 +277,7 @@ export default function CartPage() {
                 </p>
               </details>
             </div>
-            <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+            <aside className="bag-tools space-y-4 lg:sticky lg:top-6 lg:self-start">
               <section className="surface-card p-5">
                 <h2 className="section-title">Your order, your way.</h2>
                 <div className="segmented-control mt-4">
@@ -307,7 +299,7 @@ export default function CartPage() {
                 </p>
               </section>
               <BagRewards />
-              <section className="surface-card p-5">
+              <section className="surface-card p-5 bag-summary">
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <dt>Subtotal</dt>
@@ -376,6 +368,7 @@ export default function CartPage() {
         open={clearOwner === owner && cart.items.length > 0}
         title="Start with an empty bag?"
         confirmLabel="Clear bag"
+        tone="destructive"
         cancelLabel="Keep my items"
         onConfirm={discard}
         onCancel={() => setClearOwner(null)}
@@ -393,7 +386,7 @@ export default function CartPage() {
           if (editing?.owner !== owner) return;
           cart.updateItemNotes(editing.id, notes.trim());
           setEditing(null);
-          setMessage({ owner, text: "Your item note was saved." });
+          notify("Your item note was saved.");
         }}
         onCancel={() => setEditing(null)}
       >

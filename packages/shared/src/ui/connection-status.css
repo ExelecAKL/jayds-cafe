@@ -1,0 +1,126 @@
+/* packages/shared/src/ui/connection-status.css
+   The connection banner: a small pill under the top edge. Each app maps the
+   --jcs-* colours to its theme. Requires motion.css. */
+
+:root {
+  --jcs-offline-bg: #2b211b;
+  --jcs-offline-fg: #fff7ec;
+  --jcs-slow-bg: #fff0dc;
+  --jcs-slow-fg: #75400d;
+  --jcs-slow-border: #d8b07c;
+  --jcs-ok-bg: #edf6ef;
+  --jcs-ok-fg: #276248;
+  --jcs-ok-border: #b7d3bf;
+  --jcs-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  --jcs-height: 3rem;
+}
+
+.jcs {
+  position: fixed;
+  top: var(--jcs-top);
+  left: 50%;
+  z-index: 2147482000;
+  width: min(30rem, calc(100vw - 1.5rem));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.jcs-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: var(--jcs-height);
+  padding: 0.375rem 0.375rem 0.375rem 0.875rem;
+  border: 1px solid transparent;
+  border-radius: 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  box-shadow:
+    0 10px 30px rgba(32, 22, 14, 0.18),
+    0 2px 6px rgba(32, 22, 14, 0.1);
+  pointer-events: auto;
+  animation: jcs-in var(--jm-duration-slow) var(--jm-ease-spring) both;
+}
+.jcs[data-state="offline"] .jcs-pill {
+  background: var(--jcs-offline-bg);
+  color: var(--jcs-offline-fg);
+}
+.jcs[data-state="slow"] .jcs-pill {
+  background: var(--jcs-slow-bg);
+  color: var(--jcs-slow-fg);
+  border-color: var(--jcs-slow-border);
+}
+.jcs[data-state="restored"] .jcs-pill {
+  background: var(--jcs-ok-bg);
+  color: var(--jcs-ok-fg);
+  border-color: var(--jcs-ok-border);
+}
+.jcs-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.jcs[data-state="offline"] .jcs-icon {
+  animation: jsk-breathe 2.4s ease-in-out infinite;
+}
+.jcs-text {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.jcs-action {
+  flex-shrink: 0;
+  min-height: 2.5rem;
+  padding: 0 0.875rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.jcs-action:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+.jcs-close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.jcs-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+.jcs :focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+@keyframes jcs-in {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jcs-pill {
+    animation: jm-fade-in var(--jm-duration-fast) linear both;
+  }
+  .jcs[data-state="offline"] .jcs-icon {
+    animation: none;
+  }
+}
+@media print {
+  .jcs {
+    display: none;
+  }
+}

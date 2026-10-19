@@ -1,0 +1,507 @@
+/* packages/shared/src/ui/startup-screen.css
+   Branded opening screen for Admin and POS: espresso ground, steaming cup,
+   cream wordmark, a stepped progress bar and the current step in words.
+   Requires motion.css. Apps may re-map the --jss-* colours. */
+
+:root {
+  --jss-bg: #241b16;
+  --jss-bg-2: #3a2a1f;
+  --jss-fg: #fff7ec;
+  --jss-muted: #d6c1aa;
+  --jss-accent: #e2b38b;
+  --jss-track: rgba(255, 247, 236, 0.14);
+}
+
+.jss {
+  position: fixed;
+  inset: 0;
+  z-index: 2147481000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 1.5rem;
+  background:
+    radial-gradient(120% 80% at 50% 0%, var(--jss-bg-2) 0%, transparent 60%),
+    var(--jss-bg);
+  color: var(--jss-fg);
+  font-family: inherit;
+  opacity: 1;
+  transition: opacity 320ms var(--jm-ease-standard);
+}
+.jss.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+.jss-glow {
+  position: absolute;
+  width: 42rem;
+  height: 42rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(226, 179, 139, 0.16), transparent 62%);
+  animation: jss-breathe 4.8s ease-in-out infinite;
+}
+.jss-content {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: min(100%, 20rem);
+  text-align: center;
+  animation: jm-rise-in 520ms var(--jm-ease-enter) both;
+  transition: transform 320ms var(--jm-ease-enter);
+}
+.jss.is-leaving .jss-content {
+  transform: scale(1.04);
+}
+.jss-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 6.5rem;
+  height: 6.5rem;
+  margin-bottom: 1.5rem;
+}
+.jss-symbol {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 5.25rem;
+  height: 5.25rem;
+  border-radius: 50%;
+  background: rgba(255, 247, 236, 0.06);
+  border: 1px solid rgba(255, 247, 236, 0.16);
+}
+.jss-symbol img {
+  width: 3rem;
+  height: auto;
+}
+.jss-ring {
+  position: absolute;
+  inset: 0.625rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--jss-accent);
+  border-right-color: rgba(226, 179, 139, 0.35);
+  animation: jss-spin 1.6s linear infinite;
+}
+.jss-steam {
+  position: absolute;
+  top: -1.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  fill: none;
+  stroke: var(--jss-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  overflow: visible;
+}
+.jss-steam path {
+  opacity: 0;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: jss-steam 2.4s ease-in-out infinite;
+}
+.jss-steam path:nth-child(2) {
+  animation-delay: 0.4s;
+}
+.jss-steam path:nth-child(3) {
+  animation-delay: 0.8s;
+}
+.jss-brand {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+.jss-wordmark,
+.jss-brand img {
+  width: 8.5rem;
+  height: auto;
+}
+.jss-app {
+  color: var(--jss-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.jss-progress {
+  position: relative;
+  width: 100%;
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--jss-track);
+}
+.jss-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--jss-accent);
+  transition: width 600ms var(--jm-ease-enter);
+}
+.jss.is-leaving .jss-progress-fill {
+  width: 100% !important;
+}
+.jss-progress-sheen {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  animation: jss-sheen 1.4s var(--jm-ease-standard) infinite;
+}
+.jss-step {
+  min-height: 1.5rem;
+  margin: 1rem 0 0.75rem;
+  color: var(--jss-fg);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  animation: jm-rise-in 360ms var(--jm-ease-enter) both;
+}
+.jss-dots {
+  display: flex;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.jss-dots li {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--jss-track);
+  transition:
+    width 320ms var(--jm-ease-spring),
+    background-color 320ms var(--jm-ease-standard);
+}
+.jss-dots li.is-done {
+  background: var(--jss-muted);
+}
+.jss-dots li.is-current {
+  width: 1.25rem;
+  background: var(--jss-accent);
+}
+.jss-slow {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  animation: jm-rise-in 360ms var(--jm-ease-enter) both;
+}
+.jss-slow p {
+  color: var(--jss-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.jss-slow button {
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 247, 236, 0.3);
+  background: rgba(255, 247, 236, 0.08);
+  color: var(--jss-fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.jss-slow button:hover {
+  background: rgba(255, 247, 236, 0.16);
+}
+.jss-slow button:focus-visible {
+  outline: 2px solid var(--jss-accent);
+  outline-offset: 3px;
+}
+.jss-footer {
+  position: absolute;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  color: var(--jss-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  opacity: 0.8;
+}
+
+@keyframes jss-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes jss-breathe {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+@keyframes jss-steam {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 60;
+    transform: translateY(6px);
+  }
+  30% {
+    opacity: 0.8;
+  }
+  70% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes jss-sheen {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(260%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jss-glow,
+  .jss-ring,
+  .jss-progress-sheen,
+  .jss-steam path {
+    animation: none;
+  }
+  .jss-steam path {
+    opacity: 0.5;
+    stroke-dashoffset: 0;
+  }
+  .jss-ring {
+    border-color: rgba(226, 179, 139, 0.35);
+  }
+  .jss-content,
+  .jss-step,
+  .jss-slow {
+    animation-name: jm-fade-in;
+  }
+  .jss.is-leaving .jss-content {
+    transform: none;
+  }
+}
+@media print {
+  .jss {
+    display: none;
+  }
+}
+
+/* ── Minimal staff splash: a cup that fills, one line of status ─────── */
+:root {
+  --jms-bg: #f7f5f1;
+  --jms-ink: #3b2a20;
+  --jms-muted: #8a7a6c;
+  --jms-coffee: #a5683f;
+  --jms-crema: #c98d5f;
+  --jms-steam: #b9a593;
+}
+.jms {
+  position: fixed;
+  inset: 0;
+  z-index: 2147481000;
+  display: grid;
+  place-items: center;
+  background: var(--jms-bg);
+  color: var(--jms-ink);
+  font-family: inherit;
+  transition: opacity 360ms var(--jm-ease-standard);
+}
+/* Ready: the cup tops up first, then the screen lifts away. */
+.jms.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+  transition-delay: 280ms;
+}
+.jms-stage {
+  display: grid;
+  justify-items: center;
+  gap: 1.125rem;
+  transition: transform 420ms var(--jm-ease-enter);
+}
+.jms.is-leaving .jms-stage {
+  transform: translateY(-0.5rem) scale(0.96);
+  transition-delay: 280ms;
+}
+.jms.is-leaving .jms-liquid {
+  transition-duration: 520ms;
+}
+.jms-cup {
+  overflow: visible;
+  animation: jms-settle 700ms var(--jm-ease-spring) both;
+}
+.jms-line {
+  fill: none;
+  stroke: var(--jms-ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: jms-draw 900ms var(--jm-ease-enter) forwards;
+}
+.jms-handle {
+  animation-delay: 380ms;
+}
+.jms-saucer {
+  animation-delay: 560ms;
+  opacity: 0.55;
+}
+.jms-liquid {
+  transition: transform 900ms var(--jm-ease-enter);
+}
+.jms-wave {
+  transform-box: fill-box;
+}
+.jms-wave-back {
+  fill: var(--jms-crema);
+  opacity: 0.55;
+  animation: jms-wave 2.6s linear infinite reverse;
+}
+.jms-wave-front {
+  fill: var(--jms-coffee);
+  animation: jms-wave 1.9s linear infinite;
+}
+.jms-steam path {
+  fill: none;
+  stroke: var(--jms-steam);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: jms-steam 2.6s ease-in-out infinite;
+  animation-delay: 900ms;
+}
+.jms-steam path:nth-child(2) {
+  animation-delay: 1.35s;
+}
+.jms-steam path:nth-child(3) {
+  animation-delay: 1.8s;
+}
+.jms-label {
+  min-height: 1.25rem;
+  margin: 0;
+  color: var(--jms-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  animation: jms-text 420ms var(--jm-ease-enter) both;
+}
+.jms-retry {
+  min-height: 2.75rem;
+  padding: 0 1.125rem;
+  border: 1px solid #ddd2c6;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--jms-ink);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  animation: jms-text 420ms var(--jm-ease-enter) both;
+}
+.jms-retry:hover {
+  border-color: var(--jms-coffee);
+}
+.jms-retry:focus-visible {
+  outline: 2px solid var(--jms-coffee);
+  outline-offset: 3px;
+}
+.jms-caption {
+  position: absolute;
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+  margin: 0;
+  color: var(--jms-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  /* Visible by default; the delayed fade-in only applies when motion is on. */
+  animation: jms-text 600ms var(--jm-ease-enter) 700ms both;
+}
+
+@keyframes jms-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes jms-settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes jms-wave {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-16px);
+  }
+}
+@keyframes jms-steam {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  35% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+@keyframes jms-text {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jms-cup,
+  .jms-label,
+  .jms-retry,
+  .jms-caption {
+    animation: jm-fade-in 200ms linear both;
+  }
+  .jms-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .jms-wave-back,
+  .jms-wave-front,
+  .jms-steam path {
+    animation: none;
+  }
+  .jms-steam path {
+    opacity: 0.5;
+  }
+  .jms-liquid {
+    transition: none;
+  }
+  .jms.is-leaving .jms-stage {
+    transform: none;
+  }
+}
+@media print {
+  .jms {
+    display: none;
+  }
+}

@@ -8,6 +8,9 @@
     "apps/*"
   ],
   "scripts": {
+    "tokens:admin": "node scripts/build-admin-tokens.mjs",
+    "check:dashboard": "tsx tests/admin-dashboard-browser.ts",
+    "check:admin-ui": "node scripts/check-admin-ui.mjs",
     "prepare:emails": "tsx scripts/prepare-email-templates.ts",
     "dev": "tsx scripts/run-workspaces.ts dev",
     "dev:local": "tsx scripts/run-local-supabase.ts dev",

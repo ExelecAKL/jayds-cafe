@@ -15,12 +15,15 @@ import type {
 import type { TicketTaxSummary } from "../../../../lib/accepted-ticket";
 import TicketItemImage from "../../../../components/TicketItemImage";
 import { useCart } from "../../../../context/CartContext";
+import { useCustomerToast } from "../../../../context/CustomerToast";
+import MayaMark from "../../../../components/MayaMark";
 import { customerHeaders } from "../../../../context/CustomerFeatures";
 import { buildReorderDraft } from "../../../../utils/orderReorder";
 import AppShell, {
   EmptyState,
   InlineNotice,
 } from "../../../../components/AppShell";
+import { OrderDetailSkeleton } from "../../../../components/Skeletons";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import Icon from "../../../../components/Icon";
 import {
@@ -79,6 +82,7 @@ export default function OrderTrackingPage() {
   const ownerId = user?.id ?? null;
   const { menuItems } = useMenu();
   const cart = useCart();
+  const notify = useCustomerToast();
   const [order, setOrder] = useState<CustomerOrder | null>(null),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
@@ -417,16 +421,17 @@ export default function OrderTrackingPage() {
   const acceptReorder = () => {
     if (!reorder?.items.length) return;
     for (const item of reorder.items) cart.addItem(item);
+    const count = reorder.items.reduce((sum, item) => sum + item.quantity, 0);
+    notify(`${count} item${count === 1 ? "" : "s"} from ${order?.order_number ?? "your order"} added to your bag`, {
+      icon: "bag",
+    });
     setReorder(null);
     router.push("/cart");
   };
   if (loading)
     return (
       <AppShell title="Checking your order." backHref="/orders">
-        <div className="space-y-4">
-          <div className="skeleton h-36" />
-          <div className="skeleton h-72" />
-        </div>
+        <OrderDetailSkeleton />
       </AppShell>
     );
   if (!order)
@@ -508,10 +513,8 @@ export default function OrderTrackingPage() {
         </InlineNotice>
       )}
       {canPay && !verifying && (
-        <section className="wallet-strip mb-5">
-          <span className="wallet-icon">
-            <Icon name="wallet" />
-          </span>
+        <section className="wallet-strip maya-pay-strip mb-5">
+          <MayaMark size="md" />
           <div className="flex-1">
             <h2 className="font-semibold">Finish your Maya payment</h2>
             <p className="mt-1 text-xs text-text-secondary">
@@ -600,7 +603,7 @@ export default function OrderTrackingPage() {
                 : "Order progress"}
             </h2>
             {order.status === "cancelled" ? (
-              <p className="text-sm text-red-800">
+              <p className="text-sm text-error">
                 This order was cancelled. Any paid amount follows the café’s
                 refund review.
               </p>
@@ -793,8 +796,13 @@ export default function OrderTrackingPage() {
                 <dd>₱{Number(order.total).toFixed(2)}</dd>
               </div>
             </dl>
-            <p className="mt-4 text-xs text-text-secondary">
-              {order.payment_method === "maya" ? "Maya" : "Cash"} · Placed{" "}
+            <p className="order-paid-with mt-4 text-xs text-text-secondary">
+              {order.payment_method === "maya" ? (
+                <MayaMark size="sm" />
+              ) : (
+                "Cash"
+              )}{" "}
+              · Placed{" "}
               {new Date(order.created_at).toLocaleString("en-PH", {
                 timeZone: "Asia/Manila",
                 month: "short",
@@ -834,7 +842,7 @@ export default function OrderTrackingPage() {
             {canCancel && (
               <button
                 type="button"
-                className="flex min-h-12 w-full items-center justify-center rounded-2xl border border-red-200 text-sm font-semibold text-red-800"
+                className="btn-destructive-outline w-full"
                 disabled={!!busy}
                 onClick={() => setCancelDialog(true)}
               >
@@ -865,6 +873,7 @@ export default function OrderTrackingPage() {
         open={cancelDialog}
         title="Cancel this unpaid order?"
         confirmLabel="Cancel order"
+        tone="destructive"
         cancelLabel="Keep order"
         busy={busy === "cancel"}
         onConfirm={() => void cancel()}
@@ -875,7 +884,7 @@ export default function OrderTrackingPage() {
           Check the current order state if your payment was interrupted.
         </p>
         {actionError && (
-          <p role="alert" className="mt-3 text-red-800">
+          <p role="alert" className="mt-3 text-error">
             {actionError}
           </p>
         )}

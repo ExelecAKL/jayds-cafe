@@ -65,7 +65,8 @@ export default function BottomNav() {
                 )}
                 {tab.label === "Menu" && hydrated && itemCount > 0 && (
                   <span
-                    className="nav-badge"
+                    key={itemCount}
+                    className="nav-badge jm-pop"
                     aria-label={`${itemCount} items in bag`}
                   >
                     {itemCount > 99 ? "99+" : itemCount}

@@ -34,6 +34,12 @@ export const adminNavGroups: NavGroup[] = [
         icon: "support",
         keywords: "support requests refund payment courier",
       },
+      {
+        href: "/notifications",
+        label: "Notifications",
+        icon: "bell",
+        keywords: "alerts inbox updates unread attention",
+      },
     ],
   },
   {

@@ -1,4 +1,5 @@
 "use client";
+import { AdminSelect } from "./AdminSelect";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { notifyAdmin } from "./AdminToasts";
 import { stockReason } from "../lib/stock-copy";
@@ -30,6 +31,7 @@ import {
   useOperations,
   type OperationalStock,
 } from "./Operations";
+import { ColorLegend } from "./StatusSemantics";
 import { MenuItemForm } from "./MenuItemForm";
 import InventoryReadiness from "./InventoryReadiness";
 import { PaginatedTable } from "./PaginatedTable";
@@ -157,16 +159,16 @@ function StockForm({
           <label>
             Stock type
             <FieldRequirement required={true} />
-            <select {...field("stock_kind")}>
+            <AdminSelect {...field("stock_kind")}>
               <option value="ingredient">Ingredient</option>
               <option value="packaging">Packaging</option>
               <option value="finished_good">Finished good</option>
-            </select>
+            </AdminSelect>
           </label>
           <label>
             Base unit
             <FieldRequirement required={true} />
-            <select
+            <AdminSelect
               {...field("unit")}
               disabled={!!item && Number(item.current_stock) > 0}
             >
@@ -176,7 +178,7 @@ function StockForm({
               {item && !["g", "ml", "pcs"].includes(item.unit) && (
                 <option>{item.unit}</option>
               )}
-            </select>
+            </AdminSelect>
           </label>
           <label>
             Estimated cost / base unit
@@ -210,7 +212,7 @@ function StockForm({
         <label>
           Preferred supplier
           <FieldRequirement required={false} />
-          <select {...field("supplier_id")}>
+          <AdminSelect {...field("supplier_id")}>
             <option value="">No supplier assigned</option>
             {ops.suppliers
               .filter((s) => s.is_active)
@@ -219,7 +221,7 @@ function StockForm({
                   {s.name}
                 </option>
               ))}
-          </select>
+          </AdminSelect>
         </label>
         <div className="ops-form-grid">
           <label>
@@ -469,7 +471,7 @@ function MovementForm({
         <label>
           Stock item
           <FieldRequirement required={true} />
-          <select
+          <AdminSelect
             required
             value={id}
             disabled={!!countId}
@@ -493,7 +495,7 @@ function MovementForm({
                 {row.name} · {row.unit}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </label>
         {item && (
           <div className="ops-form-summary">
@@ -682,7 +684,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
         <label>
           Customization
           <FieldRequirement required={true} />
-          <select
+          <AdminSelect
             value={selected}
             onChange={(event) => {
               if (event.target.value !== "") void choose(event.target.value);
@@ -697,14 +699,14 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
                 {option.variant_group.replaceAll("_", " ")} · {option.label}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </label>
         {lines.map((line, index) => (
           <div className="ops-form-grid ops-option-row" key={index}>
             <label>
               Stock item
               <FieldRequirement required={true} />
-              <select
+              <AdminSelect
                 required
                 value={line.ingredient_id}
                 onChange={(event) =>
@@ -723,7 +725,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
                     {item.name} ({item.unit})
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </label>
             <label>
               Quantity per item
@@ -748,7 +750,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
             <label>
               Replaces
               <FieldRequirement required={false} />
-              <select
+              <AdminSelect
                 value={line.replaces_ingredient_id ?? ""}
                 onChange={(event) =>
                   setLines((previous) =>
@@ -769,7 +771,7 @@ function OptionRecipeEditor({ onClose }: { onClose: () => void }) {
                     {item.name}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </label>
             <button
               type="button"
@@ -1057,7 +1059,7 @@ export default function InventoryWorkspace() {
                   <Icon name="stock" />
                 </div>
                 <div className="ops-metric-value">
-                  {ops.error || ops.loading ? "—" : metric.value}
+                  {ops.error || ops.loading ? " - " : metric.value}
                 </div>
                 <small>{metric.note}</small>
               </div>
@@ -1070,6 +1072,15 @@ export default function InventoryWorkspace() {
           <button
             role="tab"
             aria-selected={tab === entry.key}
+            tabIndex={tab === entry.key ? 0 : -1}
+            onKeyDown={event => {
+              if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+              event.preventDefault();
+              const index = tabs.findIndex(item => item.key === entry.key);
+              const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (index + (event.key === "ArrowLeft" ? -1 : 1) + tabs.length) % tabs.length;
+              changeTab(tabs[next].key);
+              event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+            }}
             className={tab === entry.key ? "active" : ""}
             key={entry.key}
             onClick={() => changeTab(entry.key)}
@@ -1092,7 +1103,7 @@ export default function InventoryWorkspace() {
           />
         </label>
         {(tab === "stock" || tab === "forecasts") && (
-          <select
+          <AdminSelect
             aria-label="Stock filter"
             value={filter}
             onChange={(event) => {
@@ -1107,7 +1118,7 @@ export default function InventoryWorkspace() {
             <option value="ingredient">Ingredients</option>
             <option value="packaging">Packaging</option>
             <option value="finished_good">Finished goods</option>
-          </select>
+          </AdminSelect>
         )}
         <span className="spacer" />
         {tab === "waste" && (
@@ -1139,7 +1150,7 @@ export default function InventoryWorkspace() {
         )}
         {tab === "forecasts" && (
           <>
-            <select
+            <AdminSelect
               aria-label="Forecast horizon"
               value={horizon}
               onChange={(event) => setHorizon(Number(event.target.value))}
@@ -1147,7 +1158,7 @@ export default function InventoryWorkspace() {
               <option value={7}>7 days</option>
               <option value={14}>14 days</option>
               <option value={30}>30 days</option>
-            </select>
+            </AdminSelect>
             <button
               className="ops-button"
               disabled={busy || !!ops.error}
@@ -1171,6 +1182,15 @@ export default function InventoryWorkspace() {
           <LoadingRows label="Loading inventory…" />
         ) : tab === "stock" ? (
           <>
+            <div className="ops-panel-legend">
+              <ColorLegend
+                items={[
+                  { tone: "danger", label: "Out of stock, sales blocked" },
+                  { tone: "warning", label: "Low, reorder soon" },
+                  { tone: "success", label: "Healthy" },
+                ]}
+              />
+            </div>
             <div className="ops-table-wrap">
               <PaginatedTable
                 aria-label="Stock items"
@@ -1596,7 +1616,7 @@ export default function InventoryWorkspace() {
                         </td>
                         <td className="number">
                           {f?.coverage_days == null
-                            ? "—"
+                            ? " - "
                             : `${quantity(f.coverage_days)} days`}
                         </td>
                         <td className="number">
@@ -1614,7 +1634,7 @@ export default function InventoryWorkspace() {
                               </small>
                             </>
                           ) : (
-                            "—"
+                            " - "
                           )}
                         </td>
                       </tr>

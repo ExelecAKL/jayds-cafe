@@ -1,5 +1,5 @@
 // apps/admin/app/(admin)/analytics/page.tsx
-// Sales & Analytics Dashboard — revenue, best sellers, peak hours, margins
+// Sales & Analytics Dashboard  -  revenue, best sellers, peak hours, margins
 
 "use client";
 
@@ -23,6 +23,11 @@ import {
   MarginModal,
 } from "../../../components/AnalyticsModals";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
+import {
+  ChartSkeleton,
+  Skeleton,
+  SkeletonStatus,
+} from "../../../components/AdminSkeletons";
 import { PageHeader, Feedback, Icon } from "../../../components/Operations";
 import Link from "next/link";
 import { PaginatedTable } from "../../../components/PaginatedTable";
@@ -142,7 +147,7 @@ export default function AnalyticsPage() {
       }
     }
     return maxVal > 0
-      ? `${days[maxDay]} ${maxHour + 13}:00–${maxHour + 14}:00`
+      ? `${days[maxDay]} ${maxHour + 13}:00 to ${maxHour + 14}:00`
       : "No data";
   }, [heatmap]);
 
@@ -198,30 +203,32 @@ export default function AnalyticsPage() {
       <div>
         {header}
         <Feedback error={error} />
-        <section className="ops-panel">
-          <div className="ops-empty" role={loading ? "status" : undefined}>
-            {loading ? (
-              <>
-                <div
-                  className="ops-detail-skeleton"
-                  style={{ width: "100%", maxWidth: 500 }}
-                >
-                  <i />
-                  <i />
-                  <i />
+        {loading ? (
+          <SkeletonStatus label="Loading sales…" className="ask-page">
+            <div className="ops-metrics" aria-hidden="true">
+              {[0, 1, 2, 3].map((index) => (
+                <div className="ops-metric ask-metric" key={index}>
+                  <Skeleton width={["6rem", "5rem", "6.5rem", "4.5rem"][index]} height={11} />
+                  <Skeleton width={["7rem", "4.5rem", "5.5rem", "6rem"][index]} height={28} />
                 </div>
-                <p>Loading sales…</p>
-              </>
-            ) : (
+              ))}
+            </div>
+            <section className="ops-panel" aria-hidden="true">
+              <ChartSkeleton label={null} bars={14} />
+            </section>
+          </SkeletonStatus>
+        ) : (
+          <section className="ops-panel">
+            <div className="ops-empty">
               <button
                 className="ops-button"
                 onClick={() => void fetchAnalytics()}
               >
                 Try again
               </button>
-            )}
-          </div>
-        </section>
+            </div>
+          </section>
+        )}
       </div>
     );
   return (
@@ -229,66 +236,66 @@ export default function AnalyticsPage() {
       {header}
       <Feedback error={error} />
       {loading && (
-        <p role="status" className="ops-muted text-sm mb-3">
+        <p role="status" className="ops-refresh-note mb-3">
           Refreshing sales…
         </p>
       )}
       {/* Revenue Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500">Sales collected</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
+        <div className="bg-surface rounded-2xl p-5 shadow-sm border border-subtle">
+          <p className="text-sm text-muted">Sales collected</p>
+          <p className="text-2xl font-bold text-ink mt-1">
             ₱{revenue.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
           </p>
           {prevRevenue > 0 && (
             <p
-              className={`text-xs mt-1 font-medium ${revenueChange >= 0 ? "text-green-600" : "text-red-600"}`}
+              className={`text-xs mt-1 font-medium ${revenueChange >= 0 ? "text-success" : "text-danger"}`}
             >
               {revenueChange >= 0 ? "▲" : "▼"}{" "}
               {Math.abs(revenueChange).toFixed(1)}% vs prev
             </p>
           )}
         </div>
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500">Paid orders</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{orderCount}</p>
+        <div className="bg-surface rounded-2xl p-5 shadow-sm border border-subtle">
+          <p className="text-sm text-muted">Paid orders</p>
+          <p className="text-2xl font-bold text-ink mt-1">{orderCount}</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500">Avg Order Value</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
+        <div className="bg-surface rounded-2xl p-5 shadow-sm border border-subtle">
+          <p className="text-sm text-muted">Avg Order Value</p>
+          <p className="text-2xl font-bold text-ink mt-1">
             ₱{avgOrderValue.toFixed(2)}
           </p>
         </div>
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500">Busiest Time</p>
-          <p className="text-lg font-bold text-amber-600 mt-1">{busiestInfo}</p>
+        <div className="bg-surface rounded-2xl p-5 shadow-sm border border-subtle">
+          <p className="text-sm text-muted">Busiest Time</p>
+          <p className="text-lg font-bold text-warning mt-1">{busiestInfo}</p>
         </div>
       </div>
 
       {/* Revenue Chart */}
       <div
         id="revenue-chart"
-        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8 relative"
+        className="bg-surface rounded-2xl p-6 shadow-sm border border-subtle mb-8 relative"
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="font-semibold text-gray-900">Sales over time</h2>
+          <h2 className="font-semibold text-ink">Sales over time</h2>
           <button
             onClick={() =>
               exportAsPng("revenue-chart", `Revenue_Chart_${period}`)
             }
-            className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+            className="text-xs px-2 py-1 bg-raised text-muted rounded hover:bg-raised"
           >
             ↓ PNG
           </button>
         </div>
         {chartData.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-10">
+          <p className="text-sm text-muted text-center py-10">
             No revenue data for this period
           </p>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--ui-border-default)" />
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₱${v}`} />
               <Tooltip
@@ -301,7 +308,7 @@ export default function AnalyticsPage() {
                 isAnimationActive={false}
                 type="monotone"
                 dataKey="revenue"
-                stroke="#f59e0b"
+                stroke="var(--ui-chart-line)"
                 strokeWidth={2}
                 dot={{ r: 4 }}
               />
@@ -338,20 +345,20 @@ export default function AnalyticsPage() {
         id="best-sellers-chart"
         className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8"
       >
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative">
+        <div className="bg-surface rounded-2xl p-6 shadow-sm border border-subtle relative">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-semibold text-gray-900">Top 10 Best Sellers</h2>
+            <h2 className="font-semibold text-ink">Top 10 Best Sellers</h2>
             <button
               onClick={() =>
                 exportAsPng("best-sellers-chart", `Best_Sellers_${period}`)
               }
-              className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+              className="text-xs px-2 py-1 bg-raised text-muted rounded hover:bg-raised"
             >
               ↓ PNG
             </button>
           </div>
           {bestSellers.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-10">
+            <p className="text-sm text-muted text-center py-10">
               No sales data
             </p>
           ) : (
@@ -369,7 +376,7 @@ export default function AnalyticsPage() {
                 }}
                 style={{ cursor: "pointer" }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--ui-border-default)" />
                 <XAxis type="number" tick={{ fontSize: 11 }} />
                 <YAxis
                   type="category"
@@ -382,7 +389,7 @@ export default function AnalyticsPage() {
                 <Bar
                   isAnimationActive={false}
                   dataKey="qty"
-                  fill="#f59e0b"
+                  fill="var(--ui-chart-line)"
                   radius={[0, 6, 6, 0]}
                 />
               </BarChart>
@@ -391,8 +398,8 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Best Sellers Table */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h2 className="font-semibold text-gray-900 mb-4">Sales Breakdown</h2>
+        <div className="bg-surface rounded-2xl p-6 shadow-sm border border-subtle">
+          <h2 className="font-semibold text-ink mb-4">Sales Breakdown</h2>
           <div className="overflow-x-auto">
             <PaginatedTable
               aria-label="Best sellers"
@@ -400,30 +407,30 @@ export default function AnalyticsPage() {
               className="w-full text-sm"
             >
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                <tr className="border-b border-subtle">
+                  <th className="py-2 text-left text-xs font-medium text-muted uppercase">
                     #
                   </th>
-                  <th className="py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="py-2 text-left text-xs font-medium text-muted uppercase">
                     Item
                   </th>
-                  <th className="py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th className="py-2 text-right text-xs font-medium text-muted uppercase">
                     Sold
                   </th>
-                  <th className="py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th className="py-2 text-right text-xs font-medium text-muted uppercase">
                     Item sales
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-subtle">
                 {bestSellers.map((item, i) => (
                   <tr
                     key={item.item_key}
                     onClick={() => setSelectedBestSeller(item)}
-                    className="hover:bg-amber-50 cursor-pointer transition-colors"
+                    className="hover:bg-warning-soft cursor-pointer transition-colors"
                   >
-                    <td className="py-2 text-gray-400">{i + 1}</td>
-                    <td className="py-2 font-medium text-gray-900">
+                    <td className="py-2 text-muted">{i + 1}</td>
+                    <td className="py-2 font-medium text-ink">
                       <button
                         className="text-left underline-offset-4 hover:underline"
                         onClick={() => setSelectedBestSeller(item)}
@@ -431,10 +438,10 @@ export default function AnalyticsPage() {
                         {item.name}
                       </button>
                     </td>
-                    <td className="py-2 text-right text-gray-600">
+                    <td className="py-2 text-right text-muted">
                       {item.qty}
                     </td>
-                    <td className="py-2 text-right font-medium text-gray-900">
+                    <td className="py-2 text-right font-medium text-ink">
                       ₱{item.revenue.toFixed(0)}
                     </td>
                   </tr>
@@ -448,27 +455,27 @@ export default function AnalyticsPage() {
       {/* Peak Hours Heatmap */}
       <div
         id="heatmap-chart"
-        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8 relative"
+        className="bg-surface rounded-2xl p-6 shadow-sm border border-subtle mb-8 relative"
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="font-semibold text-gray-900">
-            Peak hours · 1 PM–10 PM
+          <h2 className="font-semibold text-ink">
+            Peak hours · 1 PM to 10 PM
           </h2>
           <button
             onClick={() => exportAsPng("heatmap-chart", `Heatmap_${period}`)}
-            className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+            className="text-xs px-2 py-1 bg-raised text-muted rounded hover:bg-raised"
           >
             ↓ PNG
           </button>
         </div>
         <div className="overflow-x-auto">
-          <div className="min-w-[500px]">
+          <div className="min-w-[var(--ui-legacy-length-500)]">
             <div className="flex gap-0.5 mb-1">
               <div className="w-12" />
               {Array.from({ length: 9 }, (_, h) => (
                 <div
                   key={h}
-                  className="flex-1 text-center text-[10px] text-gray-400"
+                  className="flex-1 text-center text-xs text-muted"
                 >
                   {h + 13}:00
                 </div>
@@ -477,7 +484,7 @@ export default function AnalyticsPage() {
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
               (day, di) => (
                 <div key={day} className="flex gap-0.5 mb-0.5">
-                  <div className="w-12 text-xs text-gray-500 flex items-center">
+                  <div className="w-12 text-xs text-muted flex items-center">
                     {day}
                   </div>
                   {Array.from({ length: 9 }, (_, h) => {
@@ -495,14 +502,14 @@ export default function AnalyticsPage() {
                             dayName: day,
                           })
                         }
-                        className="flex-1 h-8 rounded-md cursor-pointer hover:ring-2 hover:ring-inset hover:ring-amber-600 transition-colors box-border"
+                        className="flex-1 h-8 rounded-md cursor-pointer hover:ring-2 hover:ring-inset hover:ring-accent transition-colors box-border"
                         style={{
                           backgroundColor:
                             val === 0
-                              ? "#f9fafb"
-                              : `rgba(245, 158, 11, ${0.15 + intensity * 0.85})`,
+                              ? "var(--ui-surface-raised)"
+                              : `color-mix(in srgb, var(--ui-chart-line) ${15 + intensity * 85}%, var(--ui-surface-card))`,
                         }}
-                        title={`${day} ${h + 13}:00 — ${val} order${val !== 1 ? "s" : ""}`}
+                        title={`${day} ${h + 13}:00  -  ${val} order${val !== 1 ? "s" : ""}`}
                       />
                     );
                   })}
@@ -514,12 +521,12 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Profit Margins */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="font-semibold text-gray-900">Menu pricing guide</h2>
+      <div className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden relative">
+        <div className="px-6 py-4 border-b border-subtle flex justify-between items-center">
+          <h2 className="font-semibold text-ink">Menu pricing guide</h2>
           <button
             onClick={handleExportMarginsCSV}
-            className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 font-bold"
+            className="text-xs px-2 py-1 bg-info-soft text-info rounded hover:bg-info-soft font-bold"
           >
             ↓ CSV
           </button>
@@ -531,32 +538,32 @@ export default function AnalyticsPage() {
             className="w-full text-sm"
           >
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <tr className="border-b border-subtle bg-raised">
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted uppercase">
                   Item
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted uppercase">
                   Price
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted uppercase">
                   Ingredient Cost
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted uppercase">
                   Price less recipe cost
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted uppercase">
                   Margin %
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-subtle">
               {margins.map((m) => (
                 <tr
                   key={m.id}
                   onClick={() => setSelectedMarginItem(m.id)}
-                  className="hover:bg-amber-50 cursor-pointer transition-colors"
+                  className="hover:bg-warning-soft cursor-pointer transition-colors"
                 >
-                  <td className="px-4 py-3 font-medium text-gray-900">
+                  <td className="px-4 py-3 font-medium text-ink">
                     <button
                       className="text-left underline-offset-4 hover:underline"
                       onClick={() => setSelectedMarginItem(m.id)}
@@ -564,23 +571,23 @@ export default function AnalyticsPage() {
                       {m.name}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-right text-gray-600">
+                  <td className="px-4 py-3 text-right text-muted">
                     ₱{m.price.toFixed(2)}
                   </td>
-                  <td className="px-4 py-3 text-right text-gray-600">
+                  <td className="px-4 py-3 text-right text-muted">
                     ₱{m.cost.toFixed(2)}
                   </td>
-                  <td className="px-4 py-3 text-right font-medium text-gray-900">
+                  <td className="px-4 py-3 text-right font-medium text-ink">
                     ₱{m.profit.toFixed(2)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                         m.margin >= 80
-                          ? "bg-green-50 text-green-700"
+                          ? "bg-success-soft text-success"
                           : m.margin >= 50
-                            ? "bg-yellow-50 text-yellow-700"
-                            : "bg-red-50 text-red-700"
+                            ? "bg-warning-soft text-warning"
+                            : "bg-danger-soft text-danger"
                       }`}
                     >
                       {m.margin.toFixed(1)}%

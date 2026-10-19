@@ -13,10 +13,23 @@ import MenuCard from "../../../components/MenuCard";
 import Icon from "../../../components/Icon";
 import HomeCarousel from "../../../components/HomeCarousel";
 import HomeRecommendations from "../../../components/HomeRecommendations";
+import { ProductGridSkeleton, Skeleton } from "../../../components/Skeletons";
+import {
+  isUnread,
+  orderUpdate,
+  readUpdateIds,
+  type CustomerUpdate,
+} from "../../../utils/customerUpdates";
 
 export default function HomePage() {
   const router = useRouter();
-  const { menuItems, featuredItems, error, refetch } = useMenu();
+  const {
+    menuItems,
+    featuredItems,
+    error,
+    refetch,
+    loading: menuLoading,
+  } = useMenu();
   const { user, profile, initialized } = useAuth();
   const { orderType, setOrderType } = useCart();
   const favorites = useCustomerFavorites();
@@ -44,6 +57,20 @@ export default function HomePage() {
       active = false;
     };
   }, []);
+  // New order updates since the customer last opened Notifications.
+  const [readIds, setReadIds] = useState<Set<string> | null>(null);
+  useEffect(() => {
+    if (!initialized || !user) return;
+    void Promise.resolve().then(() => setReadIds(readUpdateIds(user.id)));
+  }, [initialized, user]);
+  const unreadUpdates = readIds
+    ? orders
+        .map((order) => orderUpdate(order))
+        .filter(
+          (update): update is CustomerUpdate =>
+            !!update && isUnread(update, readIds),
+        ).length
+    : 0;
   const activeOrder = orders.find(
     (o) => !["completed", "cancelled"].includes(o.status) && !o.is_parked,
   );
@@ -63,10 +90,23 @@ export default function HomePage() {
       actions={
         <Link
           href="/notifications"
-          className="icon-button"
-          aria-label="Notifications"
+          className="icon-button home-bell"
+          aria-label={
+            unreadUpdates
+              ? `Notifications, ${unreadUpdates} new`
+              : "Notifications"
+          }
         >
           <Icon name="bell" />
+          {unreadUpdates > 0 && (
+            <span
+              key={unreadUpdates}
+              className="home-bell-count jm-pop"
+              aria-hidden="true"
+            >
+              {unreadUpdates > 9 ? "9+" : unreadUpdates}
+            </span>
+          )}
         </Link>
       }
     >
@@ -252,6 +292,40 @@ export default function HomePage() {
           </div>
           <div className="product-grid">
             {favoriteProducts.map((item) => (
+              <MenuCard item={item} key={item.id} />
+            ))}
+          </div>
+        </section>
+      )}
+      {menuLoading && !recommended.length && (
+        <section className="home-discovery" aria-label="Menu inspiration">
+          <div className="section-heading" aria-hidden="true">
+            <div className="grid gap-2">
+              <Skeleton width={150} height={11} />
+              <Skeleton shape="title" width={190} height={26} />
+            </div>
+            <Skeleton width={70} height={14} />
+          </div>
+          <ProductGridSkeleton count={4} label="Loading featured products" />
+        </section>
+      )}
+      {recommended.length > 0 && (
+        <section className="home-discovery" aria-label="Menu inspiration">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Something to look forward to</p>
+              <h2 id="home-featured-shelf-title" className="section-title">
+                {featuredItems.length
+                  ? "Featured at Jayds"
+                  : "A little menu inspiration"}
+              </h2>
+            </div>
+            <Link href="/menu/browse" className="text-link">
+              Full menu <Icon name="arrowRight" size={17} />
+            </Link>
+          </div>
+          <div className="product-grid">
+            {recommended.map((item) => (
               <MenuCard item={item} key={item.id} />
             ))}
           </div>

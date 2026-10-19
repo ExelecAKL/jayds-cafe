@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@cafeos/shared/hooks/useAuth";
 import { customerHeaders } from "../../../context/CustomerFeatures";
 import AppShell, { InlineNotice } from "../../../components/AppShell";
+import { MessageListSkeleton } from "../../../components/Skeletons";
 import Icon from "../../../components/Icon";
 import { PRIVACY_CONTACT, PRIVACY_PHONE_URI } from "../../../lib/legal";
 interface Case {
@@ -338,7 +339,7 @@ function HelpContent({
         <section className="help-history">
           <h2>Your requests</h2>
           {history.key === historyKey && history.loading && (
-            <p role="status">Loading your requests…</p>
+            <MessageListSkeleton rows={2} label="Loading your requests…" />
           )}
           {history.key === historyKey && history.error && (
             <div role="alert">

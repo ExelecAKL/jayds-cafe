@@ -10,6 +10,8 @@ import {
   type AdminWorkflowFixture,
 } from "./admin-workflow-journeys";
 import { extraAdminAudit } from "./system-audit-extra-admin.ts";
+import { installAdminVisualFixtures, adminVisualJourneys } from "./admin-ui-journeys";
+import { adminControlJourneys } from "./admin-control-journeys";
 
 const root = process.cwd();
 const port = 4282;
@@ -372,6 +374,7 @@ try {
       const readRPC = [
         "get_published_catalog",
         "get_inventory_readiness",
+        "admin_purchase_orders",
         "inv_dashboard",
         "get_customer_scheduling_admin",
         "get_customer_operations",
@@ -453,7 +456,7 @@ try {
     }
     if (url.pathname.includes("/rpc/")) {
       const data =
-        name === "get_published_catalog"
+        name === "admin_purchase_orders" ? purchases : name === "get_published_catalog"
           ? { categories: [category], menuItems: menu }
           : name === "get_inventory_readiness"
             ? {
@@ -541,6 +544,7 @@ try {
     if (url.searchParams.get("order_number") === "ilike.%slow%") slowFinished();
   });
   const page = await context.newPage();
+  await installAdminVisualFixtures(page, menu);
   page.on("pageerror", (e) => errors.push(e.message));
   const table = (name: string) =>
     page.getByRole("table", { name, exact: true });
@@ -715,6 +719,8 @@ try {
     await expect(nav).toContainText("Page 2 of 6");
     await nav.screenshot({ path: path.join(output, "mobile-footer.png") });
   }
+  if (process.env.JAYDS_ADMIN_UI === "1") await adminVisualJourneys(page, origin);
+  if (process.env.JAYDS_ADMIN_CONTROLS === "1") await adminControlJourneys(page, origin);
   workflowMode = true;
   tables.profiles.push(
     ...list(2, (n) => ({
@@ -725,7 +731,7 @@ try {
       is_approved: false,
     })),
   );
-  const workflows = await adminWorkflowJourneys(
+  const workflows = process.env.ADMIN_TABLES_ONLY === "1" ? [] : await adminWorkflowJourneys(
     page,
     origin,
     workflowFixture,

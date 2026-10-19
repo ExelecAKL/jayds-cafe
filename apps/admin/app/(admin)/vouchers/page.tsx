@@ -1,10 +1,19 @@
 // apps/admin/app/(admin)/vouchers/page.tsx
-// Admin voucher management — create, deploy, view claims
+// Admin voucher management  -  create, deploy, view claims
 
 "use client";
+import { AdminSelect } from "../../../components/AdminSelect";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
-import { Feedback, Drawer, PageHeader } from "../../../components/Operations";
+import {
+  Badge,
+  Feedback,
+  Drawer,
+  Empty,
+  PageHeader,
+} from "../../../components/Operations";
+import { CardGridSkeleton } from "../../../components/AdminSkeletons";
+import { notifyAdmin } from "../../../components/AdminToasts";
 
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import { useState, useEffect, useCallback } from "react";
@@ -222,6 +231,12 @@ export default function VouchersPage() {
         }
       }
 
+      notifyAdmin(
+        editingId
+          ? `Voucher ${formData.code.trim().toUpperCase()} updated.`
+          : `Voucher ${formData.code.trim().toUpperCase()} created.`,
+        "success",
+      );
       setShowForm(false);
       setEditingId(null);
       setFormData(defaultForm);
@@ -275,6 +290,10 @@ export default function VouchersPage() {
       return;
     }
     setActionError("");
+    notifyAdmin(
+      `${vouchers.find((v) => v.id === id)?.code || "Voucher"} ${current ? "paused" : "enabled"}.`,
+      current ? "info" : "success",
+    );
     void fetchVouchers();
   };
 
@@ -310,46 +329,54 @@ export default function VouchersPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search vouchers..."
-        className="w-full mb-4 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+        className="w-full mb-4 px-4 py-2.5 rounded-xl border border-subtle bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border"
       />
 
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="w-8 h-8 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
-        </div>
+        <CardGridSkeleton label="Loading vouchers…" count={6} />
       ) : filteredVouchers.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-          No vouchers found.
-        </div>
+        <Empty
+          icon="ticket"
+          title={search.trim() ? "No vouchers match your search" : "No vouchers yet"}
+          description={
+            search.trim()
+              ? "Check the spelling of the code, or clear the search to see every voucher."
+              : "Create a voucher to offer customers a discount at checkout."
+          }
+        >
+          {search.trim() && (
+            <button className="ops-button" onClick={() => setSearch("")}>
+              Clear search
+            </button>
+          )}
+        </Empty>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredVouchers.map((v) => (
             <div
               key={v.id}
-              className={`bg-white rounded-2xl p-5 shadow-sm border ${v.is_active ? "border-gray-100" : "border-red-100 opacity-60"}`}
+              className={`bg-surface rounded-2xl p-5 shadow-sm border ${v.is_active ? "border-subtle" : "border-subtle opacity-60"}`}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-lg font-bold text-gray-900 font-mono">
+                  <p className="text-lg font-bold text-ink font-mono">
                     {v.code}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="text-xs text-muted mt-0.5">
                     {v.description}
                   </p>
                 </div>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${v.is_active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
-                >
-                  {v.is_active ? "Active" : "Inactive"}
-                </span>
+                <Badge tone={v.is_active ? "success" : "neutral"}>
+                  {v.is_active ? "Active" : "Paused"}
+                </Badge>
               </div>
 
               {v.applicable_item_ids && v.applicable_item_ids.length > 0 && (
-                <div className="mb-3 px-3 py-1.5 bg-amber-50 rounded-lg border border-amber-100">
-                  <p className="text-[10px] text-amber-800 font-semibold uppercase tracking-wider mb-0.5">
+                <div className="mb-3 px-3 py-1.5 bg-warning-soft rounded-lg border border-warning-border">
+                  <p className="text-xs text-warning font-semibold uppercase tracking-wider mb-0.5">
                     Item Restrictions
                   </p>
-                  <p className="text-xs text-amber-900">
+                  <p className="text-xs text-warning">
                     {v.application_mode === "selected_items"
                       ? "Discount applies ONLY to selected items."
                       : "Must buy selected items to get order discount."}
@@ -357,37 +384,37 @@ export default function VouchersPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-3">
+              <div className="grid grid-cols-2 gap-2 text-xs text-muted mb-3">
                 <div>
-                  <span className="text-gray-400">Discount</span>
-                  <p className="font-semibold text-gray-900">
+                  <span className="text-muted">Discount</span>
+                  <p className="font-semibold text-ink">
                     {v.discount_type === "percentage"
                       ? `${v.discount_value}%`
                       : `₱${v.discount_value}`}
                     {v.discount_type === "percentage" &&
                       v.max_discount_amount && (
-                        <span className="text-[10px] text-gray-500 ml-1">
+                        <span className="text-xs text-muted ml-1">
                           (up to ₱{v.max_discount_amount})
                         </span>
                       )}
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-400">Uses</span>
-                  <p className="font-semibold text-gray-900">
+                  <span className="text-muted">Uses</span>
+                  <p className="font-semibold text-ink">
                     {v.uses_count}
                     {v.max_uses ? ` / ${v.max_uses}` : " / ∞"}
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-400">Min Order</span>
-                  <p className="font-semibold text-gray-900">
+                  <span className="text-muted">Min Order</span>
+                  <p className="font-semibold text-ink">
                     ₱{v.min_order_amount}
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-400">Expires</span>
-                  <p className="font-semibold text-gray-900">
+                  <span className="text-muted">Expires</span>
+                  <p className="font-semibold text-ink">
                     {v.valid_until
                       ? new Date(v.valid_until).toLocaleDateString("en-PH", {
                           month: "short",
@@ -398,8 +425,8 @@ export default function VouchersPage() {
                 </div>
                 {v.target_tier && (
                   <div>
-                    <span className="text-gray-400">Tier</span>
-                    <p className="font-semibold text-gray-900 capitalize">
+                    <span className="text-muted">Tier</span>
+                    <p className="font-semibold text-ink capitalize">
                       {v.target_tier}
                     </p>
                   </div>
@@ -409,7 +436,7 @@ export default function VouchersPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => openEdit(v)}
-                  className="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
+                  className="flex-1 py-2 rounded-xl text-xs font-semibold bg-raised text-ink hover:bg-raised transition-all"
                 >
                   Edit
                 </button>
@@ -417,8 +444,8 @@ export default function VouchersPage() {
                   onClick={() => toggleActive(v.id, v.is_active)}
                   className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
                     v.is_active
-                      ? "bg-red-50 text-red-600 hover:bg-red-100"
-                      : "bg-green-50 text-green-600 hover:bg-green-100"
+                      ? "bg-danger-soft text-danger hover:bg-danger-soft"
+                      : "bg-success-soft text-success hover:bg-success-soft"
                   }`}
                 >
                   {v.is_active ? "Deactivate" : "Activate"}
@@ -448,7 +475,7 @@ export default function VouchersPage() {
             <Feedback error={actionError} />
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
+              <label className="block text-xs font-medium text-muted mb-1">
                 Code
                 <FieldRequirement required={true} />
               </label>
@@ -459,13 +486,13 @@ export default function VouchersPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, code: e.target.value })
                 }
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm font-mono uppercase"
+                className="w-full px-3 py-2 rounded-lg border border-subtle text-sm font-mono uppercase"
                 placeholder="JAYDS10"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
+              <label className="block text-xs font-medium text-muted mb-1">
                 Description
                 <FieldRequirement required={true} />
               </label>
@@ -476,18 +503,18 @@ export default function VouchersPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                 placeholder="10% off your next order"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-muted mb-1">
                   Discount Type
                   <FieldRequirement required={true} />
                 </label>
-                <select
+                <AdminSelect
                   aria-label="Discount type"
                   value={formData.discount_type}
                   onChange={(e) =>
@@ -496,14 +523,14 @@ export default function VouchersPage() {
                       discount_type: e.target.value as "percentage" | "fixed",
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                 >
                   <option value="percentage">Percentage (%)</option>
                   <option value="fixed">Fixed (₱)</option>
-                </select>
+                </AdminSelect>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-muted mb-1">
                   Discount Value
                   <FieldRequirement required={true} />
                 </label>
@@ -523,14 +550,14 @@ export default function VouchersPage() {
                       discount_value: Number(e.target.value),
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-muted mb-1">
                   Min Order (₱)
                   <FieldRequirement required={false} />
                 </label>
@@ -546,11 +573,11 @@ export default function VouchersPage() {
                       min_order_amount: Number(e.target.value),
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-muted mb-1">
                   Max Uses
                   <FieldRequirement required={false} />
                 </label>
@@ -562,34 +589,34 @@ export default function VouchersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, max_uses: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                   placeholder="Unlimited"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-3">
+            <div className="grid grid-cols-2 gap-4 border-t border-subtle pt-3">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-muted mb-1">
                   Target Tier
                   <FieldRequirement required={false} />
                 </label>
-                <select
+                <AdminSelect
                   aria-label="Target tier"
                   value={formData.target_tier}
                   onChange={(e) =>
                     setFormData({ ...formData, target_tier: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                 >
                   <option value="">All Members</option>
                   <option value="bronze">Bronze</option>
                   <option value="silver">Silver</option>
                   <option value="gold">Gold</option>
-                </select>
+                </AdminSelect>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-muted mb-1">
                   Valid Until
                   <FieldRequirement required={false} />
                 </label>
@@ -600,7 +627,7 @@ export default function VouchersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, valid_until: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                 />
               </div>
             </div>
@@ -616,11 +643,11 @@ export default function VouchersPage() {
               <summary>Product rules & discount limit</summary>
 
               <div className="mb-3">
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-muted mb-1">
                   Application Mode
                   <FieldRequirement required={true} />
                 </label>
-                <select
+                <AdminSelect
                   aria-label="Application mode"
                   value={formData.application_mode}
                   onChange={(e) =>
@@ -630,7 +657,7 @@ export default function VouchersPage() {
                         "whole_order" | "selected_items",
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                 >
                   <option value="whole_order">
                     Apply discount to Whole Order
@@ -638,8 +665,8 @@ export default function VouchersPage() {
                   <option value="selected_items">
                     Apply discount ONLY to Selected Items
                   </option>
-                </select>
-                <p className="text-[10px] text-gray-400 mt-1">
+                </AdminSelect>
+                <p className="text-xs text-muted mt-1">
                   If Whole Order and items are selected below, the cart must
                   contain at least one selected item to trigger the discount.
                 </p>
@@ -647,7 +674,7 @@ export default function VouchersPage() {
 
               {formData.discount_type === "percentage" && (
                 <div className="mb-3">
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-muted mb-1">
                     Maximum Discount Cap (₱)
                     <FieldRequirement required={false} />
                   </label>
@@ -661,18 +688,18 @@ export default function VouchersPage() {
                         max_discount_amount: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                    className="w-full px-3 py-2 rounded-lg border border-subtle text-sm"
                     placeholder="e.g. 50 (Caps the percentage discount)"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-muted mb-1">
                   Restricted Items
                   <FieldRequirement required={false} />
                 </label>
-                <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
+                <div className="max-h-40 overflow-y-auto border border-subtle rounded-lg p-2 space-y-1">
                   {menuItems.map((item) => {
                     const isSelected = formData.applicable_item_ids.includes(
                       item.id,
@@ -680,7 +707,7 @@ export default function VouchersPage() {
                     return (
                       <label
                         key={item.id}
-                        className="flex items-center gap-2 text-sm p-1 hover:bg-gray-50 rounded cursor-pointer"
+                        className="flex items-center gap-2 text-sm p-1 hover:bg-raised rounded cursor-pointer"
                       >
                         <input
                           type="checkbox"
@@ -704,9 +731,9 @@ export default function VouchersPage() {
                               });
                             }
                           }}
-                          className="rounded text-amber-500 focus:ring-amber-500"
+                          className="rounded text-warning focus:ring-accent"
                         />
-                        <span className="text-gray-700">{item.name}</span>
+                        <span className="text-ink">{item.name}</span>
                       </label>
                     );
                   })}

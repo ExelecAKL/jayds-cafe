@@ -44,7 +44,7 @@ export default function InventoryReadiness() {
           className="ops-action-row"
           style={{ flexWrap: "wrap" }}
         >
-          <div style={{ flex: "1 1 180px", minWidth: 0 }}>
+          <div style={{ flex: "1 1 var(--ui-legacy-length-180)", minWidth: 0 }}>
             <strong>{check.label}</strong>
             <p>
               {check.count

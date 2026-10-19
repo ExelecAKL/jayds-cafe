@@ -365,7 +365,7 @@ export default function DeliveryMapPicker({
           </label>
         )}
         <p
-          className={`text-sm ${covered ? "text-emerald-800" : "text-red-800"}`}
+          className={`text-sm ${covered ? "text-success" : "text-error"}`}
         >
           {!chosenPoint
             ? "Enter valid coordinates or choose a point on the map."

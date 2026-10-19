@@ -1,4 +1,5 @@
 "use client";
+import { AdminSelect } from "./AdminSelect";
 import { FieldRequirement } from "@cafeos/shared/ui/field-requirement";
 import { notifyAdmin } from "./AdminToasts";
 import { useActionConfirm } from "@cafeos/shared/ui/action-confirm";
@@ -222,7 +223,7 @@ function PurchaseForm({
           <label>
             Supplier
             <FieldRequirement required={true} />
-            <select
+            <AdminSelect
               required
               value={supplier}
               onChange={(e) => setSupplier(e.target.value)}
@@ -235,7 +236,7 @@ function PurchaseForm({
                     {s.name}
                   </option>
                 ))}
-            </select>
+            </AdminSelect>
           </label>
           <label>
             Expected delivery
@@ -254,7 +255,7 @@ function PurchaseForm({
               <label>
                 Stock item
                 <FieldRequirement required={true} />
-                <select
+                <AdminSelect
                   required
                   value={line.ingredient_id}
                   onChange={(e) => {
@@ -283,7 +284,7 @@ function PurchaseForm({
                         {s.supplier_id === supplier ? " · Preferred" : ""}
                       </option>
                     ))}
-                </select>
+                </AdminSelect>
               </label>
               <div className="ops-form-grid">
                 <label>
@@ -700,7 +701,7 @@ export function PurchasingWorkspace() {
               {step.label}
               <strong>
                 {ops.loading || (!ops.lastUpdated && !!ops.error)
-                  ? "—"
+                  ? " - "
                   : step.count}
               </strong>
             </span>
@@ -737,7 +738,7 @@ export function PurchasingWorkspace() {
             onChange={(e) => setSearch(e.target.value)}
           />
           {tab === "orders" && (
-            <select
+            <AdminSelect
               aria-label="Order status"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
@@ -757,7 +758,7 @@ export function PurchasingWorkspace() {
                   {s.charAt(0).toUpperCase() + s.slice(1)}
                 </option>
               ))}
-            </select>
+            </AdminSelect>
           )}
         </div>
         {ops.loading ? (
@@ -910,7 +911,7 @@ export function PurchasingWorkspace() {
                         <small>{s.email}</small>
                       </td>
                       <td>
-                        {s.contact_name || "—"}
+                        {s.contact_name || " - "}
                         <small>{s.phone}</small>
                       </td>
                       <td>{s.lead_time_days} days</td>

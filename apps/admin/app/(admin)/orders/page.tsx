@@ -2,12 +2,25 @@
 // Full orders table with status filter, date filter, search
 
 "use client";
+import { AdminSelect } from "../../../components/AdminSelect";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@cafeos/shared/supabase/client";
 import { OrderDetailsModal } from "../../../components/OrderDetailsModal";
 import type { Order, OrderStatus } from "@cafeos/shared/types";
-import { Badge, Feedback, PageHeader } from "../../../components/Operations";
+import {
+  Badge,
+  Empty,
+  Feedback,
+  PageHeader,
+} from "../../../components/Operations";
+import { TableSkeleton } from "../../../components/AdminSkeletons";
+import {
+  ColorLegend,
+  StatusPill,
+  orderStatusTone,
+  paymentTone,
+} from "../../../components/StatusSemantics";
 import { ADMIN_PAGE_SIZE } from "../../../components/Pagination";
 import { PaginatedTable } from "../../../components/PaginatedTable";
 
@@ -42,13 +55,13 @@ const ORDER_LIST_SELECT = `
   items:order_items(id),
   customer:profiles!orders_customer_id_fkey(id, full_name, email)
 `;
-const statusColors: Record<OrderStatus, string> = {
-  pending: "bg-yellow-50 text-yellow-700",
-  confirmed: "bg-blue-50 text-blue-700",
-  preparing: "bg-purple-50 text-purple-700",
-  ready: "bg-green-50 text-green-700",
-  completed: "bg-gray-100 text-gray-700",
-  cancelled: "bg-red-50 text-red-700",
+const statusLabels: Record<OrderStatus, string> = {
+  pending: "Pending",
+  confirmed: "Confirmed",
+  preparing: "Preparing",
+  ready: "Ready",
+  completed: "Completed",
+  cancelled: "Cancelled",
 };
 
 export default function OrdersPage() {
@@ -73,8 +86,15 @@ export default function OrdersPage() {
   const [typeFilter, setTypeFilter] = useState<
     "all" | "dine_in" | "takeout" | "pickup" | "delivery"
   >("all");
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+  const [loadedOnce, setLoadedOnce] = useState(false);
+  // Query once typing pauses instead of on every keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchQuery(searchInput.trim()), 280);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // Selection
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -147,6 +167,7 @@ export default function OrdersPage() {
       }
     }
     setLoading(false);
+    setLoadedOnce(true);
   }, [
     statusFilter,
     paymentFilter,
@@ -176,6 +197,24 @@ export default function OrdersPage() {
     };
   }, [fetchOrders]);
 
+  const filtered = Boolean(
+    statusFilter !== "all" ||
+      paymentFilter !== "all" ||
+      typeFilter !== "all" ||
+      dateFilter ||
+      searchInput.trim() ||
+      stockOnly,
+  );
+  const clearFilters = () => {
+    setStatusFilter("all");
+    setPaymentFilter("all");
+    setTypeFilter("all");
+    setDateFilter("");
+    setSearchInput("");
+    setSearchQuery("");
+    setStockOnly(false);
+  };
+
   return (
     <div>
       <PageHeader
@@ -189,19 +228,22 @@ export default function OrdersPage() {
       <div className="flex flex-wrap items-center gap-3 mb-6">
         {/* Search */}
         <input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          type="search"
+          aria-label="Search order number"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           placeholder="Search Order #..."
-          className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all w-48"
+          className="px-4 py-2.5 rounded-xl border border-subtle bg-surface text-ink text-sm placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all w-48"
         />
 
         {/* Status Filter */}
-        <select
+        <AdminSelect
+          aria-label="Order status"
           value={statusFilter}
           onChange={(e) =>
             setStatusFilter(e.target.value as OrderStatus | "all")
           }
-          className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+          className="px-4 py-2.5 rounded-xl border border-subtle bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all"
         >
           <option value="all">All Statuses</option>
           {ALL_STATUSES.map((s) => (
@@ -209,40 +251,43 @@ export default function OrdersPage() {
               {s.charAt(0).toUpperCase() + s.slice(1)}
             </option>
           ))}
-        </select>
+        </AdminSelect>
 
         {/* Payment Filter */}
-        <select
+        <AdminSelect
+          aria-label="Payment method"
           value={paymentFilter}
           onChange={(e) =>
             setPaymentFilter(e.target.value as typeof paymentFilter)
           }
-          className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+          className="px-4 py-2.5 rounded-xl border border-subtle bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all"
         >
           <option value="all">All Payments</option>
           <option value="cash">Cash Only</option>
           <option value="maya">Maya Only</option>
-        </select>
+        </AdminSelect>
 
         {/* Type Filter */}
-        <select
+        <AdminSelect
+          aria-label="Order type"
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)}
-          className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+          className="px-4 py-2.5 rounded-xl border border-subtle bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all"
         >
           <option value="all">All Types</option>
           <option value="dine_in">Dine In</option>
           <option value="takeout">Takeout</option>
           <option value="pickup">Pickup</option>
           <option value="delivery">Delivery</option>
-        </select>
+        </AdminSelect>
 
         {/* Date Filter */}
         <input
           type="date"
+          aria-label="Order date"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
-          className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+          className="px-4 py-2.5 rounded-xl border border-subtle bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-warning-border transition-all"
         />
 
         <label className="ops-check">
@@ -253,36 +298,41 @@ export default function OrdersPage() {
           />
           Stock needs attention
         </label>
-        {(statusFilter !== "all" ||
-          paymentFilter !== "all" ||
-          typeFilter !== "all" ||
-          dateFilter ||
-          searchQuery ||
-          stockOnly) && (
+        {filtered && (
           <button
-            onClick={() => {
-              setStatusFilter("all");
-              setPaymentFilter("all");
-              setTypeFilter("all");
-              setDateFilter("");
-              setSearchQuery("");
-              setStockOnly(false);
-            }}
-            className="text-amber-600 text-sm font-medium hover:text-amber-700 transition-colors"
+            onClick={clearFilters}
+            className="text-warning text-sm font-medium hover:text-warning transition-colors"
           >
             Clear filters
           </button>
         )}
+        {loading && loadedOnce && (
+          <span className="ops-refresh-note" role="status">
+            Updating…
+          </span>
+        )}
       </div>
 
+      <ColorLegend
+        items={[
+          { tone: "warning", label: "Pending or unpaid" },
+          { tone: "info", label: "Confirmed or preparing" },
+          { tone: "success", label: "Ready or paid" },
+          { tone: "neutral", label: "Completed or refunded" },
+          { tone: "danger", label: "Cancelled, failed or blocked by stock" },
+        ]}
+      />
+
       {/* Orders Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {loading ? (
-          <div className="p-8 text-center">
-            <div className="w-8 h-8 mx-auto border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
-          </div>
+      <div className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden">
+        {loading && !loadedOnce ? (
+          <TableSkeleton
+            label="Loading orders…"
+            rows={8}
+            columns={["title", "text", "text", "badge", "badge", "badge", "number", "text"]}
+          />
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" data-refreshing={loading}>
             <PaginatedTable
               aria-label="Orders"
               pagination={{
@@ -294,41 +344,41 @@ export default function OrdersPage() {
               className="w-full"
             >
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <tr className="border-b border-subtle bg-raised">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Order #
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Customer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Items
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Payment
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Total
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Date
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-subtle">
                 {orders.map((order) => (
                   <tr
                     key={order.id}
                     onClick={() => setSelectedOrderId(order.id)}
-                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="hover:bg-raised transition-colors cursor-pointer"
                   >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 text-sm font-medium text-ink">
                       <button
                         onClick={(event) => {
                           event.stopPropagation();
@@ -338,24 +388,18 @@ export default function OrdersPage() {
                         {order.order_number}
                       </button>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {order.customer?.full_name || "Walk-in"}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {order.items?.length || 0} items
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       <div className="font-medium capitalize">
                         {order.order_type.replace("_", " ")}
                       </div>
-                      <span
-                        className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
-                          order.order_source === "pos"
-                            ? "bg-amber-50 text-amber-700"
-                            : "bg-blue-50 text-blue-700"
-                        }`}
-                      >
-                        {order.order_source === "pos" ? "POS" : "App"}
+                      <span className="ops-source-label">
+                        {order.order_source === "pos" ? "Counter" : "App"}
                       </span>
                       {order.is_parked && <Badge>Parked</Badge>}
                       {order.stock_conflict && (
@@ -363,30 +407,21 @@ export default function OrdersPage() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[order.status]}`}
-                      >
-                        {order.status.charAt(0).toUpperCase() +
-                          order.status.slice(1)}
-                      </span>
+                      <StatusPill tone={orderStatusTone(order.status)}>
+                        {statusLabels[order.status] ?? order.status}
+                      </StatusPill>
                     </td>
                     <td className="px-6 py-4">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                          order.payment_status === "paid"
-                            ? "bg-green-50 text-green-700"
-                            : "bg-yellow-50 text-yellow-700"
-                        }`}
-                      >
-                        {order.payment_method === "maya" ? "💳 " : "💵 "}
+                      <StatusPill tone={paymentTone(order.payment_status)}>
+                        {order.payment_method === "maya" ? "Maya · " : "Cash · "}
                         {order.payment_status.charAt(0).toUpperCase() +
                           order.payment_status.slice(1)}
-                      </span>
+                      </StatusPill>
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 text-sm font-medium text-ink">
                       ₱{order.total.toFixed(2)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {new Date(order.created_at).toLocaleDateString("en-PH", {
                         month: "short",
                         day: "numeric",
@@ -400,10 +435,22 @@ export default function OrdersPage() {
               </tbody>
             </PaginatedTable>
 
-            {orders.length === 0 && (
-              <div className="p-8 text-center text-gray-400">
-                No orders found.
-              </div>
+            {orders.length === 0 && !loading && (
+              <Empty
+                icon="orders"
+                title={filtered ? "No orders match these filters" : "No orders yet"}
+                description={
+                  filtered
+                    ? "Try a different order number, date or status, or clear the filters to see every order."
+                    : "Counter and app orders will appear here as soon as they are placed."
+                }
+              >
+                {filtered && (
+                  <button className="ops-button" onClick={clearFilters}>
+                    Clear filters
+                  </button>
+                )}
+              </Empty>
             )}
           </div>
         )}

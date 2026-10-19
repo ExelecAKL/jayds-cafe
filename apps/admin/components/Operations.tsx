@@ -12,6 +12,7 @@ import { supabase } from "@cafeos/shared/supabase/client";
 import { withRequestDeadline } from "@cafeos/shared/utils/request";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { usePathname } from "next/navigation";
+import { TableSkeleton } from "./AdminSkeletons";
 import type {
   StockItem,
   StockBatch,
@@ -52,7 +53,12 @@ export type IconName =
   | "star"
   | "clock"
   | "lock"
-  | "history";
+  | "history"
+  | "help"
+  | "alert"
+  | "calendar"
+  | "info"
+  | "minus";
 const paths: Record<IconName, string> = {
   overview: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z",
   orders: "M8 3h8v3H8zM6 5H4v16h16V5h-2M8 11h8M8 15h5",
@@ -62,7 +68,7 @@ const paths: Record<IconName, string> = {
   reports: "M4 20V4M4 20h16M8 16v-5M13 16V7M18 16v-8",
   people:
     "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M16 3a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-3.87M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
-  shield: "m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3zm-4 9 3 3 5-6",
+  shield: "m12 3 8 3v6c0 5-8 9-8 9 s -8-4-8-9V6l8-3zm-4 9 3 3 5-6",
   coffee:
     "M3 8h13v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8zm13 0h2a3 3 0 0 1 0 6h-2M6 3v2M10 2v3M14 3v2",
   arrow: "M5 12h14m-5-5 5 5-5 5",
@@ -84,6 +90,20 @@ const paths: Record<IconName, string> = {
   clock: "M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0",
   lock: "M5 10h14v11H5V10zm3 0V6a4 4 0 0 1 8 0v4m-4 5v2",
   history: "M3 3v6h6M3 9a10 10 0 1 1 0 6m9-8v6l4 2",
+  help: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01",
+  alert:
+    "M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z",
+  calendar: "M4 5h16v16H4zM4 10h16M8 3v4M16 3v4",
+  info: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v6M12 7.5h.01",
+  minus: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12h8",
+};
+/** One icon per meaning, so colour is never the only signal. */
+export const toneIcons: Partial<Record<string, IconName>> = {
+  danger: "alert",
+  warning: "clock",
+  success: "check",
+  info: "info",
+  neutral: "minus",
 };
 export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   return (
@@ -390,11 +410,20 @@ export function PageHeader({
 export function Badge({
   children,
   tone = "neutral",
+  icon = true,
 }: {
   children: ReactNode;
-  tone?: "neutral" | "success" | "warning" | "danger" | "brand";
+  tone?: "neutral" | "success" | "warning" | "danger" | "brand" | "info";
+  /** Semantic badges carry their meaning's icon; brand labels do not. */
+  icon?: boolean;
 }) {
-  return <span className={`ops-badge ${tone}`}>{children}</span>;
+  const symbol = icon && tone !== "brand" ? toneIcons[tone] : undefined;
+  return (
+    <span className={`ops-badge ${tone}`}>
+      {symbol && <Icon name={symbol} size={12} />}
+      {children}
+    </span>
+  );
 }
 export function Empty({
   title,
@@ -424,16 +453,11 @@ export function LoadingRows({
   rows?: number;
 }) {
   return (
-    <div role="status" aria-label={label} className="ops-loading-rows">
-      <span className="sr-only">{label}</span>
-      {Array.from({ length: rows }, (_, index) => (
-        <div className="ops-loading-row" key={index} aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-      ))}
-    </div>
+    <TableSkeleton
+      label={label}
+      rows={rows}
+      columns={["title", "text", "badge", "number"]}
+    />
   );
 }
 export function Feedback({
@@ -447,12 +471,12 @@ export function Feedback({
     <>
       {error && (
         <div role="alert" className="ops-feedback error">
-          {error}
+          <Icon name="alert" /><span>{error}</span>
         </div>
       )}
       {success && (
         <div role="status" className="ops-feedback success">
-          {success}
+          <Icon name="check" /><span>{success}</span>
         </div>
       )}
     </>

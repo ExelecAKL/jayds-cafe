@@ -248,8 +248,10 @@ export async function surveyUxAudit({
     if (width === 390) await auditScreen("bag");
   }
   await page.setViewportSize({ width: 390, height: 844 });
+  if (!(await page.locator("#bag-voucher").isVisible()))
+    await page.getByText("Enter a voucher code", { exact: true }).click();
   await page.locator("#bag-voucher").fill("DEMO10");
-  await page.getByRole("button", { name: "Apply", exact: true }).click();
+  await page.getByRole("button", { name: "Apply code", exact: true }).click();
   await expect(page.getByText("DEMO10 applied")).toBeVisible();
   await page.locator('a[href="/checkout"]:visible').click();
   await expect(page.getByText("Guest checkout", { exact: true })).toBeVisible();
@@ -397,8 +399,10 @@ export async function surveyUxAudit({
   );
   await page.goto(base + "/cart");
   await page.getByLabel(/Use rewards points/).fill("10");
+  if (!(await page.locator("#bag-voucher").isVisible()))
+    await page.getByText("Enter a voucher code", { exact: true }).click();
   await page.locator("#bag-voucher").fill("DEMO10");
-  await page.getByRole("button", { name: "Apply", exact: true }).click();
+  await page.getByRole("button", { name: "Apply code", exact: true }).click();
   await expect(page.locator(".cart-mobile-checkout strong")).toHaveText(
     "₱134.00",
   );

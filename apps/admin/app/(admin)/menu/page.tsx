@@ -1,4 +1,5 @@
 "use client";
+import { AdminSelect } from "../../../components/AdminSelect";
 import { useState } from "react";
 import { useMenu } from "@cafeos/shared/hooks/useMenu";
 import { supabase } from "@cafeos/shared/supabase/client";
@@ -15,6 +16,7 @@ import {
   LoadingRows,
   Empty,
 } from "../../../components/Operations";
+import { ColorLegend } from "../../../components/StatusSemantics";
 import { PaginatedTable } from "../../../components/PaginatedTable";
 export default function CatalogPage() {
   const {
@@ -84,6 +86,13 @@ export default function CatalogPage() {
           Try loading menu again
         </button>
       )}
+      <ColorLegend
+        items={[
+          { tone: "success", label: "Published and available to order" },
+          { tone: "danger", label: "Unavailable, usually out of stock" },
+          { tone: "neutral", label: "Archived or switched off by you" },
+        ]}
+      />
       <section className="ops-panel">
         <div className="ops-toolbar">
           <input
@@ -95,7 +104,7 @@ export default function CatalogPage() {
               setSearch(e.target.value);
             }}
           />
-          <select
+          <AdminSelect
             aria-label="Publication filter"
             value={filter}
             onChange={(e) => {
@@ -106,7 +115,7 @@ export default function CatalogPage() {
             <option value="active">Published</option>
             <option value="disabled">Manually disabled</option>
             <option value="archived">Archived</option>
-          </select>
+          </AdminSelect>
         </div>
         {loading ? (
           <LoadingRows label="Loading catalog…" />
@@ -164,7 +173,16 @@ export default function CatalogPage() {
                       </Badge>
                     </td>
                     <td>
-                      <Badge tone={m.is_available ? "brand" : "warning"}>
+                      <Badge
+                        tone={
+                          m.is_available
+                            ? "success"
+                            : m.manually_available === false ||
+                                m.status === "archived"
+                              ? "neutral"
+                              : "danger"
+                        }
+                      >
                         {m.is_available
                           ? "Available"
                           : m.manually_available === false
